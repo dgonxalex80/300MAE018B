@@ -1,0 +1,90 @@
+---
+title: <span style="color:#235784"> </span>  
+author: "dgonzalez "
+subtitle: <span style="color:#235784"> </span> 
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: yes
+    code_folding: hide
+    theme: flatly
+    css: style.css
+---  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
+# colores
+source("colores.R")
+paleta3 <- c(c0,c4,c5)
+
+# Instalar los paquetes necesarios si no están ya instalados
+if (!require(ggplot2)) install.packages("ggplot2")
+if (!require(dplyr)) install.packages("dplyr")
+if (!require(paletteer)) install.packages("paletteer")
+library(paletteer)
+library(ggplot2)
+library(dplyr)
+library(formattable)
+
+library(readr)
+data  <- read_csv("data/estudiantes_reporte.csv", col_types = cols(Matriculada = col_integer(),Cancelada = col_integer(), Perdida = col_integer()))
+
+```
+
+```{r}
+
+# Suponiendo que `data` ya está definido y tiene una columna `Carrera`
+library(formattable)
+
+# Crear la tabla de frecuencias
+tabla <- table(data$Carrera) %>%
+  as.data.frame()
+
+names(tabla) <- c("Carrera", "Frecuencia")
+
+# Aplicar formato con barras de color a la columna de frecuencias
+formattable(tabla, list(
+  Frecuencia = color_bar("lightblue")
+))
+
+
+```
+
+
+<br/><br/>
+
+
+```{r}
+ggplot(data, aes(x = Carrera, y = Promedio, fill = Carrera)) +
+  geom_boxplot(outlier.shape = NA) +  # opcional: para que no duplique outliers
+  geom_jitter(width = 0.12, alpha = 0.35, size = 1.6) +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank()
+  ) +
+  scale_fill_manual(values = paleta3) +
+  labs(
+    title = "Diagrama de Cajas para la Variable Promedio por Carrera",
+    x = NULL
+  )
+
+```
+```{r}
+library(dplyr)
+
+data %>%
+  group_by(Carrera) %>%
+  summarise(
+    n       = n(),
+    min     = min(Promedio, na.rm = TRUE),
+    Q1      = quantile(Promedio, 0.25, na.rm = TRUE),
+    mediana = median(Promedio, na.rm = TRUE),
+    media   = mean(Promedio, na.rm = TRUE),
+    Q3      = quantile(Promedio, 0.75, na.rm = TRUE),
+    max     = max(Promedio, na.rm = TRUE),
+    sd      = sd(Promedio, na.rm = TRUE)
+  )
+
+```
+
