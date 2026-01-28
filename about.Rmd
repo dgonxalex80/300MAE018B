@@ -1,5 +1,5 @@
 ---
-title: <span style="color:#235784"> </span>  
+title: <span style="color:#235784">Grupo 300MAE018 - B 2026-1 </span>  
 author: "dgonzalez "
 subtitle: <span style="color:#235784"> </span> 
 output:
@@ -65,11 +65,15 @@ ggplot(data, aes(x = Carrera, y = Promedio, fill = Carrera)) +
   ) +
   scale_fill_manual(values = paleta3) +
   labs(
-    title = "Diagrama de Cajas para la Variable Promedio por Carrera",
+    title = "Promedio académico por Carrera",
     x = NULL
   )
 
 ```
+
+<br/><br/>
+
+
 ```{r}
 library(dplyr)
 
