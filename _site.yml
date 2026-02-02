@@ -42,7 +42,7 @@ navbar:
           href: caso1.html
         - text: "--------"  
         - text: "Monitoría 1"  
-          href: monitoria.html
+          href: monitoria1.html
         - text: "--------"       
 
     - text: "Módulo 2"
