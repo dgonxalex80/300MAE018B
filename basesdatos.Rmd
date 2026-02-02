@@ -27,7 +27,7 @@ source("colores.R")
 
 <br/><br/><br/>
 
-# **BASES DE DATPS**
+# **BASES DE DATOS**
 
 <br/>
 
@@ -40,11 +40,11 @@ Una base de datos en estadística es un conjunto de información relacionada con
 
 <br/>
 
-Es importante indicar que variables como: número de la encuesta, número de identificación, teléfono, dirección, entre otros, no constituyen variables estadística, aun que pueden ser utilizadas para la identificación de la persona u objeto  de donde proviene la información. 
+Es importante indicar que variables como: número de la encuesta, número de identificación, teléfono, dirección, entre otros, no constituyen variables estadísticas, aunque pueden ser utilizadas para la identificación de la persona u objeto de donde proviene la información. 
 
 <br/>
 
-Existen repositorio de bases de datos para uso general como: 
+Existen repositorios de bases de datos para uso general como: 
 
 <br/>
 
@@ -211,7 +211,7 @@ Algunas de las herramientas utiliziadas en el manejo de información  son :
 + SAS
 + Julia 
 
-+ R,  RStudio
++ R,  RStudio, Positron
 + Python
 
 En nuestro caso haremos uso del lenguaje estadístico **R*
@@ -240,9 +240,9 @@ Existen metodologías para corregir estos problemas sin afectar la información 
 
 <br/>
 
-Las bases de datos debe estar acompañadas de una ficha técnica donde si indican sus principales características :
+Las bases de datos deben estar acompañadas de una ficha técnica donde se indican sus principales características:
 
-+ [Ficha tecnica](https://drive.google.com/file/d/1O1eaS8y6olf5o_42ehgDgVZ4q1dganbd/view) 
++ [Ficha técnica](https://drive.google.com/file/d/1O1eaS8y6olf5o_42ehgDgVZ4q1dganbd/view) 
 
 + [Casos positivos de COVID-19 en Colombia](https://www.datos.gov.co/Salud-y-Protecci-n-Social/Casos-positivos-de-COVID-19-en-Colombia/gt2j-8ykr)
 
@@ -294,7 +294,7 @@ head(mtcars, n=3)
 
 <br/>
 
-El formato **csv** es uno de los mas utilizados para el almacenamiento de datos estructurados (agrupados en filas y columnas)  . El termino csv significa *"valores separados por comas"* 
+El formato **csv** es uno de los más utilizados para el almacenamiento de datos estructurados (agrupados en filas y columnas). El término csv significa *"valores separados por comas"*.
 
 + RStudio usando ventanas : **File/ Import Dataset / From Text (base)...**
 
@@ -314,6 +314,7 @@ casas <- read_delim("data/casas.csv", delim = ";", escape_double = FALSE, trim_w
 ```{r, eval=FALSE}
 library(readr)
 casas <- read_delim("data/casas.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+head(casas)
 ```
 
 Otro ejemplo para importar una base de datos en formato csv :

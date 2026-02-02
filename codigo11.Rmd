@@ -81,7 +81,7 @@ Para guardar el archivo en mi PC, el formarto RDS es menos pesado En ete caso se
 saveRDS(Colombia, file = "data/Colombia23.RDS") 
 ```
 
-4. Podemos trabajar con Dataset disponible en los paquetes de R. Para ello solo utilizamos la función data
+4. Podemos trabajar con datasets disponibles en los paquetes de R. Para ello solo utilizamos la función data.
 
 ```{r}
 data(iris)  # data set iris
@@ -89,7 +89,7 @@ data(cars)  # data set cars
 ```
 
 
-Ahora si tengo un archivo en mi PC, puedo utilizar la siguinte función para conocer la ruta donde esta  el archivo  y luego copiando la ruta obtenida con Ctrl+C, 
+Ahora sí tengo un archivo en mi PC, puedo utilizar la siguiente función para conocer la ruta donde está el archivo y luego copiar la ruta obtenida con Ctrl+C. 
 
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
 file.choose()
@@ -300,9 +300,9 @@ str_to_sentence(texto)
 
 <br/><br/>
 
-[Librerías en R](https://estadistica-dma.ulpgc.es/cursoR4ULPGC/5-librerias.html)
+[Librerías en R](https://estadística-dma.ulpgc.es/cursoR4ULPGC/5-librerias.html)
 
-[Creación de paquetes R con Rstudio](https://estadistica-dma.ulpgc.es/cursoR4ULPGC/16-crearPaquetes.html)
+[Creación de paquetes R con Rstudio](https://estadística-dma.ulpgc.es/cursoR4ULPGC/16-crearPaquetes.html)
 
 [Tutoriales interactivos con R](https://rstudio.github.io/learnr/)
 
@@ -346,4 +346,3 @@ summarytools::descr(Colombia22$edad)
 saveRDS(Colombia, file = "data/Colombia.RDS")  # guardar base con modificaciones
 #-----------------------------------------------------
 ```
-

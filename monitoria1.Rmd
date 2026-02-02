@@ -1,5 +1,5 @@
 ---
-title: <span style="color:#235784"> </span>  
+title: <span style="color:#235784">**Problemas** </span>  
 subtitle: <span style="color:#235784">**Unidad 1.1**</span> 
 author: "dgonzalez "
 output:
@@ -36,8 +36,6 @@ knitr::include_graphics("img/monitoria1.png")
 ```
 
 <br/><br/>
-
-# <span style="color:#2C5697"> **Problemas**</span> 
 
 <br/>
 
@@ -267,7 +265,7 @@ De acuerdo con la información anterior, responda falso o verdadero a las siguie
 |g. | Si el estado cobra un impuesto sobre las ventas del 16\%, el promedio del impuesto en Junio es de 1.75  |
 |h. | En la variable nivel tecnológico, el promedio es: $\dfrac{12.5+30+17.5}{3}$ |
 |i. | El cuartil 1 $Q_{1}$ para las ventas de Mayo  es 8.0 |
-|j. | El tipo de estudio corresponde a la Estadística Inferencial ya que se realizó muesteo |
+|j. | El tipo de estudio corresponde a la Estadística Inferencial ya que se realizó muestreo |
 |k. | La variable nivel tecnológico de la empresa se clasifica como nominal |
 |l. | 30 empresas tienen un nivel tecnológico medio |
 |m. | Las ventas de Junio muestran sesgo negativo |
@@ -283,7 +281,7 @@ Tomado de Arroyo(2012)
 <div class="box1 with-label">
 <div class="label">Problema 8</div>
 
-A partir del siguiente gráfico de los tiempos de atención en una entidad bancaria determine la media y la mediana (n=500 clientes). Se puede afirmar que la distribución del tiempo de atención es asimétrica positiva?. Se desea establecer los porcentajes de clientes atendidos en los rangos bajos (menos de 10 min), medios (entre 10 min y 12 min), altos (más de 12 min), con el fin de evaluar si en su mayoría los tiempos se concentran en el rango medio. Verifique si esta afirmación es correcta.
+A partir del siguiente gráfico de los tiempos de atención en una entidad bancaria determine la media y la mediana (n=500 clientes). ¿Se puede afirmar que la distribución del tiempo de atención es asimétrica positiva? Se desea establecer los porcentajes de clientes atendidos en los rangos bajos (menos de 10 min), medios (entre 10 min y 12 min), altos (más de 12 min), con el fin de evaluar si en su mayoría los tiempos se concentran en el rango medio. Verifique si esta afirmación es correcta.
 
 
 ```{r, echo=FALSE}
@@ -380,7 +378,7 @@ $\displaystyle\sum_{i=1}^{54}x_{i}^2 = 61.2377$
 
 <br/><br/>
 
-+ Construya un  diagrama de cajas y a partir de este resultado determine si su forma es simétrica
++ Construya un diagrama de cajas y a partir de este resultado determine si su forma es simétrica
 
 Para construir el diagrama de cajas se emplean los cuartiles ($Q_{1}$, $Q_{2}$ y $Q_3$). Ellos determinan la caja central del diagrama. Las lineas a lado y lado 
 
@@ -482,7 +480,7 @@ sd      :       1.949468
 </pre>
 
 
-Por política de la empresa, el peso del producto debe estar en un 90% de los casos entre mas o menos dos onzas al rededor del peso especificado en la etiquete del producto (16.0 onzas). Un segundo criterio importante es el de establecer si en los datos obtenidos se presentan datos atípicos y si los valores se pueden clasificar como homogéneos, teniendo como referencia un indicador del 10%. En caso de no cumplimiento de los criterios de calidad será necesario detener la producción y llamar a la empresa de mantenimiento para que realice los ajustes necesarios.
+Por política de la empresa, el peso del producto debe estar en un 90% de los casos entre más o menos dos onzas alrededor del peso especificado en la etiqueta del producto (16.0 onzas). Un segundo criterio importante es establecer si en los datos obtenidos se presentan datos atípicos y si los valores se pueden clasificar como homogéneos, teniendo como referencia un indicador del 10%. En caso de no cumplimiento de los criterios de calidad será necesario detener la producción y llamar a la empresa de mantenimiento para que realice los ajustes necesarios.
 
 
 Debido a que la muestra obtenida constituye una muestra representativa del proceso, el director de la empresa le pide le ayude a validar los resultados y le indique que decisión debe tomarse a partir de la información obtenida
@@ -636,7 +634,7 @@ Realice un bosquejo de su representación gráfica y de la posición de los indi
 
 #### **Supermercados de ventas de alimentos**: 
 
-El siguiente conjunto de datos incluye información de la última semana de 100 establecimientos sobre sus ventas, costos, utilidad, número de empleados y su estrato socio-económico del barrio donde se encuentran localizados. Realiza un **análisis descriptivo** de la información suministada, utilizando indicadores de centro, dispersión y forma y graficos que complementen el análisis, que permitan identificar tendencias en las ventas, costos y beneficios , si existe relación entre sus indicadores y su localización, de tal forma que permitan establecer un estado inicial de las empresas para este año. 
+El siguiente conjunto de datos incluye información de la última semana de 100 establecimientos sobre sus ventas, costos, utilidad, número de empleados y su estrato socio-económico del barrio donde se encuentran localizados. Realiza un **análisis descriptivo** de la información suministrada, utilizando indicadores de centro, dispersión y forma y gráficos que complementen el análisis, que permitan identificar tendencias en las ventas, costos y beneficios, si existe relación entre sus indicadores y su localización, de tal forma que permitan establecer un estado inicial de las empresas para este año. 
 
 
 ### **Información**
@@ -670,11 +668,11 @@ summarytools::descr(datosENE[,2:6])
   
  Una característica de calidad importante en un proceso de llenado automático es el peso del producto. Las empresas cuidan que el producto final no tenga pesos por debajo del anunciado en su etiqueta, pues de hacerlo puede incurrir en multas y pérdida de algunos de sus clientes. Por el contrario, si el producto se empaca muy por encima del peso especificado, se estará incurriendo en sobrecostos para la empresa.  
    
-Una empresa que comercializa café instantáneo descafeinado, en presentación de 6.5 gramos, tiene dentro sus directrices, al comenzar el día, tomar una muestra de 50 bolsas y medir su peso. Se espera que los resultados estén entre más o menos 1.5 gramos alrededor del valor especificado en la etiqueta. Si el porcentaje de bolsas en la muestra es superior al 95 %, se da inicio al proceso. Si alcanza porcentajes entre el 85 % y 95 %, se debe llamar al ingeniero de planta para que realice los ajustes necesarios. Y finalmente, si se encuentran porcentajes inferiores al 85 % se debe reportar a la empresa de mantenimiento, para que realicen ajustes mayores.  
+Una empresa que comercializa café instantáneo descafeinado, en presentación de 6.5 gramos, tiene dentro sus directrices, al comenzar el día, tomar una muestra de 50 bolsas y medir su peso. Se espera que los resultados estén entre más o menos 1.5 gramos alrededor del valor especificado en la etiqueta. Si el porcentaje de bolsas en la muestra es superior al 95 %, se da inicio al proceso. Si alcanza porcentajes entre el 85 % y 95 %, se debe llamar al ingeniero de planta para que realice los ajustes necesarios. Finalmente, si se encuentran porcentajes inferiores al 85 % se debe reportar a la empresa de mantenimiento, para que realicen ajustes mayores.  
    
 El día de hoy se recogió información de una muestra de 50 bolsas. A continuación se presentan los datos y su representación gráfica.  
    
-   **Realice un breve análisis de la información suministrada y a partir de ellos realice recomendaciones.**
+   **Realice un breve análisis de la información suministrada y a partir de ella realice recomendaciones.**
 
 ```{r}
    # Diagrama de tallos y hojas, peso del paquete de café instantáneo en gramos
@@ -819,7 +817,7 @@ tiempos <- round(rnorm(100, mean = 18, sd = 4),1)
 # Mostrando el diagrama de tallo y hojas
 stem(tiempos)
 
-# Imprimiendo los datos simulados
+# Imprimiendo los datos
 tiempos
 
 # Generando una gráfica simple para visualizar la distribución de los tiempos
@@ -850,7 +848,4 @@ El director de operaciones del banco ha solicitado una revisión de estos criter
 <!-- <br/><br/><br/> -->
 <!-- <div class="box1 with-label"> <div class="label">Problema 25</div> -->
 <!-- </div> -->
-
-
-
 

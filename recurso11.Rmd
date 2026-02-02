@@ -142,7 +142,7 @@ La información requerida se mide a través de variables aleatorias, que corresp
 Variables >>>>  Objetivos >>>>>>> Problema
 
 
-```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+```{r, echo=FALSE, out.width="70%", fig.align = "center"}
 knitr::include_graphics("img/metodologia123.png")
 ```
 
@@ -175,7 +175,7 @@ Corresponden a valores no númericos que pueden corresponder a factores o a nive
 
 #### **Variables Cuantitativas** 
 
-Son valores numéricos que pueden estar relacionados con la medición, el conteo de eventos o tambien con niveles numéricos que se asignen a variables que se miden a traves de test, pero que corresponden a variables cualitativas. A este último proceso descrito se le llama operacionalización de una variable cualitativa 
+Son valores numéricos que pueden estar relacionados con la medición, el conteo de eventos o también con niveles numéricos que se asignen a variables que se miden a través de test, pero que corresponden a variables cualitativas. A este último proceso descrito se le llama operacionalización de una variable cualitativa. 
 
 <div class="box1 with-label">
 <div class="label">Ejemplo 4</div>
@@ -200,7 +200,7 @@ Las variables se miden en diferentes escalas, dependiendo del tipo de valor que 
 #### **Escalas de medición**
 
 
-```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+```{r, echo=FALSE, out.width="70%", fig.align = "center"}
 knitr::include_graphics("img/tiposvariables.png")
 ```
 
@@ -325,7 +325,7 @@ Corresponde a valores  numéricos, para los cuales además de las diferencias ta
 <div class="box3 with-label">
 <div class="label">Nota</div>
 
-Es importante poder distinguir entre variables estadísticas y variables no estadística en una base de datos. Para hacerlo nos preguntamos si para la variable en análisis tiene sentido un análisis estadístico (gráficos, tabla o indicadores).  Por ejemplo: No tiene sentido realizar un análisis con variables como :  id, nombre, correo electrónico, dirección, teléfono, longitud y latitud, representante legal, entro otras 
+Es importante poder distinguir entre variables estadísticas y variables no estadísticas en una base de datos. Para hacerlo nos preguntamos si para la variable en análisis tiene sentido un análisis estadístico (gráficos, tabla o indicadores). Por ejemplo: no tiene sentido realizar un análisis con variables como: id, nombre, correo electrónico, dirección, teléfono, longitud y latitud, representante legal, entre otras. 
 
 </div>
 <br/><br/><br/>
@@ -416,7 +416,7 @@ Si $n/N > 0.05$, debemos realizar corrección por población finita.
 Existen dos tipos de muestreo:
 
 
-```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+```{r, echo=FALSE, out.width="70%", fig.align = "center"}
 knitr::include_graphics("img/tiposmuestreo.png")
 ```
 
@@ -506,7 +506,7 @@ Las características de control pueden ser: sexo, edad, religión, partido polí
 
 **Muestreo bola de nieve**
 
-En este método se selecciona inicialmente un grupo de entrevistados. El resto de entrevistados se eligen de acuerdo a información suministrada por los mismos entrevistados -referidos-. Este método permite obtener información rápida y muy fácilmente
+En este método se selecciona inicialmente un grupo de entrevistados. El resto de entrevistados se eligen de acuerdo con información suministrada por los mismos entrevistados -referidos-. Este método permite obtener información rápida y muy fácilmente.
 
 
 <br/><br/><br/>

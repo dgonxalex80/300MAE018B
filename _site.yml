@@ -31,6 +31,19 @@ navbar:
         - text: "Código 1.1"  
           href: codigo11.html
         - text: "--------"
+        - text: "Guía 1.2"
+          href: guia12.html        
+        - text: "Recursos 1.2"
+          href: recurso12.html
+        - text: "Código 1.2"  
+          href: codigo12.html        
+        - text: "--------"  
+        - text: "Caso 1"  
+          href: caso1.html
+        - text: "--------"  
+        - text: "Monitoría 1"  
+          href: monitoria.html
+        - text: "--------"       
 
     - text: "Módulo 2"
       menu:

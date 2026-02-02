@@ -1,0 +1,125 @@
+---
+title: <span style="color:#936A4D"></span>  
+author: "dgonzalez "
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: yes
+    code_folding: hide
+    theme: flatly
+    css: style.css
+---  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
+
+# colores
+source("colores.R")
+library(readr)
+cervezas <- read_csv("data/cervezas.csv")
+```
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/caso1.png")
+```
+
+<br/><br/>
+
+## **Enunciado**
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/cervezas2.png")
+```
+
+La siguiente información recoge las principales características de un grupo de marcas de cerveza, con el propósito de clasificar los productos y realizar un análisis descriptivo de las 200 marcas registradas.
+
+Inicialmente el director de investigación desea su apoyo en una primera etapa del análisis que consiste en resumir la información suministrada en tablas e indicadores que le permitan validar algunas de sus hipótesis.
+
+La base compartida contiene información sobre 200 marcas de cervezas que son distribuidas en la ciudad. 
+Las variables recogidas corresponden a:  
+
++ <span style="color:#b0394a">**marca**</span> 
+
++ <span style="color:#b0394a">**producto**</span>,
+
++ <span style="color:#b0394a">**tipo**</span> de cerveza : lager artesanal, clara artesanal, lager importada, cerveza normal y helada, baja en calorías / sin alcohol,
+
++ <span style="color:#b0394a">**origen**</span> : nacional o importada 
+
++ <span style="color:#b0394a">**país**</span> de origen, 
+
++ contenido de <span style="color:#b0394a">**alcohol**</span> en porcentaje ,
+
++ cantidad de <span style="color:#b0394a">**calorías**</span> por porción,
+
++ tamaño <span style="color:#b0394a">**porción**</span> en ml examinada, 
+
++ <span style="color:#b0394a">**presentación**</span> en ml,
+
++ <span style="color:#b0394a">**precio **</span> de la unidad (presentación) en dólares.
+
+
+Su trabajo consiste en escribir un primer informe basado en una evaluación descriptiva, que contenga las tablas que resumen la información para cada variable de base de datos y  resumen de sus indicadores estadísticos.
+
+Finalmente adjunte un análisis de los resultados obtenidos.
+
+Para orientar el desarrollo de la actividad, responda y soporte con resultados las siguientes preguntas:
+
+- ¿Qué variables son cualitativas y cuáles son cuantitativas en la base? Justifique su clasificación.
+- Para cada variable cualitativa, ¿cuál es su tabla de frecuencias (absoluta y relativa) y qué categorías concentran la mayor proporción?
+- Para cada variable cuantitativa, ¿cuáles son los indicadores de resumen (mínimo, máximo, media, mediana, cuartiles, desviación estándar)?
+- ¿Qué variables muestran mayor variabilidad y cómo se interpreta en el contexto del mercado de cervezas?
+- ¿Qué patrones o diferencias relevantes se observan entre tipo, origen y país de procedencia?
+- ¿Qué conclusiones descriptivas preliminares se pueden extraer sobre alcohol, calorías, porción, presentación y precio?
+
+<br/><br/>
+
+## **Descarga de la base de datos** 
+
+
+<a href="data/cervezas.csv" download="cervezas.csv"
+   style="
+     display:inline-block;
+     padding:10px 14px;
+     background:#31487A;
+     color:white;
+     border-radius:10px;
+     text-decoration:none;
+     font-weight:600;">
+  ⬇️ Descargar CSV
+</a>
+
+<br/><br/>
+
+## **Carga de la data**
+
+```{r,  message=FALSE, warning=FALSE}
+library(readr)
+cervezas <- read_csv("data/cervezas.csv")
+
+attr(cervezas, "spec") <- NULL
+attr(cervezas, "problems") <- NULL
+str(cervezas, vec.len = 0, width = 40)
+
+
+
+```
+
+<br/><br/>
+
+## **Base de datos**
+```{r}
+library(DT)
+# Mostrar la tabla con DataTable
+cervezas2 <- cervezas[,c(1,4,6:12)]
+DT::datatable(
+  head(cervezas2, fillContainer = FALSE, options = list(pageLength = 8))
+)
+
+```
+
+
+

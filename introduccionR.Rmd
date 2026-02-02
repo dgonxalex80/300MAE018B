@@ -29,27 +29,28 @@ source("colores.R")
 
 # **INTRODUCCIÓN A** <img src="img/logoR.png" width="80">
 
+
 <br/><br/>
 
-# **Que es R** 
+# **Qué es R** 
 
-Es un lenguaje para la computación  estadística, utilizado para el procesamiento de información y generación de modelos estadísticos. Entre las principales caractarísticas  estan:
+Es un lenguaje para la computación estadística, utilizado para el procesamiento de información y la generación de modelos. Entre las principales características están:
 
-   + Licencia (GNU GPL)  abierta y gratis
+   + Licencia (GNU GPL) abierta y gratuita
    
    + Creciente popularidad en ciencia de datos
-
-   + Multipalataforma (UNIX, Windows, MacOS)
-
-   + Ross Ihaka y Robert Gentieman (U.Auckland - Nueva Zelanda) 1993
+   
+   + Multiplataforma (UNIX, Windows, macOS)
+   
+   + Ross Ihaka y Robert Gentleman (U. Auckland - Nueva Zelanda), 1993
 
    + Lenguaje multiparadigma
    
-   + Codigo construido en C y Fortran
+   + Código construido en C y Fortran
    
    + Gran comunidad muy activa 
    
-   + Mas de 7000 paquetes 
+   + Más de 7000 paquetes 
    
 <br/><br/>
 
@@ -60,11 +61,13 @@ knitr::include_graphics("img/Rt.png")
 
 <br/><br/>
 
-En el siguiente enlace se pueden obtener los archivos para su instalación : https://www.r-project.org/
+En el siguiente enlace se pueden obtener los archivos para su instalación: https://www.r-project.org/
 
 <br/><br/>
 
-Podemos usar este lenguaje utilizando una terminal o mediante la IDE **RStudio**, la cual integra un conjunto de herramientas que facilitan el uso R a los usuarios 
+Podemos usar este lenguaje utilizando una terminal o mediante un entorno de desarrollo integrado (IDE) como **RStudio**, que integra herramientas para escribir, ejecutar y organizar proyectos en R.
+
+Una forma sencilla de recordarlo: **R es el lenguaje**, y **RStudio es el programa** (IDE) donde escribimos y ejecutamos el código con mayor comodidad.
 
 <br/><br/>
 
@@ -74,17 +77,17 @@ knitr::include_graphics("img/logoRStudio.png")
 
 <br/><br/>
 
-Esta interfaz esta conformada por varias ventana como se muestra en la siguiente imagen
+Esta interfaz está conformada por varias ventanas, como se muestra en la siguiente imagen:
 
 <img src="img/VRStudio.png" width="800">
 
-1. Fuente (Source) : Ventana donde se trabajan los script  con código que se guardan para posterior utilización
-2. Consola (Console) : Ventana donde se pueden escribir comandos de manera directa
-3. Ambiente (Environment) : Ventana donde se pueden observar las varables y objetos creados
-4. Archivos (Files) : Ventana que muestra el directorio y los archivos en el que estamos trabajando
-5. Graficos (plots) : Ventana que presenta los gráficos construidos
-6. Paquetes (Packages) : Ventana que permite instalar los paquetes requeridos
-7. Ayudas (Help) : Ventana en la que podemos pedir ayuda sobre las sintaxis de funciones
+1. Fuente (Source): ventana donde se trabajan los scripts con código que se guardan para posterior utilización.
+2. Consola (Console): ventana donde se pueden escribir comandos de manera directa.
+3. Ambiente (Environment): ventana donde se pueden observar las variables y objetos creados.
+4. Archivos (Files): ventana que muestra el directorio y los archivos en el que estamos trabajando.
+5. Gráficos (Plots): ventana que presenta los gráficos construidos.
+6. Paquetes (Packages): ventana que permite instalar los paquetes requeridos.
+7. Ayudas (Help): ventana en la que podemos pedir ayuda sobre la sintaxis de funciones.
 
 <br/><br/>
 
@@ -92,11 +95,11 @@ En los siguientes enlaces se pueden descargar los programas, dependiendo el sist
 
 + [R download](https://cran.r-project.org/)
 
-+ [RStudio download](https://rstudio.com/products/rstudio/download/)
++ [RStudio download](https://posit.co/downloads/)
 
 <br/><br/>
 
-### **Bilbiografia recomendada**:
+### **Bibliografía recomendada**:
 
 + [**R para principiantes**](https://cran.r-project.org/doc/contrib/rdebuts_es.pdf)
 
@@ -108,6 +111,28 @@ En los siguientes enlaces se pueden descargar los programas, dependiendo el sist
 A continuación se relacionan algunas ayudas para la iniciación del lenguaje
 
 <br/><br/><br/>
+
+# **Primeros pasos recomendados en R y RStudio**
+
+Si es tu primera vez, estos pasos te ayudan a organizarte y evitar errores comunes:
+
+1. **Crea un proyecto**: en RStudio ve a `File > New Project` y elige una carpeta. Esto facilita el manejo de rutas y archivos.
+2. **Guarda tus scripts**: trabaja siempre en el panel *Source* y guarda tus archivos `.R` o `.Rmd`.
+3. **Conoce tu directorio de trabajo**: es la carpeta desde donde R lee y guarda archivos.
+4. **Pide ayuda**: usa `?funcion` o `help("funcion")` para leer la documentación.
+
+Ejemplos básicos:
+
+```{r eval=FALSE}
+getwd()           # muestra el directorio de trabajo
+setwd("ruta")     # cambia el directorio de trabajo
+list.files()      # lista archivos en el directorio actual
+
+?mean            # ayuda de la función mean
+help("plot")     # ayuda de la función plot
+```
+
+<br/><br/>
 
 # **Tipos de datos en R**
 
@@ -172,7 +197,7 @@ y
 
 Colección de objetos cada uno de tipos diferentes. El objeto de esta clase guarda valores en diferentes formatos. 
 
-En el siguiente ejemplo se construye un objeto **h** que contiene varios elementos dentro de si, todos relacionados con un histograma
+En el siguiente ejemplo se construye un objeto **h** que contiene varios elementos dentro de sí, todos relacionados con un histograma
 
 ```{r tidy=FALSE, eval=FALSE}
 h=hist(rnorm(100,25,10)) #<<
@@ -187,7 +212,7 @@ h$equidist
 
 ## **data.frames**
 
-Estructura de datos de dos dimensiones - filas y columnas - base de datos. En este caso se puede obtener un fila (data[1,] o una columna (data[,1], por separado o un elemento de la data directamente data[20,2].
+Estructura de datos de dos dimensiones - filas y columnas - base de datos. En este caso se puede obtener una fila (data[1,]), una columna (data[,1]) o un elemento de la data directamente (data[20,2]).
 
 ```{r tidy=FALSE, eval=FALSE}
 data(iris) #<<
@@ -200,7 +225,7 @@ iris[1,5]
 
 ## **funciones**
 
-Para construir una función utilizamos la palabra *function*, entre parentesis los valores de entrada y entre corchetes la formula que conforma la función. Por ejemplo:
+Para construir una función utilizamos la palabra *function*, entre paréntesis los valores de entrada y entre corchetes la fórmula que conforma la función. Por ejemplo:
 
 $$f(x)=\dfrac{1}{(x-1)^{2}} $$
 
@@ -213,28 +238,28 @@ En este caso la función es evaluada dentro de un otra función en la construcci
 
 ```{r }
 x=seq(from=2,to=10, by=0.01)  # genera secuencia de numeros entre 2 y 10 con paso 0.01
-plot(x, fx(x), type="l", col=c1, las=1) # genera grafica
+plot(x, fx(x), type="l", col=c1, las=1) # genera gráfica
 ```
 
-El siguiente ejemplo construye una función para la realización de un gráfico. En este caso los valores de entrada estan conformados por un vector de datos y un color
+El siguiente ejemplo construye una función para la realización de un gráfico. En este caso los valores de entrada están conformados por un vector de datos y un color
 
 ```{r}
-y=sample(1:6,100, replace = T)  # generacion de datos
-# funcion definida para la construccion de graficos
+y=sample(1:6,100, replace = T)  # generación de datos
+# función definida para la construcción de gráficos
 grafica=function(x,color){
         barplot(x,
                 col=color, las=1)
         grid()
 }
 
-z=table(y) # generacion de tabla de datos
-grafica(z,c1)  # evalua la funcion en los datos z y colo rojo
+z=table(y) # generación de tabla de datos
+grafica(z,c1)  # evalúa la función en los datos z y color rojo
 ```
 
 
 ```{r}
-w=round(prop.table(z)*100,2)  # genera datos y constuye tabla en porcentaje
-grafica(w,c6)  # evalua la funcion con w y color azul
+w=round(prop.table(z)*100,2)  # genera datos y construye tabla en porcentaje
+grafica(w,c6)  # evalúa la función con w y color azul
 ```
 
 <br/><br/>
@@ -262,14 +287,14 @@ Objeto para series de tiempo
 # **Instalación de paquetes en R**
 
 
-El lenguaje **R** esta conformado por miles de paquetes o **Packages** construidos por investigadores en diversos temas y área del conocimiento
+El lenguaje **R** está conformado por miles de paquetes o **Packages** construidos por investigadores en diversos temas y áreas del conocimiento.
 
-Al instalar inicialmente R contiene una serie de funciones listas para ser utiliadas las que llamamos -**base** con el que R funciona de manera adecuada para dar respuesta a problemas básicos, sin embargo en algunos casos es necesario instalar paquetes adicionales, los cuales iremos anunciando en la medida que sean necesario.
+Al instalar inicialmente R contiene una serie de funciones listas para ser utilizadas, las que llamamos **base**, con las que R funciona de manera adecuada para dar respuesta a problemas básicos. Sin embargo, en algunos casos es necesario instalar paquetes adicionales, los cuales iremos anunciando en la medida que sean necesarios.
 
 Para instalar un paquete lo podemos hacer de dos formas : 
 
 
-1. Utilizando la vengtana **Packages** ubicada en la parte inferior derecha de RStudio
+1. Utilizando la ventana **Packages** ubicada en la parte inferior derecha de RStudio
 
 <center>
 
@@ -299,14 +324,31 @@ install.packages("ggplot2")
 
 #### **Análisis descriptivo**
 
-+ agricolate
-+ spych
++ agricolae
++ psych
 + summarytools
 + ggplot2
 
 
 + flexdashboard
-+ Rmarkdown
++ rmarkdown
 
 [Paquetes RStudio](https://gallery.shinyapps.io/087-crandash/)
 
+<br/><br/>
+
+# **Introducción a Positron**
+
+**Positron** es un IDE gratuito y de nueva generación creado por **Posit** para ciencia de datos. Está pensado para trabajar con **R y Python** en el mismo entorno y combina edición moderna de código con herramientas interactivas para análisis.
+
+Principales ideas para empezar:
+
+1. **Editor moderno**: basado en Code OSS (la base de Visual Studio Code), con extensiones y personalización.
+2. **Exploración de datos**: visor de variables y data frames con filtros y resúmenes.
+3. **Consola interactiva**: ejecutar líneas o bloques de código sin salir del editor.
+4. **Notebooks y Quarto**: soporte integrado para documentos y reportes reproducibles.
+5. **Apps de datos**: ejecución y vista previa de Shiny, Streamlit o Dash desde el IDE.
+
+Si ya usas RStudio, puedes probar Positron para flujos más modernos o proyectos que mezclen R y Python. RStudio sigue vigente y optimizado para R, mientras que Positron apunta a un entorno unificado de ciencia de datos.
+
+Descarga e información oficial: https://positron.posit.co/

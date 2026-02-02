@@ -1,14 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Andika&family=Shadows+Into+Light&display=swap');
+
+/* Paleta base */
+:root {
+  --azul-profundo: #072766;
+  --azul-claro: #5079B2;
+  --crema: #ffffff;
+  --tierra-clara: #9D785D;
+  --tierra-oscura: #936A4D;
+  --texto: #2b2b2b;
+  --blanco: #ffffff;
+  --sombra: #5079B2;
+}
+
 /* Estilo general */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f7f7f7;
-  color: #333333;
+  font-family: 'Andika', sans-serif;
+  background-color: var(--crema);
+  color: var(--texto);
 }
 
 /* Encabezado */
 header {
-  background-color: #2c5697; /* color azul del encabezado */
-  color: white;
+  background-color: var(--azul-profundo);
+  color: var(--blanco);
   padding: 10px 0;
   text-align: center;
   font-size: 24px;
@@ -28,12 +42,12 @@ header h1 {
 
 /* Navegación */
 nav {
-  background-color: #2c5697; /* color azul para la barra de navegación */
+  background-color: var(--azul-profundo);
   padding: 10px;
 }
 
 nav a {
-  color: white;
+  color: var(--blanco);
   text-decoration: none;
   margin: 0 10px;
   font-size: 16px;
@@ -46,24 +60,25 @@ nav a:hover {
 /* Contenido principal */
 main {
   padding: 20px;
-  background-color: white;
+  background-color: var(--blanco);
   margin: 20px auto;
   max-width: 1200px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px var(--sombra);
+  border-radius: 8px;
 }
 
 h2 {
-  color: #2c5697; /* color azul para los títulos */
+  color: var(--azul-profundo);
 }
 
 h3 {
-  color: #3b75b2; /* color azul para los subtítulos */
+  color: var(--azul-claro);
 }
 
 /* Panel lateral */
 aside {
-  background-color: #2c5697;
-  color: white;
+  background-color: var(--azul-profundo);
+  color: var(--blanco);
   padding: 20px;
   margin: 20px 0;
 }
@@ -74,16 +89,17 @@ aside h3 {
 
 /* Botones */
 button {
-  background-color: #3b75b2;
-  color: white;
+  background-color: var(--azul-claro);
+  color: var(--blanco);
   border: none;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 button:hover {
-  background-color: #2c5697;
+  background-color: var(--azul-profundo);
 }
 
 /* Tabla */
@@ -94,7 +110,7 @@ table {
 }
 
 table, th, td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--tierra-clara);
 }
 
 th, td {
@@ -103,13 +119,13 @@ th, td {
 }
 
 th {
-  background-color: #2c5697;
-  color: white;
+  background-color: var(--azul-profundo);
+  color: var(--blanco);
 }
 
 /* Enlaces */
 a {
-  color: #2c5697;
+  color: var(--azul-claro);
 }
 
 a:hover {
@@ -118,194 +134,146 @@ a:hover {
 
 /* Cambiar el color de fondo de la barra de navegación */
 .navbar {
-  background-color:#2c5697; /* prefigures este valor por el color que prefieras */
+  background-color: var(--azul-profundo);
 }
 
 /* Cambiar el color del texto en la barra de navegación */
 .navbar .navbar-brand, .navbar .navbar-nav > li > a {
-  color: #ffffff; /* Cambia este valor por el color que prefieras */
+  color: var(--blanco);
 }
 
 
 
 /* Cambiar el color de fondo del menú de navegación */
 .navbar {
-  background-color: #2c5697 !important; /* Color azul */
+  background-color: var(--azul-profundo) !important;
 }
 
 /* Cambiar el color de los enlaces del menú de navegación */
 .navbar .navbar-nav > li > a {
-  color: #ffffff !important; /* Color de los enlaces */
+  color: var(--blanco) !important;
 }
 
 /* Cambiar el color de fondo de los enlaces del menú al pasar el mouse */
 .navbar .navbar-nav > li > a:hover, 
 .navbar .navbar-nav > li > a:focus {
-  background-color: #3b75b2 !important; /* Color de fondo al pasar el mouse */
-  color: #ffffff !important; /* Color del texto al pasar el mouse */
+  background-color: var(--azul-claro) !important;
+  color: var(--blanco) !important;
 }
 
 /* Cambiar el color de fondo del enlace del menú activo (seleccionado) */
 .navbar .navbar-nav > li.active > a {
-  background-color: #3b75b2 !important; /* Cambia este color según tus preferencias */
-  color: #ffffff !important; /* Color del texto del enlace activo */
+  background-color: var(--azul-claro) !important;
+  color: var(--blanco) !important;
 }
 
 /* Cambiar el tipo de letra del sitio web */
 body {
-  font-family: 'Arial', sans-serif; /* Tipo de letra */
+  font-family: 'Andika', sans-serif;
 }
 
 /* Cambiar el tipo de letra y color de los encabezados */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Arial', sans-serif; /* Tipo de letra */
-  color: #2c5697; /* Color de los encabezados */
+  font-family: 'Andika', sans-serif;
+  color: var(--azul-profundo);
 }
 
 /* Definir una clase para la caja de contenido ---------------------------------*/
 .box1 {
-    border: 2px solid #8DA9C4; /* Color azul del borde */
-    padding: 15px; /* Espaciado interior */
-    margin: 15px 0; /* Espaciado exterior */
-    border-radius: 5px; /* Esquinas redondeadas opcional */
-    position: relative; /* Necesario para la posición absoluta de la etiqueta */
+  border: 2px solid var(--azul-claro);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  position: relative;
+  background-color: var(--blanco);
 }
 
 /* Opcional: estilizar el texto dentro de la caja */
 .box1 h2, .box1 p {
-    color: #000000; /* Color del texto */
+  color: var(--texto);
+}
+
+.box1 .label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--azul-claro);
+  color: var(--blanco);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--sombra);
+  font-size: 1.1em;
+}
+
+.box1.with-label {
+  padding-top: 25px;
 }
 
 /* Definir una clase para la caja de contenido */
-        .box1 {
-            border: 2px solid #8DA9C4; /* Color azul del borde */
-            padding: 15px; /* Espaciado interior */
-            margin: 15px 0; /* Espaciado exterior */
-            border-radius: 5px; /* Esquinas redondeadas opcional */
-            position: relative; /* Necesario para la posición absoluta de la etiqueta */
-        }
-
-        /* Opcional: estilizar el texto dentro de la caja */
-        .box1 h2, .box1 p {
-            color: #000000; /* Color del texto */
-        }
-
-        /* Estilo para la etiqueta */
-        .box1 .label {
-            position: absolute; /* Posiciona la etiqueta dentro de la caja */
-            top: -10px; /* Ajusta la posición vertical de la etiqueta */
-            left: 10px; /* Ajusta la posición horizontal de la etiqueta */
-            background-color: #8DA9C4; /* Color de fondo de la etiqueta */
-            color: #000000; /* Color del texto de la etiqueta */
-            padding: 5px 10px; /* Espaciado interior de la etiqueta */
-            border-radius: 5px; /* Esquinas redondeadas de la etiqueta */
-            font-weight: bold; /* Texto en negrita */
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional para la etiqueta */
-            font-size: 1.2em; /* Tamaño de la fuente aumentado */
-        }
-
-        /* Ajustar el espaciado cuando hay una etiqueta */
-        .box1.with-label {
-            padding-top: 25px; /* Espaciado adicional para la etiqueta */
-        }
-
-/* Definir una clase para la caja de contenido */
 .box3 {
-    border: 2px solid #FFAD42; /* Color azul del borde */
-    padding: 15px; /* Espaciado interior */
-    margin: 15px 0; /* Espaciado exterior */
-    border-radius: 5px; /* Esquinas redondeadas opcional */
-    position: relative; /* Necesario para la posición absoluta de la etiqueta */
+  border: 2px solid var(--tierra-clara);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  position: relative;
+  background-color: var(--blanco);
 }
 
 /* Opcional: estilizar el texto dentro de la caja */
 .box3 h2, .box3 p {
-    color: #2C5697; /* Color del texto */
+  color: var(--texto);
 }
 
-/* Definir una clase para la caja de contenido */
-        .box3 {
-            border: 2px solid #FFAD42; /* Color azul del borde */
-            padding: 15px; /* Espaciado interior */
-            margin: 15px 0; /* Espaciado exterior */
-            border-radius: 5px; /* Esquinas redondeadas opcional */
-            position: relative; /* Necesario para la posición absoluta de la etiqueta */
-        }
+.box3 .label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--tierra-clara);
+  color: var(--blanco);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--sombra);
+  font-size: 1.1em;
+}
 
-  /* Opcional: estilizar el texto dentro de la caja */
-        .box3 h2, .box3 p {
-            color: #000000; /* Color del texto */
-        }
-
-        /* Estilo para la etiqueta */
-        .box3 .label {
-            position: absolute; /* Posiciona la etiqueta dentro de la caja */
-            top: -10px; /* Ajusta la posición vertical de la etiqueta */
-            left: 10px; /* Ajusta la posición horizontal de la etiqueta */
-            background-color: #FFAD42; /* Color de fondo de la etiqueta */
-            color:#2C5697; /* Color del texto de la etiqueta */
-            padding: 5px 10px; /* Espaciado interior de la etiqueta */
-            border-radius: 5px; /* Esquinas redondeadas de la etiqueta */
-            font-weight: bold; /* Texto en negrita */
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional para la etiqueta */
-            font-size: 1.2em; /* Tamaño de la fuente aumentado */
-        }
-
-        /* Ajustar el espaciado cuando hay una etiqueta */
-        .box3.with-label {
-            padding-top: 25px; /* Espaciado adicional para la etiqueta */
-        }
-
-
-
+.box3.with-label {
+  padding-top: 25px;
+}
 
 
 /* Definir una clase para la caja de contenido */
 .box4 {
-    border: 2px solid #999999; /* Color azul del borde */
-    padding: 15px; /* Espaciado interior */
-    margin: 15px 0; /* Espaciado exterior */
-    border-radius: 5px; /* Esquinas redondeadas opcional */
-    position: relative; /* Necesario para la posición absoluta de la etiqueta */
+  border: 2px solid var(--tierra-oscura);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  position: relative;
+  background-color: var(--blanco);
 }
 
 /* Opcional: estilizar el texto dentro de la caja */
 .box4 h2, .box4 p {
-    color: #000000; /* Color del texto */
+  color: var(--texto);
 }
 
-/* Definir una clase para la caja de contenido */
-        .box4 {
-            border: 2px solid #999999; /* Color azul del borde */
-            padding: 15px; /* Espaciado interior */
-            margin: 15px 0; /* Espaciado exterior */
-            border-radius: 5px; /* Esquinas redondeadas opcional */
-            position: relative; /* Necesario para la posición absoluta de la etiqueta */
-        }
+.box4 .label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--tierra-oscura);
+  color: var(--blanco);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--sombra);
+  font-size: 1.1em;
+}
 
-  /* Opcional: estilizar el texto dentro de la caja */
-        .box4 h2, .box4 p {
-            color: #2C5697; /* Color del texto */
-        }
-
-        /* Estilo para la etiqueta */
-        .box4 .label {
-            position: absolute; /* Posiciona la etiqueta dentro de la caja */
-            top: -10px; /* Ajusta la posición vertical de la etiqueta */
-            left: 10px; /* Ajusta la posición horizontal de la etiqueta */
-            background-color: #999999; /* Color de fondo de la etiqueta */
-            color: #ffffff; /* Color del texto de la etiqueta */
-            padding: 5px 10px; /* Espaciado interior de la etiqueta */
-            border-radius: 5px; /* Esquinas redondeadas de la etiqueta */
-            font-weight: bold; /* Texto en negrita */
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional para la etiqueta */
-            font-size: 1.2em; /* Tamaño de la fuente aumentado */
-        }
-
-        /* Ajustar el espaciado cuando hay una etiqueta */
-        .box4.with-label {
-            padding-top: 25px; /* Espaciado adicional para la etiqueta */
-        }
+.box4.with-label {
+  padding-top: 25px;
+}
 
 
 
@@ -314,50 +282,35 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Definir una clase para la caja de contenido */
 .box2 {
-    border: 2px solid #1F5591; /* Color azul del borde */
-    padding: 15px; /* Espaciado interior */
-    margin: 15px 0; /* Espaciado exterior */
-    border-radius: 5px; /* Esquinas redondeadas opcional */
-    position: relative; /* Necesario para la posición absoluta de la etiqueta */
+  border: 2px solid var(--azul-profundo);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  position: relative;
+  background-color: var(--blanco);
 }
 
 /* Opcional: estilizar el texto dentro de la caja */
 .box2 h2, .box2 p {
-    color: #000000; /* Color del texto */
+  color: var(--texto);
 }
 
-/* Definir una clase para la caja de contenido */
-        .box2 {
-            border: 2px solid #1F5591; /* Color azul del borde */
-            padding: 15px; /* Espaciado interior */
-            margin: 15px 0; /* Espaciado exterior */
-            border-radius: 5px; /* Esquinas redondeadas opcional */
-            position: relative; /* Necesario para la posición absoluta de la etiqueta */
-        }
+.box2 .label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--azul-profundo);
+  color: var(--blanco);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--sombra);
+  font-size: 1.1em;
+}
 
-  /* Opcional: estilizar el texto dentro de la caja */
-        .box2 h2, .box2 p {
-            color: #000000; /* Color del texto */
-        }
-
-        /* Estilo para la etiqueta */
-        .box2 .label {
-            position: absolute; /* Posiciona la etiqueta dentro de la caja */
-            top: -10px; /* Ajusta la posición vertical de la etiqueta */
-            left: 10px; /* Ajusta la posición horizontal de la etiqueta */
-            background-color:#1F5591; /* Color de fondo de la etiqueta */
-            color: #ffffff; /* Color del texto de la etiqueta */
-            padding: 5px 10px; /* Espaciado interior de la etiqueta */
-            border-radius: 5px; /* Esquinas redondeadas de la etiqueta */
-            font-weight: bold; /* Texto en negrita */
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional para la etiqueta */
-            font-size: 1.2em; /* Tamaño de la fuente aumentado */
-        }
-
-        /* Ajustar el espaciado cuando hay una etiqueta */
-        .box2.with-label {
-            padding-top: 25px; /* Espaciado adicional para la etiqueta */
-        }
+.box2.with-label {
+  padding-top: 25px;
+}
 
 
 
@@ -366,46 +319,47 @@ h1, h2, h3, h4, h5, h6 {
 
  /* Estilo principal de la caja */
 .box20 {
-            position: relative; /* Para poder posicionar la etiqueta */
-            background-color: #E5F3FA; /* Color de fondo de la caja */
-            padding: 20px;
-            border-radius: 8px; /* Esquinas redondeadas */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
-            width: 300px;
-            margin: 20px;
-        }
+  position: relative;
+  background-color: var(--blanco);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px var(--sombra);
+  width: 300px;
+  margin: 20px;
+  border: 2px solid var(--azul-claro);
+}
 
 /* Estilo para el contenido dentro de la caja */
 .box20 h2, .box20 p {
-            color: #1F5591; /* Color del texto */
-            margin: 0;
-        }
+  color: var(--azul-profundo);
+  margin: 0;
+}
 
 /* Estilo para el número grande (como el "03") */
 .box20 .number {
-            font-size: 2.5em; /* Tamaño grande para el número */
-            font-weight: bold;
-            color: #2979B8; /* Color del número */
-            margin-bottom: 10px;
-        }
+  font-size: 2.5em;
+  font-weight: bold;
+  color: var(--azul-claro);
+  margin-bottom: 10px;
+}
 
 /* Estilo para la etiqueta */
 .box20 .label {
-            position: absolute; /* Posiciona la etiqueta dentro de la caja */
-            top: -10px; /* Ajusta la posición vertical de la etiqueta */
-            left: 10px; /* Ajusta la posición horizontal de la etiqueta */
-            background-color: #1F5591; /* Color de fondo de la etiqueta */
-            color: #ffffff; /* Color del texto de la etiqueta */
-            padding: 5px 10px; /* Espaciado interior de la etiqueta */
-            border-radius: 5px; /* Esquinas redondeadas de la etiqueta */
-            font-weight: bold; /* Texto en negrita */
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional para la etiqueta */
-            font-size: 1.2em; /* Tamaño de la fuente aumentado */
-        }
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background-color: var(--azul-profundo);
+  color: var(--blanco);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--sombra);
+  font-size: 1.1em;
+}
 
 /* Ajustar el espaciado cuando hay una etiqueta */
 .box20.with-label {
-            padding-top: 25px; /* Espaciado adicional para la etiqueta */
+  padding-top: 25px;
 }
 
 
@@ -413,140 +367,139 @@ h1, h2, h3, h4, h5, h6 {
 /*---------------------------------------------------------------------------*/
 /* Contenedor para las cajas */
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 20px 0;
 }
 
 /* Estilo de las cajas */
 .box22 {
-    flex: 1 1 20%;
-    background-color: #E5F3FA;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    min-width: 200px;
-    max-width: 300px;
-    box-sizing: border-box;
-    text-align: center;
+  flex: 1 1 20%;
+  background-color: var(--blanco);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px var(--sombra);
+  margin: 10px;
+  min-width: 200px;
+  max-width: 300px;
+  box-sizing: border-box;
+  text-align: center;
+  border: 2px solid var(--azul-claro);
 }
 
 /* Colores de la paleta */
-.box22:nth-child(1) { background-color: #90CAF9; } /* Azul */
-.box22:nth-child(2) { background-color: #90CAF9; } /* Azul */
-.box22:nth-child(3) { background-color: #FFCC80; } /* Naranja */
-.box22:nth-child(4) { background-color: #FFCC80; } /* Naranja */
+.box22:nth-child(1) { border-color: var(--azul-profundo); }
+.box22:nth-child(2) { border-color: var(--azul-claro); }
+.box22:nth-child(3) { border-color: var(--tierra-clara); }
+.box22:nth-child(4) { border-color: var(--tierra-oscura); }
 
 /* Estilo del texto en las cajas */
 .box22 h2, .box22 p {
-    color: #1F5591;
-    margin: 0;
+  color: var(--azul-profundo);
+  margin: 0;
 }
 
 .box22 .number {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #2979B8;
-    margin-bottom: 10px;
+  font-size: 2.5em;
+  font-weight: bold;
+  color: var(--azul-claro);
+  margin-bottom: 10px;
 }
 
 /* Responsivo: Pantallas más pequeñas */
 @media (max-width: 800px) {
-  .box22{
-    flex: 1 1 45%;
-  }
+    .box22 {
+        flex: 1
+
+
+.two-column {
+  display: flex;
+  justify-content: space-between;
+  gap: 2em;
+  flex-wrap: wrap;
 }
 
-/* Ajustes tablas gt */
-.gt_table{
-  vertical-align: top;
-  margin-top: 0px;
+.column {
+  width: 48%;
 }
 
-/* ====== Navbar: evitar hover negro (Bootstrap / rmarkdown site) ====== */
 
-/* Color del link al pasar el mouse */
-.navbar .navbar-nav > li > a:hover,
-.navbar .navbar-nav > li > a:focus{
-  background-color: #3b75b2 !important;
-  color: #ffffff !important;
+
+/*---------------------------------*/
+
+/* Botón individual Show/Hide que crea R Markdown */
+button.code-folding-btn {
+  font-size: 0 !important;   /* oculta el texto original (Show/Hide) */
+  position: relative;
 }
 
-/* Cuando el dropdown está abierto (Bootstrap pone .open) */
-.navbar .navbar-nav > .open > a,
-.navbar .navbar-nav > .open > a:hover,
-.navbar .navbar-nav > .open > a:focus{
-  background-color: #3b75b2 !important;
-  color: #ffffff !important;
+/* Texto cuando el bloque está oculto (equivalente a Show) */
+button.code-folding-btn::after {
+  content: "Mostrar";
+  font-size: 12px;           /* tamaño visible del texto nuevo */
 }
 
-/* Estado activo (página actual) */
-.navbar .navbar-nav > .active > a,
-.navbar .navbar-nav > .active > a:hover,
-.navbar .navbar-nav > .active > a:focus{
-  background-color: #3b75b2 !important;
-  color: #ffffff !important;
+/* Texto cuando el bloque está expandido (equivalente a Hide) */
+button.code-folding-btn[aria-expanded="true"]::after {
+  content: "Ocultar";
+  font-size: 12px;
 }
 
-/* Ícono/caret del dropdown (la flechita) */
-.navbar .navbar-nav > li > a .caret{
-  border-top-color: #ffffff !important;
-  border-bottom-color: #ffffff !important;
+/* Botones globales “Show All Code” / “Hide All Code” en la barra superior */
+#rmd-show-all-code,
+#rmd-hide-all-code {
+  font-size: 0 !important;   /* oculta texto original */
 }
 
-/* ====== Dropdown (menú desplegable) ====== */
-.navbar .dropdown-menu{
-  background-color: #2c5697 !important;
-  border: 0 !important;
+#rmd-show-all-code::after {
+  content: "Mostrar todo el código";
+  font-size: 14px;
 }
 
-.navbar .dropdown-menu > li > a{
-  color: #ffffff !important;
+#rmd-hide-all-code::after {
+  content: "Ocultar todo el código";
+  font-size: 14px;
 }
 
-.navbar .dropdown-menu > li > a:hover,
-.navbar .dropdown-menu > li > a:focus{
-  background-color: #3b75b2 !important;
-  color: #ffffff !important;
+/* =========================
+   Rmd: TOC flotante (menú lateral izquierdo)
+   ========================= */
+
+/* Caja / panel del TOC */
+#TOC, .tocify {
+  background-color: #F7F7F9 !important;     /* fondo claro */
+  border: 1px solid rgba(7, 39, 102, 0.12) !important;
+  border-radius: 10px !important;
 }
 
-/* ==========================
-   TOC flotante (toc_float) - evitar hover negro
-   ========================== */
-
-/* Items del TOC - letras del menu lateral */  
-.tocify .list-group-item{
-  background-color: #ffffff !important;
-  color: #235784  !important;
-  border-color: #e6e6e6 !important;
+/* Links del TOC */
+#TOC a, .tocify a {
+  color: var(--azul-profundo) !important;
+  font-weight: 600 !important;
 }
 
-/* Hover del TOC */
-.tocify .list-group-item:hover,
-.tocify .list-group-item:focus{
-  background-color: #E8F1FB !important;
-  color: #8FB3E2 !important;
+/* “Título” grande de nivel 1 (como Metodología Estadística) */
+.tocify .tocify-header > a {
+  background-color: #EAF0FA !important;     /* barra clara */
+  color: var(--azul-profundo) !important;
+  border-radius: 8px !important;
 }
 
-/* Link dentro del item */
-.tocify .list-group-item a{
-  color: inherit !important;
+/* Sección activa (cuando estás “sobre” esa parte) */
+.tocify .active > a {
+  background-color: rgba(80, 121, 178, 0.22) !important;
+  color: var(--azul-profundo) !important;
+  border-radius: 8px !important;
 }
 
-/* Item activo - sombra del item pagina actual*/
-.tocify .list-group-item.active,
-.tocify .list-group-item.active:hover,
-.tocify .list-group-item.active:focus{
-  background-color: #8FB3E2 !important;
-  border-color: #2c5697 !important;
-  color: #31487A !important;
+/* Hover (cuando pasas el cursor) */
+#TOC a:hover, .tocify a:hover {
+  background-color: rgba(80, 121, 178, 0.16) !important;
+  color: var(--azul-profundo) !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
 }
 
-/* Cabecera del TOC (si aplica) */
-.tocify-header,
-.tocify .tocify-header{
-  background-color: #2c5697 !important;
-  color: #ffffff !important;
-}
+
+

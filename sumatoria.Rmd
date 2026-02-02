@@ -62,7 +62,7 @@ Esta forma de expresión matemática nos ayuda a resumir la escritura de series 
  + Infinita :  $\displaystyle\sum_{i=1}^{n} a_{i} = a_{1} + a_{2} + a_{3} + ...$
  
  
- Ahora si se quiere representar la suma de los primeros 100 números enteros se escribe:
+ Ahora sí se quiere representar la suma de los primeros 100 números enteros se escribe:
  
  $$\sum_{i=1}^{100} x = 1 + 2 + 3 + 4 + 5 + \cdots + 99 +100$$
  <br/><br/>
@@ -203,4 +203,3 @@ f. $\displaystyle\sum_{i=1}^{15} \dfrac{(x_{i}-3.5)(y_{i}-4.0)}{(x_{i}-3.5)^{2}}
 
 
 <br/><br/><br/><br/>
-
