@@ -1,31 +1,31 @@
-id,Nombre,,,Empid,Carrera,car,Matriculada,Cancelada,Perdida,Promedio
-1,ACHURY VARGAS,SOFIA,,9015572,Mercadeo,MER,1,0,0,3.98
-2,ACOSTA GIRALDO,,,9015384,Administración de Empresas,ADM,1,0,0,3.92
-3,ANGULO ARIAS,SEBASTIAN,,9011005,Negocios Internacionales,NEG,1,0,0,3.88
-4,ARANGO RAMOS,MARTINA,,9025045,Administración de Empresas,ADM,1,0,0,3.98
-5,ARBELAEZ PALACIOS,,,9010076,Mercadeo,MER,1,0,0,4.17
-6,BUENO SUAREZ,JUAN,,9023948,Negocios Internacionales,NEG,1,0,0,4.03
-7,BURBANO AHUMADA,ERIKA,,9015625,Administración de Empresas,ADM,1,0,0,4.04
-8,CASTRILLON VICTORIA,,,8974011,Administración de Empresas,ADM,1,0,0,3.47
-9,CHIQUITO ARANGO,DANIELA,,8989698,Negocios Internacionales,NEG,1,0,0,4.01
-10,CRUZ VICTORIA,LUISA,,9013918,Negocios Internacionales,NEG,1,0,0,3.97
-11,GIRON ROBBY,KENNETH,,8985079,Administración de Empresas,ADM,2,1,0,3.61
-12,GOMEZ RAMIREZ,MARIANA,,9019102,Negocios Internacionales,NEG,1,0,0,4.16
-13,GOMEZ VELASQUEZ,JUAN,,8977259,Negocios Internacionales,NEG,1,0,0,4.09
-14,HERNANDEZ CARDENAS,,,9018597,Negocios Internacionales,NEG,1,0,0,3.94
-15,HURTADO LUGO,JUAN,,8967662,Administración de Empresas,ADM,1,0,0,3.43
-16,IZQUIERDO GONZALEZ,,,9024687,Negocios Internacionales,NEG,1,0,0,4.53
-17,LONDOÑO JARAMILLO,,,8957913,Mercadeo,MER,1,0,0,3.49
-18,MESU MONTOYA,LAURA,,8974768,Mercadeo,MER,1,0,0,3.93
-19,NIETO HERNANDEZ,,,8974666,Negocios Internacionales,NEG,1,0,0,3.99
-20,ORTEGA GARCIA,ISABELLA,,8977629,Mercadeo,MER,1,0,0,4.03
-21,PEREZ DIAZ,CATALINA,,8991050,Administración de Empresas,ADM,1,0,0,3.99
-22,PEREZ VILLALOBOS,JUAN,,9023729,Administración de Empresas,ADM,1,0,0,4.01
-23,QUINTERO ZAMBRANO,,,8960180,Negocios Internacionales,NEG,1,0,0,4.09
-24,RAMIREZ LOPEZ,KEVIN,,8988718,Administración de Empresas,ADM,1,0,0,3.64
-25,REYES QUINTERO,DANIELA,,9015650,Mercadeo,MER,1,0,0,4.14
-26,RIVERA JARAMILLO,,,9016115,Administración de Empresas,ADM,1,0,0,4.24
-27,VARELA DUMANCELI,,,8993315,Mercadeo,MER,1,0,0,3.79
-28,VASQUEZ ZULUAGA,ANA,,9019489,Negocios Internacionales,NEG,1,0,0,4.22
-29,VILLAMIZAR MURILLO,,,9019228,Mercadeo,MER,1,0,0,4.39
-30,VILLEGAS GALLEGO, VALENTINA,,9010361,Mercadeo,MER,1,0,0,3.88
+,apellidos,nombre
+1,Achury Vargas,Sofia
+2,Acosta Giraldo,Sebastian
+3,Angulo Arias,Sebastian
+4,Arango Ramos,Martina
+5,Arbelaez Palacios,Mariana
+6,Bueno Suarez,Juan Sebastian
+7,Burbano Ahumada,Erika Sofia
+8,Castrillon Victoria,Isabel
+9,Chiquito Arango,Daniela
+10,Cruz Victoria,Luisa Fernanda
+11,Giron Robby,Kenneth
+12,Gomez Ramirez,Mariana
+13,Gomez Velasquez,Juan Martin
+14,Hernandez Cardenas,Daniela
+15,Hurtado Lugo,Juan Sebastian
+16,Izquierdo Gonzalez,Catalina
+17,Londoño Jaramillo,Santiago
+18,Mesu Montoya,Laura
+19,Nieto Hernandez,Isabella
+20,Ortega Garcia,Isabella
+21,Perez Diaz,Catalina
+22,Perez Villalobos,Juan Jose
+23,Quintero Zambrano,Camilo
+24,Ramirez Lopez,Kevin
+25,Reyes Quintero,Daniela
+26,Rivera Jaramillo,Alejandro
+27,Varela Dumanceli,Carolina
+28,Vasquez Zuluaga,Ana Sofia
+29,Villamizar Murillo,Alejandra
+30,Villegas Gallego,Valentina

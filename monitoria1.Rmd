@@ -4,7 +4,7 @@ subtitle: <span style="color:#235784">**Unidad 1.1**</span>
 author: "dgonzalez "
 output:
   html_document:
-    toc: true
+    toc: no
     toc_depth: 2
     toc_float: true
     code_folding: hide
@@ -174,7 +174,7 @@ Un vendedor convierte  los  pesos de los paquetes que se producen en  su empresa
 <br/><br/>
 
 
-### <span style="color:#686868">**NOTA**</span> 
+### <span style="color:#936A4D">**NOTA**</span> 
 
 * $\bar{x}=\frac{1}{n}\sum x_{i}$, 
 
@@ -681,7 +681,7 @@ El día de hoy se recogió información de una muestra de 50 bolsas. A continuac
 ```
 
 
-```{r, fig.width=10, fig.align='center'}
+```{r,  fig.align='center'}
 # Datos de los pesos de los paquetes de café instantáneo
 pesos <- c(4.3, 4.7, 4.8, 4.8, 4.9, 5.0, 5.1, 5.2, 5.4, 5.5, 5.7, 5.7, 5.8, 5.8, 5.9, 5.9, 6.0, 6.0, 6.1, 6.1, 6.1, 6.1, 6.2, 6.2, 6.2, 6.3, 6.3, 6.4, 6.4, 6.5, 6.5, 6.6, 6.7, 7.0, 7.2, 7.3, 7.4, 7.6, 7.7, 7.8, 8.2, 8.5, 8.7, 8.9)
 
@@ -826,6 +826,7 @@ plot(tiempos, type = "b", main = "Distribución de Tiempos de Procesamiento de P
 summarytools::descr(tiempos)
 
 ```
+
 
 
 Criterios establecidos por el banco:

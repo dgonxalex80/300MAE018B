@@ -73,11 +73,7 @@ navbar:
       menu:
         - text: "Guía proyecto"
           href: enconstruccion.html
-    - text: "Información"
-      menu:
-        - text: "300MAE018G"
-          href: about.html  
-        
+    
 output:  
  html_document:
     theme: spacelab

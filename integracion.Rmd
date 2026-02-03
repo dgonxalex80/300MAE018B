@@ -1,10 +1,10 @@
 ---
-title: <span style="color:#235784"> </span>  
+title: <span style="color:#235784">**Integración** </span>  
 author: "dgonzalez "
 subtitle: <span style="color:#235784"> </span> 
 output:
   html_document:
-    toc: no
+    toc: true
     toc_depth: 2
     toc_float: yes
     code_folding: hide
@@ -24,7 +24,7 @@ source("colores.R")
  knitr::include_graphics("img/modulo0.png")
 ```
 
-# <span style="color:#235784"> **Integración**</span> 
+
 
 <br/><br/>
 

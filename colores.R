@@ -9,3 +9,5 @@ c5= "#D9E1F1" # LEVENDER (WEB)
 
 c6= "#2C5697" # AZUL INSTITUCIONAL
 c7= "#F7F7F7" # FONDO GRIS CLARO WEB
+
+c8 = "#936A4d" # cafe oscuro

@@ -4,7 +4,7 @@ author: "dgonzalez "
 subtitle: <span style="color:#235784">Estadística para la toma de decisiones </span> 
 output:
   html_document:
-    toc: no
+    toc: true
     toc_depth: 2
     toc_float: yes
     code_folding: hide
