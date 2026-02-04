@@ -122,7 +122,7 @@ table(clientes$categoria_preferida)
 
 <br/>
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #install.packages("AER")
 library(AER)
 
@@ -147,7 +147,7 @@ En todos los casos  podemos elaborar una tabla acompañada con los porcentajes (
 ### Paquete flextable
 
 ```{r, eval=FALSE}
-install.packages("flextable")
+# install.packages("flextable")
 library(flextable)
 ```
 
@@ -448,11 +448,11 @@ https://www.rstudio.com/resources/cheatsheets/
 df <- data.frame(
   id = 1:10,
   nombre = c("Juan", "Carlos", "James", "David", "Jenny", "Harold", "Leonardo", "John", "Ana", "Luz"),
-  edad = c(20, 25, 22, 28, 21, 23, 25, 20, 21, 20),
+  edad = c(18, 25, 22, 30, 21, 23, 25, 20, 21, 20),
   grado = c("C", "A", "A", "C", "B", "B", "A", "C", "C", "C"),
-  Examen1 = c(3.8, 4.1, 4.0, 3.9, 4.0, 4.3, 3.6, 3.7, 3.8, 3.8),
-  Examen2 = c(3.9, 3.9, 4.0, 3.9, 3.8, 3.6, 4.0, 4.0, 3.9, 3.8),
-  Promedio = c(3.9, 4.0, 4.1, 3.6, 3.7, 4.6, 3.5, 3.6, 3.8, 3.7),
+  Examen1 = c(3.2, 4.1, 4.0, 3.9, 4.0, 4.3, 3.6, 3.7, 3.8, 3.8),
+  Examen2 = c(3.3, 3.9, 4.0, 3.9, 3.8, 3.6, 4.0, 4.0, 3.9, 3.8),
+  Promedio = c(3.3, 4.0, 4.1, 3.6, 3.7, 4.6, 3.5, 3.6, 3.8, 3.7),
   Entrevista = c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE),
   stringsAsFactors = FALSE
 )
@@ -473,10 +473,10 @@ df1
 library(formattable)
 
 formattable(df, list(
-  edad = color_tile("transparent", "lightpink"),
-  Examen1 = color_bar("lightgreen"),
-  Examen2 = color_bar("lightblue"),
-  Promedio = color_bar("lightgreen"))
+  edad = color_tile("transparent", "#5D7A9C"),
+  Examen1 = color_bar("#F7B983"),
+  Examen2 = color_bar("#F7D18B"),
+  Promedio = color_bar("#F6E8D9"))
 )
 
 ```

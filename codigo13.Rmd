@@ -1,0 +1,1189 @@
+---
+title:  " "
+author: "dgonzalez "
+subtitle: " "
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: yes
+    code_folding: hide
+    theme: flatly
+---
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE,comment = NA)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(readxl)
+
+# Helper para cargar paquetes opcionales sin romper el Rmd
+load_pkg <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message("Paquete no instalado: ", pkg)
+    return(FALSE)
+  }
+  library(pkg, character.only = TRUE)
+  TRUE
+}
+
+Visitantes <- read_csv("data/Visitantes.csv")
+clientes <- read_csv("data/clientes.csv")
+ventas <- read_excel("data/ventas.xlsx")
+cervezas <- read_csv("data/cervezas.csv")
+
+
+# colores
+source("colores.R")
+pal_admin <- c(c11, c21, c31, c41, c51)
+
+```
+
+<br/><br/>
+
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/codigo1.png")
+```
+
+
+<br/><br/>
+
+
+# **Introducción**
+
+La visualización de datos es una de las partes más importantes del análisis de datos, que permite de manera gráfica representar la información con el fin de poder resumirlos e interpretarlos 
+
+
+Algunas consideraciones
+
+<br/><br/>
+
+|Tipo de variable | Tipos de escala  |  Tipo de gráfico            |  Sintaxis R          | 
+|:----------------|:-----------------|:----------------------------|:---------------------|
+| Cualitativa     | Nominal          |  diagrama de torta          |  pie(table(x))       |
+|                 |                  |                             |                      |
+|                 | Ordinal          |  diagrama de barras         |  barplot(table(x))   |
+|                 |                  |  diag.barras dobles         |  barplot(table(x,y)) |
+|                 |                  |  diag. mosaico              |  plot(x,y)           |
+|                 |                  |                             |                      |
+|Cuantitativa     | De intervalo     |  diagrama de tallos y hojas | stem(x)              |
+|                 |                  |  histograma                 | hist(x)              | 
+|                 | De razón         |  diagrama de puntos         | plot(x,y)            |
+|                 |                  |  diagrama de densidad       | density(x)           |
+|                 |                  |  diagrama de cajas          | boxplot(x)           |
+|                 |                  |  diagrama de linea          | plot(x, type="l")    |
+|                 |                  |                             |                      |
+ 
+ **Nota**: Además de estas formas de representación gráfica existen otras formas que combinan variables como:
+ 
+ + Mapas
+ + Diagrama de Mosaico
+ + Diagramas de radar
+ 
+ 
+<br/><br/><br/>
+
+# **Transformación de bases y relaciones**
+
+En esta sección se integran las bases de **clientes** y **ventas** para caracterizar comportamientos de compra.
+
+```{r}
+# Limpieza y estandarización
+clientes_limpio <- clientes %>% 
+  mutate(
+    ultima_compra = as.numeric(gsub(",", ".", ultima_compra)),
+    genero_cliente = factor(genero_cliente),
+    categoria_preferida = factor(categoria_preferida)
+  )
+
+# Agregación de ventas por cliente
+ventas_cliente <- ventas %>% 
+  group_by(Cliente) %>% 
+  summarise(
+    ventas_total = sum(Ventas_Netas, na.rm = TRUE),
+    transacciones = n(),
+    items_total = sum(Items, na.rm = TRUE),
+    ticket_prom = ventas_total / transacciones,
+    .groups = "drop"
+  )
+
+# Relación clientes-ventas
+base_rel <- clientes_limpio %>% 
+  left_join(ventas_cliente, by = c("id" = "Cliente"))
+
+# Guardar bases transformadas
+write_csv(clientes_limpio, "data/clientes_limpio.csv")
+write_csv(ventas_cliente, "data/ventas_cliente.csv")
+write_csv(base_rel, "data/base_rel.csv")
+```
+
+```{r}
+# Segmentación de comportamiento (valor y frecuencia)
+seg_cortes <- function(x, labels3) {
+  q <- unique(quantile(x, probs = c(0, .33, .66, 1), na.rm = TRUE))
+  if (length(q) >= 4) {
+    return(cut(x, breaks = q, include.lowest = TRUE, labels = labels3))
+  }
+  # fallback si hay muchos empates
+  ntile(x, 3) |> factor(labels = labels3)
+}
+
+base_rel <- base_rel %>% 
+  mutate(
+    seg_valor = seg_cortes(ventas_total, c("Bajo", "Medio", "Alto")),
+    seg_frecuencia = seg_cortes(transacciones, c("Baja", "Media", "Alta"))
+  )
+```
+
+```{r}
+# Tabla de relaciones y comportamiento
+relaciones <- base_rel %>% 
+  group_by(seg_valor, seg_frecuencia, genero_cliente) %>% 
+  summarise(
+    clientes = n(),
+    ventas_prom = mean(ventas_total, na.rm = TRUE),
+    ticket_prom = mean(ticket_prom, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+write_csv(relaciones, "data/relaciones.csv")
+
+relaciones
+```
+
+```{r, message=FALSE, warning=FALSE}
+# Relación ingresos vs ventas totales
+ggplot(base_rel, aes(x = ingresos, y = ventas_total, color = seg_valor)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "Ingresos vs Ventas Totales", x = "Ingresos", y = "Ventas totales") +
+  theme_minimal()
+```
+
+```{r}
+# Paleta (5 + 1 extra)
+pal <- c(
+  "Alimentos"     = "#F28B30",
+  "Deportes"      = "#F2B33D",
+  "Electrónica"   = "#3B5B8A",
+  "Hogar"         = "#5D7A9C",
+  "Ropa"          = "#F0D9BF",
+  "Extra"         = "#2F476E"  # por si luego agregas otra categoría
+)
+
+base_rel %>%
+  group_by(categoria_preferida) %>%
+  summarise(ticket_prom = mean(ticket_prom, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = categoria_preferida, y = ticket_prom, fill = categoria_preferida)) +
+  geom_col() +
+  labs(title = "Ticket promedio por categoría preferida",
+       x = "Categoría", y = "Ticket promedio") +
+  scale_fill_manual(values = pal) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+<br/><br/><br/>
+
+# **Variable cualitativa-nominal**
+
+## **1. Gráfico de tortas**
+
+```{r}
+t1 <- table(clientes$categoria_preferida)
+pie(t1, col = pal_admin)
+```
+
+
+```{r}
+t1 <- table(clientes$categoria_preferida)
+labs <- names(t1)
+pct <- round(t1 / sum(t1) * 100)
+labs <- paste(labs, pct, "%")
+pie(t1, 
+    labels = labs, 
+    main = "Distribución por categoría preferida",
+    col = pal_admin)
+```
+
+<br/><br/><br/>
+
+# **Variable cualitativa-ordinal**
+
+## **2.Gráfico de barras**
+
+```{r}
+ingresos_cat <- cut(clientes$ingresos,
+                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
+                    include.lowest = TRUE,
+                    labels = c("Bajo", "Medio", "Alto"))
+barplot(table(ingresos_cat), ylim =c(0,400) )
+```
+
+
+
+
+```{r}
+ingresos_cat <- cut(clientes$ingresos,
+                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
+                    include.lowest = TRUE,
+                    labels = c("Bajo", "Medio", "Alto"))
+ev <- table(ingresos_cat)
+barplot(ev,  col = pal[2:4], 
+        main = "Ingresos de clientes (nivel)",
+        las = 1,
+        ylim =c(0,400))
+```
+<br/><br/><br/>
+
+## **3. Gráfico de barras 2 **
+
+
+```{r}
+conteo <- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
+barplot(conteo)
+
+```
+
+
+```{r}
+counts <- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
+barplot(counts, main = "Método de pago por tipo de cliente",  
+        xlab = "Tipo de cliente",
+        col = pal[1:nrow(counts)],
+        legend = rownames(counts),
+        las = 1)
+```
+
+
+## **4. Diagrama de mosaico **
+
+
+```{r, message=FALSE, warning=FALSE}
+op <- par(no.readonly = TRUE)
+
+# Márgenes un poco más amplios (sobre todo abajo/izquierda)
+par(mar = c(6, 6, 4, 2) + 0.1)
+
+mosaicplot(
+  ~ gear + vs,
+  data = mtcars,
+  col  = c("#899DB9", "#F7D18B"),
+  las  = 1,
+  main = "Número de cambios por  tipo de motor (vs)",
+  xlab = "Número de cambios",
+  ylab = "Tipo de motor(en V, en Línea)",
+  cex.axis  = 0.9,
+  cex.main  = 1.1,
+  cex.lab   = 1.0,
+  border    = "white",
+  off       = 0.02
+)
+
+par(op)
+
+```
+
+<br/><br/><br/>
+
+# **Variables cuantitativas**
+
+## **5. Diagrama de tallos y hojas**
+
+```{r}
+vn <- ventas$Ventas_Netas
+
+# Diagrama de tallos y hojas
+stem(vn)
+```
+
+<br/><br/><br/>
+
+## **6. Histograma**
+
+```{r}
+hist(vn)
+```
+
+
+
+
+```{r}
+h1=hist(vn, 
+        main = "Ventas netas", 
+        xlab = "ventas netas", ylab="frecuencias absolutas", 
+        labels=TRUE, 
+        col=c21,
+        ylim = c(0,30))
+abline(v=mean(vn), col=c31, lwd=2)
+```
+<br/><br/><br/>
+
+## **7. Diagrama de densidad**
+
+```{r}
+vn <- ventas$Ventas_Netas
+plot(density(vn))
+```
+
+
+
+
+```{r}
+plot(density(vn),
+     main="Distribución de ventas netas", 
+     col=c11, 
+     lwd=2,
+     las=1, 
+     xlab = "Ventas netas",
+     ylab = "Densidad")
+```
+
+<br/><br/><br/>
+
+## **8. Diagrama de cajas** 
+
+```{r}
+boxplot(vn)
+```
+
+
+```{r, fig.height=3}
+boxplot(vn, main="Ventas netas",
+        col=c41,
+        las=1,
+        horizontal = TRUE)
+abline(v=mean(vn), col=c31, lwd=2)
+```
+
+<br/><br/><br/>
+
+## **9. Comparación diagrama de cajas**
+
+```{r}
+boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas)
+```
+
+
+
+```{r}
+par(oma = c(2, 5, 3, 4) )  # margenes de la imagen
+boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas,
+        main = "Ventas netas por tipo de cliente", 
+        col = pal_admin,
+        xlab = "ventas netas", ylab = " ", 
+        horizontal = TRUE,
+        las = 1)
+abline(v = mean(ventas$Ventas_Netas), col = c31, lwd = 2)
+```
+
+<br/><br/><br/>
+
+## **10. Gráfico de series de tiempo**
+
+```{r}
+ventas$fecha <- as.Date("2023-01-01") + 7 * (1:nrow(ventas))
+ventas$mes <- as.Date(cut(ventas$fecha, "month"))
+serie <- aggregate(Ventas_Netas ~ mes, data = ventas, sum)
+
+plot(serie$mes, serie$Ventas_Netas, type = "l",
+     main = "Ventas netas mensuales", 
+     col = c31, 
+     lwd = 2, xlab = "mes", ylab = "ventas netas")
+```
+
+
+<br/><br/><br/>
+
+## **11. Resumen**
+
+```{r, eval=FALSE }
+x=rnorm(100,100,20)
+y=rnorm(100,100,25)
+z=rbinom(100,4,0.30)
+t=1:100
+pie(table(z))
+barplot(table(z))
+stem(x)
+hist(x)
+boxplot(x)
+plot(x,y)
+plot(t,y, type="l")
+plot(density(x))
+```
+
+<br/><br/>
+
+# **Paquetes adicionales**
+
+Hasta el momento se ha utilizado R base para la elaboración de gráficos, a continuación se presentan algunos paquetes que mejoran la construcción de gráficos y su visualización :
+
+<br/><br/>
+
+## **ggplot2**. 
+
+
+```{r, echo=FALSE, out.width="10%", fig.align='left'}
+knitr::include_graphics("img/ggplot2.png")
+```
+
+
+Este paquete de R permite la construcción de gráficos utilizando para ello una "grámatica" de los grafocos, la cual incorpora componentes como : los datos (data), un conjunto de coordenadas ( ), una serie de geometrias (geoms)  
+
+Componentes de un gráfico en ggplot2:
+
++ **Data**: capa de los datos
+
++ **Aesthetics**: capa estetica (aes), definimos las variables a utilizar en el gráfico
+
++ **Geometries**: capa de geometrias, se define el tipo de gráfica a realizar
+
++ **Facets**: capa de facetas, permite detallar la gráfica por categorias
+
++ **Statistics**: capa de estadística, permite agregar modelos
+
++ **Coordinates**: capa de coordenadas, permite ajustar las escalas de los ejes
+
++ **Theme**: capas de características del gráfico que no dependen de los datos
+
+<br/><br/>
+
+Para empezar, inicialmente se instalar el paquete
+
+```{r, eval=FALSE}
+install.packages("ggplot2")
+```
+Y luego habilitarlo para su uso
+
+```{r}
+library(ggplot2)
+```
+
+Se empieza con el primero de los lienzo, donde se declara la data que vamos a utilizar
+
+### data
+
+
+```{r}
+fig=ggplot(data=clientes)
+fig
+```
+
+<br/><br/>
+
+Como segundo paso se definen las variables que se van a utilizar en la construcción del gráfico
+
+### data + aesthetics
+
+
+```{r}
+fig=ggplot(data=clientes,  aes(x=edad_cliente , y=puntos))
+fig
+```
+
+Luego de tener definida la base y las variables a utilizar se indica la geometria a utilizar, en este caso se trata de puntos
+
+
+### data + aesthetics + geometries
+
+
+```{r}
+fig=ggplot(data=clientes,  aes(x=edad_cliente , y=puntos))
+fig + geom_point(color = c11)
+```
+
+<br/><br/>
+
+
+Otros elementos a utilizar son :
+
+<br/>
+
+**facet**  que nos ayuda a visualizar el gráfico por factor, construyendo la gráfica para cada mes en este caso
+
+### data + aesthetics + geometries + facets
+
+
+```{r}
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
+  geom_point(color = c21) + facet_wrap(~ Metodo_Pago)
+fig
+```
+
+<br/><br/>
+
+
+**stat** permite realizar modelos lineales y mostrar asi la relación existente entre las variables 
+
+### data + aesthetics + geometries + facets + statistics
+
+
+
+```{r}
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
+  geom_point(color = c21) + 
+  facet_wrap(~ Metodo_Pago) +
+  stat_smooth(method = "loess" , formula =y ~ x, color = c31)
+fig
+```
+
+<br/><br/>
+
+
+**coordinates**  la cual permite ajustar los ejes , por ejemplo podemos determian el rango de que queremos presentar en la gráfica
+
+### data + aesthetics + geometries + facets + statistics + coordinates
+
+
+
+
+```{r}
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
+        facet_wrap(~ Metodo_Pago) + 
+        stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
+        coord_cartesian(xlim = c(18,70))
+fig
+```
+
+<br/><br/>
+
+**themes**  finalmente la capa del tema o fondo de la gráfica
+
+
+### data + aesthetics + geometries + facets + statistics + coordinates + themes
+
+
+```{r}
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
+        facet_wrap(~ Metodo_Pago) + 
+        stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
+        coord_cartesian(xlim = c(18,70)) +
+        theme_classic()
+fig
+```
+
+<br/><br/><br/>
+
+### **Otros ejemplos de ggplot2**
+
+```{r}
+ventas$Tipo_Cliente = as.factor(ventas$Tipo_Cliente)
+fig2 = ggplot(data=ventas, aes(x=Ventas_Netas, y=Tipo_Cliente)) +
+  geom_boxplot(fill = c41, color = c1)+
+  geom_point(color = c11, alpha = 0.5, position = position_jitter(width = 0.2))+
+  ggtitle("Ventas netas por tipo de cliente")+
+  labs(x="ventas netas" , y="tipo de cliente")
+  
+fig2        
+```
+
+
+```{r}
+fig3=ggplot(clientes, aes(edad_cliente)) +
+       geom_histogram(bins = 7,fill=c21, color=c7, alpha=0.9)+
+       theme_minimal() +
+       labs(x = "edad", y = "frecuencia absoluta") +
+       ggtitle("Edad de clientes")
+fig3 
+```
+
+
+```{r}
+fig=ggplot(data = ventas, aes(x = Tipo_Cliente, fill = Metodo_Pago)) + 
+      geom_bar(colour= c1, size = 0.3 ) +  
+  coord_polar() +
+  scale_fill_manual(values = pal_admin)
+fig
+```
+```{r}
+# Plot
+ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, fill = Tipo_Cliente)) +
+  geom_boxplot(alpha = 0.6) +
+  geom_jitter(color = c1, size = 0.4, alpha = 0.6) +
+  scale_fill_manual(values = pal_admin) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 11)) +
+  ggtitle("Ventas netas por tipo de cliente (geom_jitter)") +
+  xlab("")
+```
+
+
+
+## **highcharter**  
+
+![](img/highcharter.png)
+
+Este es un paquete especializado en la creación de gráficos dinámicos que emplea inrnamente  javascript.
+
+Este paquete permite crear varios tipos de gráficos como: diagramas de dispersión, de burbuja, de línea, serie de tiempo, mapas de calor, treemap, gráficos de barras, redes, entre otros.
+
+Gran parte de los gráficos se realizan con la función : ** hchart() ** que es aplicada a objetos 
+
+Inicialmente se instala el paquete por una única vez
+
+```{r, eval=FALSE}
+# install.packages("highcharter")
+```
+
+Luego se carga para utilizar sus funciones
+
+```{r, message=FALSE,warning=FALSE}
+load_pkg("highcharter")
+```
+
+
+```{r, message=FALSE,warning=FALSE, echo=FALSE}
+if (load_pkg("highcharter")) {
+  hchart(ventas, "scatter", hcaes(x = Edad, y = Ventas_Netas, group = Metodo_Pago)) %>%
+    hc_title(text = "Ventas netas vs edad por método de pago")
+}
+```
+
+```{r}
+# paquetes requeridos
+# install.packages("ggplot2")
+library(ggplot2)
+# install.packages("ggbeeswarm")
+load_pkg("ggbeeswarm")
+
+# gráfico 
+if (load_pkg("ggbeeswarm")) {
+  ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, color = Tipo_Cliente)) +
+    geom_beeswarm(cex = 2) +
+    scale_color_manual(values = pal_admin)
+}
+```
+
+
+```{r}
+# construccion de la data
+df <- cervezas[, c("tipo", "precio")]
+
+# instalacion de paquetes
+# install.packages("ggridges")
+load_pkg("ggridges")
+# install.packages("ggplot2")
+library(ggplot2)
+
+# construcción de gráfico
+if (load_pkg("ggridges")) {
+  ggplot(df, aes(x = precio, y = tipo, fill = tipo, color = tipo)) +
+    geom_density_ridges(alpha = 0.6) +
+    scale_fill_manual(values = pal_admin) +
+    scale_color_manual(values = pal_admin)
+}
+```
+
+```{r}
+# Datos
+v_m <- ventas$Ventas_Netas[ventas$Genero == "Mujer"]
+v_h <- ventas$Ventas_Netas[ventas$Genero == "Hombre"]
+
+# Estimaciones de densidad
+denx <- density(v_m)
+deny <- density(v_h)
+
+# Gráfico
+plot(denx,
+     ylim = c(0, max(c(denx$y, deny$y))),
+     xlim = c(min(c(denx$x, deny$x)),
+              max(c(denx$x, deny$x))),
+     las=1, main="Ventas netas por género", xlab="ventas netas")
+lines(deny)
+
+# Colorear las áreas
+polygon(denx, col = adjustcolor(c21, alpha.f = 0.6))
+polygon(deny, col = adjustcolor(c31, alpha.f = 0.6))
+```
+
+
+
+Tomado de  : https://r-charts.com/es/distribucion/ggbeeswarm/
+
+## **plotly**
+ 
+ ![](img/plotly.png)
+
+<br/><br/><br/><br/>
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# install.packages("plotly") # instala plotly
+library(plotly) # carga plotly
+
+datos <- ventas %>% # data de ejemplo
+  group_by(Tipo_Cliente) %>% # agrupa por tipo
+  summarise(Ventas = sum(Ventas_Netas), .groups = "drop") # suma ventas
+
+p <- plot_ly(datos, x = ~Tipo_Cliente, y = ~Ventas, type = "bar") # gráfico
+p # imprime gráfico
+```
+
+## **gganimate (GIF)** 
+
+Ejemplo de gráfico dinámico que cambia en el tiempo y se exporta como GIF.
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# install.packages(c("gganimate","gifski","transformr")) # instala paquetes
+library(gganimate) # carga gganimate
+library(gifski) # carga gifski
+library(transformr) # carga transformr
+
+ventas$fecha <- as.Date("2023-01-01") + 7 * (1:nrow(ventas)) # crea fechas
+ventas$mes <- as.Date(cut(ventas$fecha, "month")) # agrupa por mes
+resumen <- aggregate(Ventas_Netas ~ mes + Tipo_Cliente, data = ventas, sum) # resume
+
+p <- ggplot(resumen, aes(mes, Ventas_Netas, color = Tipo_Cliente)) + # base
+  geom_line(size = 1) + # líneas
+  geom_point(size = 2) + # puntos
+  scale_color_manual(values = pal_admin) + # colores
+  labs(title = "Ventas netas por tipo de cliente: {frame_time}", # título
+       x = "mes", y = "ventas netas") + # ejes
+  transition_reveal(mes) # animación
+
+anim <- animate(p, nframes = 80, fps = 10, width = 700, height = 400, # render
+                renderer = gifski_renderer()) # renderizador GIF
+anim_save("img/ventas_tiempo.gif", anim) # guarda GIF
+```
+
+<br/><br/><br/><br/>
+
+## **animation (GIF)** 
+
+Ejemplo sencillo con el paquete `animation` para crear un GIF.
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# install.packages("animation") # instala animation
+library(animation) # carga animation
+
+ani.options(interval = 0.15) # controla velocidad
+
+saveGIF({ # guarda GIF
+  for (i in 1:20) { # recorre frames
+    plot(rnorm(100), # datos aleatorios
+         main = paste("Frame", i)) # título por frame
+  }
+}, movie.name = "img/animacion.gif") # nombre del archivo
+```
+
+## **fmsb** 
+
+<br/><br/>
+
+### **gráficos de radar** 
+
+Paquete para el trabajo en Estadística Medica que se utiliza para la construcción de un diagrama de radar
+
+```{r}
+# install.packages("fmsb")
+load_pkg("fmsb") # carga fmsb si está disponible
+
+if (load_pkg("fmsb")) {
+  set.seed(1) # fija semilla
+  df <- data.frame(rbind(rep(10, 8), # máximos
+                         rep(0, 8), # mínimos
+                         matrix(sample(0:10, 8), nrow = 1))) # datos
+  colnames(df) <- paste("Var", 1:8) # nombres
+
+  radarchart(df, # radar
+             cglty = 1, cglcol = "gray", # grid
+             pcol = c11, plwd = 2, # línea
+             pfcol = adjustcolor(c21, alpha.f = 0.25)) # relleno
+}
+
+```
+<br/><br/>
+
+```{r}
+# install.packages("fmsb")
+load_pkg("fmsb") # carga fmsb si está disponible
+# matriz de datos
+if (load_pkg("fmsb")) {
+  df2 <- data.frame(rbind(rep(10, 8), rep(0, 8), # máximos y mínimos
+                          matrix(sample(0:10, 24,
+                                        replace = TRUE), # datos
+                                 nrow = 3)))
+  colnames(df2) <- paste("Var", 1:8) # nombres
+  # colores de areas
+  areas <- c(adjustcolor(c11, alpha.f = 0.25), # grupo 1
+             adjustcolor(c31, alpha.f = 0.25), # grupo 2
+             adjustcolor(c41, alpha.f = 0.25)) # grupo 3
+
+  radarchart(df2, # radar
+             cglty = 1,       # tipo de línea del grid
+             cglcol = "gray", # color líneas grid
+             pcol = c(c11, c31, c41),      # color de líneas
+             plwd = 2,        # ancho de línea
+             plty = 1,        # tipo de línea
+             pfcol = areas)   # color de las áreas 
+
+  legend("topright", # leyenda
+         legend = paste("Grupo", 1:3), # etiquetas
+         bty = "n", pch = 20, col = areas, # estilo
+         text.col = "grey25", pt.cex = 2) # estilo texto
+}
+
+```
+
+<br/><br/>
+
+### **gráfico de barras polar**
+
+
+```{r}
+
+# Datos por método de pago
+data <- as.data.frame(table(ventas$Metodo_Pago))
+colnames(data) <- c("variable", "value")
+
+# Create grafico en coordenadas 
+plot <- ggplot(data,aes(x = variable,y = value,
+                 fill = variable)) +
+          geom_col(width = 1, color = "white") +
+          coord_polar() +                         # vonvierte en grafico circular
+          labs(x = "", y = "",title = "Titulo",   # add titulo, subtitulo, nota
+                             subtitle = "Subtitulo", 
+                              caption = "Nota" ) +
+         theme_minimal() +                     # borra caracteristicas del grafico
+         scale_fill_manual(values = pal_admin) +
+         theme(                                # asigna caracteristicas
+            legend.position = "none",
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            axis.ticks = element_blank(),
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(face = "bold"),
+           plot.title = element_text(size = 24, face = "bold"),
+          plot.subtitle = element_text(size = 12))
+
+plot # imprime grafico
+
+
+
+
+```
+
+ <br/><br/><br/>
+ 
+# **Mapas** 
+ 
+En el siguiente enlace encontrará los archivos para la construcción de los mapas en formato .shp (debe copiar los cuatro archivos)
+
+Archivos .shp : https://sites.google.com/site/seriescol/shapes
+ 
+A continuación el código para el mapa de Cali sin información (usa `sf`).
+ 
+<br/>
+
+### **Mapa de Cali** 
+
+```{r}
+load_pkg("sf") # carga sf si está disponible
+
+cali <- tryCatch( # intenta leer el shapefile
+  sf::st_read("map/cali/cali.shp", quiet = TRUE), # ruta del .shp
+  error = function(e) NULL # si falla, devuelve NULL
+)
+
+if (is.null(cali)) { # valida que se haya cargado
+  message("No se pudo leer map/cali/cali.shp. Verifique que exista el .dbf.") # aviso
+} else { # si existe, grafica
+  plot(sf::st_geometry(cali), col = c7, border = c1, # geometría y colores
+       main = "Cali - mapa base") # título
+}
+```
+ <br/>
+ 
+ 
+
+ 
+### **Mapa de Cali con indice**
+ 
+Para mostrar la información se debe incorporar un vector al objeto **cali** que contiene la información para el mapa. este objeto en formato lista tiene incorporada una data que contiene varias columnas al cual se le adiciona la información a publicar.  
+
+En el caso de Cali tiene 22 comunas se adiciona un vector con 22 valores con el nombre de indice
+ 
+<br/><br/>
+
+```{r}
+if (!is.null(cali)) { # solo si el mapa existe
+  set.seed(1) # reproducibilidad
+  cali$indice <- runif(nrow(cali), min = 0, max = 100) # indicador simulado
+
+  ggplot(cali) + # inicia gráfico
+    geom_sf(aes(fill = indice), color = "white", linewidth = 0.2) + # polígonos
+    scale_fill_viridis_c(option = "C") + # paleta
+    labs(title = "Cali - índice simulado", fill = "Índice") + # etiquetas
+    theme_minimal() # tema
+}
+```
+
+
+
+<br/><br/>
+
+### **Mapa de Colombia**
+
+Para el caso de Colombia se obtiene el archivo `depto.shp` que contiene la información por departamentos (33). A continuación se simula un indicador y se presenta en el mapa.
+
+<br/><br/>
+```{r}
+load_pkg("sf") # carga sf si está disponible
+
+mapco <- tryCatch( # intenta leer el shapefile
+  sf::st_read("map/colombia/depto.shp", quiet = TRUE), # ruta del .shp
+  error = function(e) NULL # si falla, devuelve NULL
+)
+
+if (is.null(mapco)) { # valida que se haya cargado
+  message("No se pudo leer map/colombia/depto.shp.") # aviso
+} else { # si existe, simula y grafica
+  set.seed(2) # reproducibilidad
+  mapco$indice <- runif(nrow(mapco), min = 0, max = 100) # indicador simulado
+
+  ggplot(mapco) + # inicia gráfico
+    geom_sf(aes(fill = indice), color = "white", linewidth = 0.1) + # polígonos
+    scale_fill_viridis_c(option = "D") + # paleta
+    labs(title = "Colombia - indicador simulado", fill = "Índice") + # etiquetas
+    theme_minimal() # tema
+}
+```
+<br/>
+
+
+
+Para representar información en el mapa seden ingresar una vector con 33 valores, igual numero de departamentos en el mismo orden en que se encuentran los nombre de los departamento en el archivo mapco
+
+<br/>
+
+```{r}
+# mapco$NOMBRE_DPT
+```
+<br/>
+
+ Si se quiere representar un mapa con las muertes causadas por covid en Colombia por departamento debemos crear una tabla con la información relacionada con esta variable por departamento en el mismo orden contenida en el archivo **depto.shp** y adicionarla como variable : mapcol@data$muertes
+
+De la base de datos abiertos Colombia se obtiene la siguiente información correspondiente al número de fallecidos por Covid19, durante el periodo marzo 2019 a agosto 25 de 2021
+
+```{r, eval=FALSE}
+# colombia=readRDS("data/Colombia.RDS") # lee archivo RDS (si existe)
+# colombia$departamento_nom= str_to_upper(colombia$departamento_nom) # normaliza texto
+# t=table(colombia$departamento_nom,colombia$estado) # tabla de frecuencias
+# fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880, # vector
+#             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
+#             620,249,29,87,17,45,133)
+```
+ 
+
+<br/><br/>
+
+```{r }
+ require(sp)
+ require(rgdal)
+ require(raster)
+ require(RColorBrewer)
+
+ mi.palette <- brewer.pal(n = 7, name = "OrRd")   # paleta de colores
+ mapco=shapefile("map/colombia/depto.shp")  # importa mapa en formato .shp
+ colombia=readRDS("data/Colombia.RDS")
+ colombia$departamento_nom= str_to_upper(colombia$departamento_nom)
+ t=table(colombia$departamento_nom,colombia$estado)
+ fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880,
+             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
+             620,249,29,87,17,45,133) # vector con información
+ mapco@data$fallecidos=fallecidos # se adiciona variable con 33 valores = 33 dptos, en mismo orden
+ spplot(mapco[,6], col.regions = mi.palette, cuts = 6)  # mapa
+```
+
+
+```{r map4, echo=FALSE, out.width="40%", fig.align = "center"}
+knitr::include_graphics("img/mapColombia2.png")
+```
+<br/><br/>
+
+
+
+
+## **tmap**
+
+https://www.jstatsoft.org/article/view/v084i06
+
+
+
+
+<br/><br/><br/> 
+
+#  **Margenes de los gráficos**
+
+```{r}
+# Grafico normal
+x=rnorm(100,100,20)
+plot(density(x))
+```
+
+<br/> <br/> 
+
+### **margenes de la grafica  c(bottom, left, top, right)**
+
+```{r}
+
+par(mar = c(5, 4, 4, 2) + 0.1)
+x=rnorm(100,100,20)
+plot(density(x))
+```
+
+<br/> <br/> 
+
+
+###  **margenes de la gráfica**
+
+```{r}
+
+par(mai = c(1.5, 1.5, 1.5, 1.5))
+x=rnorm(100,100,20)
+plot(density(x))
+
+```
+
+<br/> <br/> 
+
+### **Matriz de gráficos mfrow = c(2, 2)**
+
+```{r}
+x=rnorm(100,100,20)
+y=rnorm(100,100,25)
+z=rbinom(100,4,0.30)
+t=1:100
+par(mfrow = c(2, 2) ) # definición de la matriz
+
+plot(density(x))
+barplot(table(z))
+hist(x)
+plot(x,y)
+```
+
+<br/> <br/> 
+
+### **margenes exteriores c(bottom, left, top, right)**
+
+```{r}
+
+par(mfrow = c(2, 2),   # matriz de graficos 2x2
+    oma = c(3, 5, 2, 4) )  # margenes de la imagen
+plot(density(x))
+barplot(table(z))
+hist(x)
+plot(x,y)
+
+```
+
+<br/> <br/> 
+
+# **Tamaño texto**
+
+
+```{r}
+x=rnorm(100,100,20)
+plot(density(x),cex.lab=.8,  # tamaño de etiqueta ejes
+                cex.axis=2, # tamaño escalas de los ejes 
+                cex.main=1.5, # tamaño del titulo
+                cex.sub=1)    # tamaño del subtitulo
+```
+
+
+https://r-charts.com/es/r-base/margenes/
+
+
+<br/> <br/> <br/> 
+
+# **Flexdashboard**
+
+Este paquete permite la construcción de tableros que pueden ser publicados en formato html. A continuación se describen las principales características y la forma que podemos construir un tablero
+
+Iniciaremos cargando el paquete (por una única vez)
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# install.packages("flexdashboard")
+```
+
+<br/> 
+
+Tambien debemos activarlo, aunque este procedimiento viene en el formato que nos proporciona RStudio 
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+library(flexdashboard)
+```
+
+<br/> 
+
+Inicialmente utilizamos la plantilla que para este propósito tiene RStudio, entrando por el menú : **File/ New file /  RMarkdown..**
+
+![](img/flexdashboard1.png){width=50%}
+
+![](img/flexdashboard2.png){width=50%}
+
+Este procedimiento genera un formato para un tablero que puede ser modificado o ajustado a nuestras necesidades
+
+![](img/flexdashboard3.png){width=60%}
+
+<br/> 
+
+En este formato podemos distinguir varias partes :
+
++ Encabezado :  donde se define la estructura del tablero y los temas 
++ Bloque setup . Donde colocamos las instrucciones generales de R , como puede ser cargar las bases de datos que seran utilizadas durante todo el documento, ademas de cargar las librerias necesarias  
++ Definicion de columnas o filas del tablero y hojas del tablero
++ Bloques de R con el contenido
+
+
+<br/> <br/> 
+
+## **Uso de color**
+
+https://r-charts.com/colors/
+
+http://brandcolors.net/
+
+<br/> <br/> 
+
+## **Algunos paquetes**
+
+[Selección de paquetes de Sharpm Machis](https://www.computerworld.com/article/2921176/great-r-packages-for-data-import-wrangling-visualization.html)
+
+<br/> <br/> <br/> 
+
+## **Ejemplo de tablero**
+
+<br/> <br/> 
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/tablero-01.png")
+```
+
+<html>
+<button id="dl-rmd" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
+  📥 Descargar código Rmd
+</button>
+<script>
+document.getElementById('dl-rmd').addEventListener('click', async () => {
+  const urlRaw = 'https://raw.githubusercontent.com/dgonxalex80/300MAE005H/main/pdf/tablero-01.Rmd';
+  const resp = await fetch(urlRaw);               // CORS está permitido en raw.githubusercontent.com
+  const blob = await resp.blob();
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tablero-01.Rmd';                  // nombre de archivo al guardar
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+</script>
+</html>

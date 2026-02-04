@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="dgonzalez" />
+
+
+<title> </title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/proj4js-2.3.15/proj4.js"></script>
+<link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet" />
+<script src="site_libs/highcharts-9.3.1/highcharts.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-3d.js"></script>
+<script src="site_libs/highcharts-9.3.1/highcharts-more.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/stock.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/map.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/drilldown.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/item-series.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/annotations.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/export-data.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/funnel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/heatmap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/treemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sankey.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/organization.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/streamgraph.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/sunburst.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/vector.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/wordcloud.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/xrange.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/tilemap.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/venn.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/gantt.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/timeline.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/bullet.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/coloraxis.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/dumbbell.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/lollipop.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/series-label.js"></script>
+<script src="site_libs/highcharts-9.3.1/plugins/motion.js"></script>
+<script src="site_libs/highcharts-9.3.1/custom/reset.js"></script>
+<script src="site_libs/highcharts-9.3.1/modules/boost.js"></script>
+<script src="site_libs/highchart-binding-0.9.4/highchart.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"> </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Estadística
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 0
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo0.html">Módulo 0</a>
+    </li>
+    <li>
+      <a href="sumatoria.html">Sumatoria</a>
+    </li>
+    <li>
+      <a href="productoria.html">Productoria</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 1
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo1.html">Módulo 1</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="guia11.html">Guía 1.1</a>
+    </li>
+    <li>
+      <a href="recurso11.html">Metodología Estadística</a>
+    </li>
+    <li>
+      <a href="basesdatos.html">Bases de datos</a>
+    </li>
+    <li>
+      <a href="introduccionR.html">Introducción a R</a>
+    </li>
+    <li>
+      <a href="codigo11.html">Código 1.1</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="guia12.html">Guía 1.2</a>
+    </li>
+    <li>
+      <a href="recurso12.html">Recursos 1.2</a>
+    </li>
+    <li>
+      <a href="codigo12.html">Código 1.2</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="caso1.html">Caso 1</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="monitoria1.html">Monitoría 1</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo2.html">Módulo 2</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 3
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo3.html">Módulo 3</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 4
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo4.html">Módulo 4</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Módulo 5
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="modulo5.html">Módulo 5</a>
+    </li>
+    <li class="divider"></li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proyecto
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="enconstruccion.html">Guía proyecto</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore"><span style="color:#235784"> </span></h1>
+<h3 class="subtitle"><span style="color:#235784"><strong>Unidad
+1.1</strong></span></h3>
+<h4 class="author">dgonzalez</h4>
+
+</div>
+
+
+<p><br/><br/></p>
+<p><img src="img/recurso1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><br/><br/></p>
+<div id="introducción" class="section level2">
+<h2><strong>Introducción</strong></h2>
+<blockquote>
+<p>Una gráfica o una representación gráfica o un gráfico, es un tipo de
+representación de datos, generalmente cuantitativos, mediante recursos
+visuales (líneas, vectores, superficies o símbolos), para que se
+manifieste visualmente la relación matemática o correlación estadística
+que guardan entre sí.</p>
+</blockquote>
+<p>Wikipedia</p>
+</div>
+<div id="paquetes-de-r-para-gráficos" class="section level2">
+<h2><strong>Paquetes de R para gráficos</strong></h2>
+<p>R posee una serie de paquetes construido para la visualización de
+datos que hacen que tengan una excelente presentación. Empezando por
+funciones del núcleo base, hasta paquetes que elaboran gráficos
+interactivos</p>
+<p><img src="img/RStudio.jpeg" width="90">
+<img src="img/ggplot2.png" width="80">
+<img src="img/highcharter.png" width="80">
+<img src="img/shiny.png" width="80">
+<img src="img/plotly.png" width="80">
+<img src="img/dashboard.png" width="80"></p>
+<p>Elegir el gráfico adecuado es muy importante pues existen diferentes
+alternativos y se debe escoger el apropiado para representar los datos.
+El tipo de dato determina el tipo de grafico asi:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="21%" />
+<col width="55%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Tipo de variable</th>
+<th align="left">Escala</th>
+<th align="left">Gráfico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Cualitativas</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Nominal</td>
+<td align="left">torta</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Ordinal</td>
+<td align="left">barras</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Cuantitativas</td>
+<td align="left">Intervalo-razón</td>
+<td align="left">diagrama de tallos y hojas</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">histograma</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">diagrama de cajas</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">diagrama de densidad</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">diagrama de puntos</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">diagrama de lineas</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">diagrama de radar</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">gráfico likert</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">mapa de calor</td>
+</tr>
+</tbody>
+</table>
+<div id="gráficos-variables-cualitativas-con-r-base"
+class="section level3">
+<h3><strong>Gráficos variables cualitativas con R base</strong></h3>
+<p>Gráfico de tortas</p>
+<pre class="r"><code>a=rep(&quot;Cultutal&quot;, 360145)
+b=rep(&quot;Pastoral&quot;, 61496)
+c=rep(&quot;Bienestar&quot;,49912)
+d=rep(&quot;Deportivo&quot;,11777)
+data=c(a,b,c,d)
+t=table(data)
+lbs=c(&quot;Cultural&quot;, &quot;Pastoral&quot;, &quot;Bienestar&quot;, &quot;Deportivo&quot;)
+pct=round(t/sum(t)*100)
+labs=paste(lbs, pct)
+labs=paste(labs, &quot;%&quot;, sep = &quot; &quot;) 
+pie(t, labels=labs, main=&quot; Participación eventos Medio Universitario&quot;,
+    col = paleta4)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
+</div>
+<div id="diagrama-de-barras" class="section level3">
+<h3><strong>Diagrama de barras</strong></h3>
+<pre class="r"><code>ev=c(4,  8, 12, 43, 32)
+names(ev)=c(&quot;Muy regular&quot;, &quot;Regular&quot;, &quot;Bueno&quot;, &quot;Muy bueno&quot;,&quot;Excelente&quot;)
+barplot(ev, col=c(&quot;#ff5b00&quot;,&quot;#dcf600&quot;,&quot;#7dbd00&quot;,&quot;#659cef&quot;,&quot;#2956b2&quot;), main = &quot;Evaluación proceso de inducción&quot;)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
+</div>
+<div id="diagrama-de-barras-dos-variables" class="section level3">
+<h3><strong>Diagrama de barras dos variables</strong></h3>
+<pre class="r"><code>counts &lt;- table(mtcars$vs, mtcars$gear); rownames(counts)=c(&quot;Montor en linea&quot;, &quot;Motor en V&quot;)
+barplot(counts, main=&quot;Numero de cambios adelante por Tipo de motor&quot;,  xlab=&quot;Numero de cambios adelante &quot;,col=c(c11,c41),
+  legend = rownames(counts))</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
+</div>
+<div id="gráficas-variables-cuantitativas-con-r-base"
+class="section level3">
+<h3><strong>Gráficas variables cuantitativas con R base</strong></h3>
+</div>
+<div id="diagrama-de-árbol" class="section level3">
+<h3><strong>Diagrama de árbol</strong></h3>
+<pre class="r"><code>nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
+stem(nf)</code></pre>
+<pre><code>
+  The decimal point is at the |
+
+  1 | 67
+  2 | 00012244444
+  2 | 555677777778
+  3 | 0000000000000011111111222222223344
+  3 | 555555566677777777888999
+  4 | 0111123</code></pre>
+<p>Este diagrama ordena los datos de manera que se puede determinar
+tanto en mínimo (1.6) como el máximo (4.3) , además de visualizar donde
+están la mayor concentración de ellos.</p>
+</div>
+<div id="histograma" class="section level3">
+<h3><strong>Histograma</strong></h3>
+<pre class="r"><code>nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
+
+h1 = hist(nf, main = &quot;Nota final matemáticas fundamentales&quot;, xlab = &quot;nota&quot;, ylab=&quot;frecuencias absolutas&quot;, labels=TRUE, col=c21, ylim = c(0,30))
+abline(v=3,col=c31, lwd=2)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
+<pre class="r"><code>h1</code></pre>
+<pre><code>$breaks
+[1] 1.5 2.0 2.5 3.0 3.5 4.0 4.5
+
+$counts
+[1]  5 11 23 27 18  6
+
+$density
+[1] 0.1111111 0.2444444 0.5111111 0.6000000 0.4000000 0.1333333
+
+$mids
+[1] 1.75 2.25 2.75 3.25 3.75 4.25
+
+$xname
+[1] &quot;nf&quot;
+
+$equidist
+[1] TRUE
+
+attr(,&quot;class&quot;)
+[1] &quot;histogram&quot;</code></pre>
+<p><br/><br/></p>
+</div>
+<div id="diagrama-de-densidad" class="section level3">
+<h3><strong>Diagrama de densidad</strong></h3>
+<pre class="r"><code>nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
+plot(density(nf), main=&quot;Distribucion de las notas de matematias fundamentales&quot;, col=c21, lwd=2)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+<div id="diagrama-de-cajas" class="section level3">
+<h3><strong>Diagrama de cajas</strong></h3>
+<pre class="r"><code>nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
+boxplot(nf, main=&quot;Nota final matemáticas fundamentales&quot;,col=c21, las=1)
+abline(h=3, col=c41)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-8-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+<div id="diagrama-de-cajas-1" class="section level3">
+<h3><strong>Diagrama de cajas</strong></h3>
+<pre class="r"><code>nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
+cc=c(20, 10, 20, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 10, 30, 20, 20, 30, 20, 30, 30, 20, 10, 30, 20, 20, 30, 30, 10, 20, 10, 20, 20, 20, 10, 20, 10, 20, 20, 30, 30, 30, 10, 30, 20, 20, 20, 20, 20, 20, 10, 20, 30, 30, 10, 10, 10, 20, 10, 20, 10, 30, 20, 10, 20, 30, 10, 30, 30, 30, 20, 30, 30, 30, 30, 30, 30, 20, 10, 30, 10, 20, 20, 10, 20, 20, 20, 20, 10, 20)
+labs=c(&quot;Ing. de Sistemas&quot;,&quot;Ing. Industrial&quot;,&quot;Ing. Mecánica&quot;)
+boxplot((nf~cc),main=&quot;Nota final matemáticas fundamentales por carrera&quot;, 
+        col=c(c21,c51,c41), names=labs, xlab = &quot;carrera&quot;, ylab = &quot;nota&quot;)
+abline(h=3, col=c31,  lwd=2)
+abline(h=4, col=c11, lwd=2)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-9-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+<div id="diagrama-de-dispersión" class="section level3">
+<h3><strong>Diagrama de dispersión</strong></h3>
+<pre class="r"><code>ed=round(rnorm(90,18,1),1)
+plot(ed,nf, main=&quot;Edad vs Nota final matemáticas fundamentales&quot;, ylim = c(0,5), xlab = &quot;Edad&quot;, ylab = &quot;Nota final&quot;,col=c11,pch=19)
+grid()</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-10-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+<div id="gráfica-de-series-de-tiempo" class="section level3">
+<h3><strong>Gráfica de series de tiempo</strong></h3>
+<pre class="r"><code>plot(AirPassengers, main=&quot;Numero de pasajeros por mes&quot;, col=c31, lwd = 2)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+<div id="resumen" class="section level3">
+<h3><strong>Resumen</strong></h3>
+<pre class="r"><code>x=rnorm(100,100,20)
+y=rnorm(100,100,25)
+z=rbinom(100,4,0.30)
+t=1:100
+par(mfrow=c(2, 2))
+pie(table(z))
+barplot(table(z))
+stem(x)</code></pre>
+<pre><code>
+  The decimal point is 1 digit(s) to the right of the |
+
+   5 | 8
+   6 | 578
+   7 | 1124446688
+   8 | 1556677889
+   9 | 000122234444555556689999999
+  10 | 00001111122566777899
+  11 | 00122556677889
+  12 | 000122356679
+  13 | 06
+  14 | 
+  15 | 0</code></pre>
+<pre class="r"><code>hist(x)
+boxplot(x)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" /></p>
+<pre class="r"><code>plot(x,y)
+plot(t,y, type=&quot;l&quot;)
+plot(density(x))
+par(mfrow=c(1, 1))</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-12-2.png" alt="" width="672" /></p>
+<p><br/><br/></p>
+</div>
+</div>
+<div id="gráficos-con-ggplot2" class="section level2">
+<h2><strong>Gráficos con ggplot2</strong></h2>
+<ul>
+<li><p><strong>Data</strong>: capa de los datos</p></li>
+<li><p><strong>Aesthetics</strong>: capa estética
+(<strong>aes</strong>), definimos las variables a utilizar en el
+gráfico</p></li>
+<li><p><strong>Geometries</strong>: capa de geometrías, se define el
+tipo de gráfica a realizar</p></li>
+<li><p><strong>Facets</strong>: capa de facetas, permite detallar la
+gráfica por categorías</p></li>
+<li><p><strong>Statistics</strong>: capa de estadística, permite agregar
+modelos</p></li>
+<li><p><strong>Coordinates</strong>: capa de coordenadas, permite
+ajustar las escalas de los ejes</p></li>
+<li><p><strong>Theme</strong>: capas de características del gráfico que
+no dependen de los datos</p></li>
+</ul>
+<p><br/><br/></p>
+<div
+id="gráfico-data-aesthetics-geometries-facets-statistics-coordinates-themes"
+class="section level4">
+<h4>gráfico = data + aesthetics + geometries + facets + statistics +
+coordinates + themes</h4>
+<p><br/><br/></p>
+</div>
+<div id="primer-paso-instalar-y-cargar-la-libreria"
+class="section level4">
+<h4>Primer paso: <strong>Instalar y cargar la libreria</strong></h4>
+<pre class="r"><code># Instalar ggplot2 si no lo tienes
+install.packages(&quot;ggplot2&quot;)
+
+# Cargar la librería ggplot2
+library(ggplot2)</code></pre>
+<pre>
+# Instalar ggplot2 si no lo tienes
+install.packages("ggplot2")
+
+# Cargar la librería ggplot2
+library(ggplot2)
+
+</pre>
+<p></br></br></p>
+</div>
+<div id="segundo-paso-declarar-la-base-de-datos-y-las-varibles"
+class="section level4">
+<h4>Segundo paso : <strong>Declarar la base de datos y las
+varibles</strong></h4>
+<pre class="r"><code>p &lt;- ggplot(mtcars, aes(x = wt, y = mpg))
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div id="tercer-paso-crear-grafico-base-con-las-diferentes-geometrías"
+class="section level4">
+<h4>Tercer paso : <strong>Crear grafico base</strong> con las diferentes
+geometrías</h4>
+<pre class="r"><code>p &lt;- p + geom_point()  
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="24%" />
+<col width="25%" />
+<col width="26%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td align="left">geo_point()</td>
+<td align="left">geom_bar()</td>
+<td align="left">geom_col()</td>
+<td align="left">stat_count()</td>
+</tr>
+<tr class="even">
+<td align="left">geom_boxplot()</td>
+<td align="left">stat_boxplot()</td>
+<td align="left">geom_density()</td>
+<td align="left">stat_density()</td>
+</tr>
+<tr class="odd">
+<td align="left">geom_histogram()</td>
+<td align="left">geom_violin()</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p></br></br></p>
+</div>
+<div id="cuarto-paso-agregar-caracteristicas-adicionales"
+class="section level4">
+<h4>Cuarto paso : <strong>Agregar caracteristicas
+adicionales</strong></h4>
+<pre class="r"><code>p &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = cyl)) +
+          geom_point(size = 2, alpha = 0.7)  # Tamaño y transparencia de los puntos
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-16-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div
+id="sexto-paso-agregar-títilo-etiquetas-a-los-ejes-leyenda-aclararoria"
+class="section level4">
+<h4>Sexto paso : <strong>Agregar títilo, etiquetas a los ejes leyenda
+aclararoria</strong></h4>
+<pre class="r"><code>p &lt;- p + labs(title = &quot;Relación entre Peso del Auto y Consumo de Combustible&quot;,
+              subtitle = &quot;Clasificación por número de cilindros&quot;,
+              x = &quot;Peso del Auto (1000 lbs)&quot;,
+              y = &quot;Millas por Galón (mpg)&quot;,
+              color = &quot;Cilindros&quot;
+              )
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-17-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div id="septimo-paso-agregar-una-línea-de-tendencia"
+class="section level4">
+<h4>Septimo paso : <strong>Agregar una línea de tendencia</strong></h4>
+<pre class="r"><code>p &lt;- p + geom_smooth(method = &quot;lm&quot;, se = FALSE, linetype = &quot;dashed&quot;, color = c31)
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div id="octavo-paso-agreagar-un-tema-o-fondo" class="section level4">
+<h4>Octavo paso : <strong>Agreagar un tema o fondo</strong></h4>
+<pre class="r"><code>p &lt;- p + theme_minimal(base_size = 14)
+p</code></pre>
+<pre><code>`geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-19-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div id="noveno-paso-ajustar-la-escala-de-colores"
+class="section level3">
+<h3>Noveno paso : <strong>Ajustar la escala de colores</strong></h3>
+<pre class="r"><code>library(ggplot2)
+
+# Asegurar que cyl es un factor
+mtcars$cyl &lt;- as.factor(mtcars$cyl)
+
+# Crear el gráfico desde cero
+p &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(size = 4, alpha = 0.7) +  # Agregar puntos
+  scale_color_brewer(palette = &quot;Set1&quot;) +  # Aplicar escala de color discreta
+  labs(
+    title = &quot;Relación entre Peso y Consumo de Combustible&quot;,
+    subtitle = &quot;Clasificación por número de cilindros&quot;,
+    x = &quot;Peso del Auto (1000 lbs)&quot;,
+    y = &quot;Millas por Galón (mpg)&quot;,
+    color = &quot;Cilindros&quot;
+  ) +
+  theme_minimal(base_size = 12)
+
+# Mostrar el gráfico
+p</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-20-1.png" alt="" width="672" /></p>
+<div id="gráfico-completo" class="section level4">
+<h4>gráfico completo !!</h4>
+<p></br></br></p>
+</div>
+</div>
+</div>
+<div id="otros-gráficos" class="section level2">
+<h2>Otros gráficos</h2>
+<pre class="r"><code>library(ggplot2)
+data=data.frame(carrera=c(&quot;biologia&quot;,&quot;biomedica&quot;,&quot;civil&quot;,&quot;electronica&quot;,&quot;mecanica&quot;,  &quot;sistemas&quot;),frecuencia=c(8, 9,10,2, 3,7))
+
+ggplot(data, aes(x=carrera, y=frecuencia)) +
+  geom_bar(stat=&quot;identity&quot;, fill=c11)+
+  geom_text(aes(label=frecuencia), vjust=2.5, color=&quot;white&quot;, size=4)+
+  theme_minimal()</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-21-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+<pre class="r"><code>ggplot(iris, aes(Sepal.Length)) +
+       geom_histogram(bins = 7,fill=c11, color=c13, alpha=0.9)+
+       theme_minimal() +
+       labs(x = &quot;cm&quot;, y = &quot;frecuencia absoluta&quot;) +
+       ggtitle(&quot;Longitud del sepalo&quot;)</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-22-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+<pre class="r"><code>ggplot(iris, aes(x=Sepal.Length, y=Species)) +
+  geom_boxplot(fill=c(c12,c32,c42),  # color de relleno
+               color=c2,    # color de lineas
+               alpha=0.5)+
+  geom_point(color=c11,alpha=0.2)     # color puntos</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+</div>
+<div id="gráficos-con-plotly" class="section level2">
+<h2><strong>Gráficos con plotly</strong></h2>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;plotly&quot;)
+
+# Cargar librerías necesarias
+library(ggplot2)
+library(plotly)
+
+# Convertir &#39;cyl&#39; a factor para que se represente como variable categórica
+mtcars$cyl &lt;- as.factor(mtcars$cyl)
+
+# Crear gráfico base con ggplot2
+p &lt;- ggplot(mtcars, aes(
+  x = wt, y = mpg, color = cyl,
+  text = paste(
+    &quot;Modelo:&quot;, rownames(mtcars), &quot;&lt;br&gt;&quot;,
+    &quot;Peso (wt):&quot;, wt, &quot;&lt;br&gt;&quot;,
+    &quot;Millas por Galón (mpg):&quot;, mpg, &quot;&lt;br&gt;&quot;,
+    &quot;Cilindros:&quot;, cyl
+  )
+)) +
+  geom_point(size = 2, alpha = 0.7) +  # Agregar puntos
+  scale_color_brewer(palette = &quot;Set1&quot;) +  # Escala de color
+  labs(
+    title = &quot;Relación entre Peso y Consumo de Combustible&quot;,
+    subtitle = &quot;Datos de mtcars&quot;,
+    x = &quot;Peso del Auto (1000 lbs)&quot;,
+    y = &quot;Millas por Galón (mpg)&quot;,
+    color = &quot;Cilindros&quot;
+  ) +
+  theme_minimal(base_size = 14)
+
+# Convertir el gráfico de ggplot2 a un gráfico interactivo con Plotly
+p_interactivo &lt;- ggplotly(p, tooltip = &quot;text&quot;)
+
+# Mostrar el gráfico interactivo
+p_interactivo</code></pre>
+<p><a href="https://gganimate.com/"
+class="uri">https://gganimate.com/</a></p>
+<p><a href="https://rafalab.github.io/dslibro/ggplot2.html">Anàlisis de
+datos con R Cap,7 ggplot2</a><br/> <a
+href="https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf">ggplot2
+resumen</a></p>
+</div>
+<div id="graficos-con-highcharter" class="section level2">
+<h2><strong>Graficos con highcharter</strong></h2>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;highcharter&quot;)
+# install.packages(&quot;dplyr&quot;)
+
+# Cargar librerías necesarias
+library(highcharter)
+library(dplyr)
+
+# Convertir &#39;cyl&#39; a factor para diferenciar los colores
+mtcars &lt;- mtcars %&gt;%
+  mutate(
+    cyl = as.factor(cyl),  # Convertir a factor
+    modelo = rownames(mtcars)  # Guardar nombres de los autos
+  )
+
+# Crear gráfico interactivo con highcharter
+hchart(mtcars, &quot;scatter&quot;, hcaes(x = wt, y = mpg, group = cyl, name = modelo)) %&gt;%
+  hc_title(text = &quot;Relación entre Peso y Consumo de Combustible&quot;) %&gt;%
+  hc_subtitle(text = &quot;Datos de mtcars con diferenciación por cilindros&quot;) %&gt;%
+  hc_xAxis(title = list(text = &quot;Peso del Auto (1000 lbs)&quot;)) %&gt;%
+  hc_yAxis(title = list(text = &quot;Millas por Galón (mpg)&quot;)) %&gt;%
+  hc_tooltip(
+    useHTML = TRUE,
+    pointFormat = &quot;&lt;b&gt;Modelo:&lt;/b&gt; {point.name}&lt;br&gt;
+                   &lt;b&gt;Peso (wt):&lt;/b&gt; {point.x}&lt;br&gt;
+                   &lt;b&gt;Millas por Galón (mpg):&lt;/b&gt; {point.y}&lt;br&gt;
+                   &lt;b&gt;Cilindros:&lt;/b&gt; {point.group}&quot;
+  ) %&gt;%
+  hc_chart(zoomType = &quot;xy&quot;)</code></pre>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-3387d3b5ac40cec1bb0e" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-3387d3b5ac40cec1bb0e">{"x":{"hc_opts":{"chart":{"reflow":true,"zoomType":"xy"},"title":{"text":"Relación entre Peso y Consumo de Combustible"},"yAxis":{"title":{"text":"Millas por Galón (mpg)"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"name":"4","data":[{"mpg":22.8,"cyl":"4","disp":108,"hp":93,"drat":3.85,"wt":2.32,"qsec":18.61,"vs":1,"am":1,"gear":4,"carb":1,"modelo":"Datsun 710","x":2.32,"y":22.8,"name":"Datsun 710"},{"mpg":24.4,"cyl":"4","disp":146.7,"hp":62,"drat":3.69,"wt":3.19,"qsec":20,"vs":1,"am":0,"gear":4,"carb":2,"modelo":"Merc 240D","x":3.19,"y":24.4,"name":"Merc 240D"},{"mpg":22.8,"cyl":"4","disp":140.8,"hp":95,"drat":3.92,"wt":3.15,"qsec":22.9,"vs":1,"am":0,"gear":4,"carb":2,"modelo":"Merc 230","x":3.15,"y":22.8,"name":"Merc 230"},{"mpg":32.4,"cyl":"4","disp":78.7,"hp":66,"drat":4.08,"wt":2.2,"qsec":19.47,"vs":1,"am":1,"gear":4,"carb":1,"modelo":"Fiat 128","x":2.2,"y":32.4,"name":"Fiat 128"},{"mpg":30.4,"cyl":"4","disp":75.7,"hp":52,"drat":4.93,"wt":1.615,"qsec":18.52,"vs":1,"am":1,"gear":4,"carb":2,"modelo":"Honda Civic","x":1.615,"y":30.4,"name":"Honda Civic"},{"mpg":33.9,"cyl":"4","disp":71.09999999999999,"hp":65,"drat":4.22,"wt":1.835,"qsec":19.9,"vs":1,"am":1,"gear":4,"carb":1,"modelo":"Toyota Corolla","x":1.835,"y":33.9,"name":"Toyota Corolla"},{"mpg":21.5,"cyl":"4","disp":120.1,"hp":97,"drat":3.7,"wt":2.465,"qsec":20.01,"vs":1,"am":0,"gear":3,"carb":1,"modelo":"Toyota Corona","x":2.465,"y":21.5,"name":"Toyota Corona"},{"mpg":27.3,"cyl":"4","disp":79,"hp":66,"drat":4.08,"wt":1.935,"qsec":18.9,"vs":1,"am":1,"gear":4,"carb":1,"modelo":"Fiat X1-9","x":1.935,"y":27.3,"name":"Fiat X1-9"},{"mpg":26,"cyl":"4","disp":120.3,"hp":91,"drat":4.43,"wt":2.14,"qsec":16.7,"vs":0,"am":1,"gear":5,"carb":2,"modelo":"Porsche 914-2","x":2.14,"y":26,"name":"Porsche 914-2"},{"mpg":30.4,"cyl":"4","disp":95.09999999999999,"hp":113,"drat":3.77,"wt":1.513,"qsec":16.9,"vs":1,"am":1,"gear":5,"carb":2,"modelo":"Lotus Europa","x":1.513,"y":30.4,"name":"Lotus Europa"},{"mpg":21.4,"cyl":"4","disp":121,"hp":109,"drat":4.11,"wt":2.78,"qsec":18.6,"vs":1,"am":1,"gear":4,"carb":2,"modelo":"Volvo 142E","x":2.78,"y":21.4,"name":"Volvo 142E"}],"type":"scatter"},{"name":"6","data":[{"mpg":21,"cyl":"6","disp":160,"hp":110,"drat":3.9,"wt":2.62,"qsec":16.46,"vs":0,"am":1,"gear":4,"carb":4,"modelo":"Mazda RX4","x":2.62,"y":21,"name":"Mazda RX4"},{"mpg":21,"cyl":"6","disp":160,"hp":110,"drat":3.9,"wt":2.875,"qsec":17.02,"vs":0,"am":1,"gear":4,"carb":4,"modelo":"Mazda RX4 Wag","x":2.875,"y":21,"name":"Mazda RX4 Wag"},{"mpg":21.4,"cyl":"6","disp":258,"hp":110,"drat":3.08,"wt":3.215,"qsec":19.44,"vs":1,"am":0,"gear":3,"carb":1,"modelo":"Hornet 4 Drive","x":3.215,"y":21.4,"name":"Hornet 4 Drive"},{"mpg":18.1,"cyl":"6","disp":225,"hp":105,"drat":2.76,"wt":3.46,"qsec":20.22,"vs":1,"am":0,"gear":3,"carb":1,"modelo":"Valiant","x":3.46,"y":18.1,"name":"Valiant"},{"mpg":19.2,"cyl":"6","disp":167.6,"hp":123,"drat":3.92,"wt":3.44,"qsec":18.3,"vs":1,"am":0,"gear":4,"carb":4,"modelo":"Merc 280","x":3.44,"y":19.2,"name":"Merc 280"},{"mpg":17.8,"cyl":"6","disp":167.6,"hp":123,"drat":3.92,"wt":3.44,"qsec":18.9,"vs":1,"am":0,"gear":4,"carb":4,"modelo":"Merc 280C","x":3.44,"y":17.8,"name":"Merc 280C"},{"mpg":19.7,"cyl":"6","disp":145,"hp":175,"drat":3.62,"wt":2.77,"qsec":15.5,"vs":0,"am":1,"gear":5,"carb":6,"modelo":"Ferrari Dino","x":2.77,"y":19.7,"name":"Ferrari Dino"}],"type":"scatter"},{"name":"8","data":[{"mpg":18.7,"cyl":"8","disp":360,"hp":175,"drat":3.15,"wt":3.44,"qsec":17.02,"vs":0,"am":0,"gear":3,"carb":2,"modelo":"Hornet Sportabout","x":3.44,"y":18.7,"name":"Hornet Sportabout"},{"mpg":14.3,"cyl":"8","disp":360,"hp":245,"drat":3.21,"wt":3.57,"qsec":15.84,"vs":0,"am":0,"gear":3,"carb":4,"modelo":"Duster 360","x":3.57,"y":14.3,"name":"Duster 360"},{"mpg":16.4,"cyl":"8","disp":275.8,"hp":180,"drat":3.07,"wt":4.07,"qsec":17.4,"vs":0,"am":0,"gear":3,"carb":3,"modelo":"Merc 450SE","x":4.07,"y":16.4,"name":"Merc 450SE"},{"mpg":17.3,"cyl":"8","disp":275.8,"hp":180,"drat":3.07,"wt":3.73,"qsec":17.6,"vs":0,"am":0,"gear":3,"carb":3,"modelo":"Merc 450SL","x":3.73,"y":17.3,"name":"Merc 450SL"},{"mpg":15.2,"cyl":"8","disp":275.8,"hp":180,"drat":3.07,"wt":3.78,"qsec":18,"vs":0,"am":0,"gear":3,"carb":3,"modelo":"Merc 450SLC","x":3.78,"y":15.2,"name":"Merc 450SLC"},{"mpg":10.4,"cyl":"8","disp":472,"hp":205,"drat":2.93,"wt":5.25,"qsec":17.98,"vs":0,"am":0,"gear":3,"carb":4,"modelo":"Cadillac Fleetwood","x":5.25,"y":10.4,"name":"Cadillac Fleetwood"},{"mpg":10.4,"cyl":"8","disp":460,"hp":215,"drat":3,"wt":5.424,"qsec":17.82,"vs":0,"am":0,"gear":3,"carb":4,"modelo":"Lincoln Continental","x":5.424,"y":10.4,"name":"Lincoln Continental"},{"mpg":14.7,"cyl":"8","disp":440,"hp":230,"drat":3.23,"wt":5.345,"qsec":17.42,"vs":0,"am":0,"gear":3,"carb":4,"modelo":"Chrysler Imperial","x":5.345,"y":14.7,"name":"Chrysler Imperial"},{"mpg":15.5,"cyl":"8","disp":318,"hp":150,"drat":2.76,"wt":3.52,"qsec":16.87,"vs":0,"am":0,"gear":3,"carb":2,"modelo":"Dodge Challenger","x":3.52,"y":15.5,"name":"Dodge Challenger"},{"mpg":15.2,"cyl":"8","disp":304,"hp":150,"drat":3.15,"wt":3.435,"qsec":17.3,"vs":0,"am":0,"gear":3,"carb":2,"modelo":"AMC Javelin","x":3.435,"y":15.2,"name":"AMC Javelin"},{"mpg":13.3,"cyl":"8","disp":350,"hp":245,"drat":3.73,"wt":3.84,"qsec":15.41,"vs":0,"am":0,"gear":3,"carb":4,"modelo":"Camaro Z28","x":3.84,"y":13.3,"name":"Camaro Z28"},{"mpg":19.2,"cyl":"8","disp":400,"hp":175,"drat":3.08,"wt":3.845,"qsec":17.05,"vs":0,"am":0,"gear":3,"carb":2,"modelo":"Pontiac Firebird","x":3.845,"y":19.2,"name":"Pontiac Firebird"},{"mpg":15.8,"cyl":"8","disp":351,"hp":264,"drat":4.22,"wt":3.17,"qsec":14.5,"vs":0,"am":1,"gear":5,"carb":4,"modelo":"Ford Pantera L","x":3.17,"y":15.8,"name":"Ford Pantera L"},{"mpg":15,"cyl":"8","disp":301,"hp":335,"drat":3.54,"wt":3.57,"qsec":14.6,"vs":0,"am":1,"gear":5,"carb":8,"modelo":"Maserati Bora","x":3.57,"y":15,"name":"Maserati Bora"}],"type":"scatter"}],"xAxis":{"type":"linear","title":{"text":"Peso del Auto (1000 lbs)"}},"subtitle":{"text":"Datos de mtcars con diferenciación por cilindros"},"tooltip":{"useHTML":true,"pointFormat":"<b>Modelo:<\/b> {point.name}<br>\n                   <b>Peso (wt):<\/b> {point.x}<br>\n                   <b>Millas por Galón (mpg):<\/b> {point.y}<br>\n                   <b>Cilindros:<\/b> {point.group}"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+<p><br/><br/></p>
+<div id="estética-en-la-visualización" class="section level3">
+<h3><strong>Estética en la visualización</strong></h3>
+<p>La <strong>estética</strong> juega un papel fundamental en la
+visualización de datos, ya que ayuda a hacer que la información sea más
+comprensible y atractiva para el espectador. Entre las diferentes formas
+de estética utilizadas en la visualización, se encuentran:</p>
+<ul>
+<li>Forma</li>
+<li>Tamaño</li>
+<li>Color</li>
+<li>Ancho línea</li>
+<li>Tipo línea</li>
+<li>1D, 2D, 3D</li>
+</ul>
+<p><br/><br/></p>
+<p>La <strong>posición</strong> se refiere a la ubicación de los
+elementos dentro de la visualización y es fundamental para transmitir
+información espacial. Por lo general haciendo referencia al plano
+cartesiano (2D) e indicando relaciones de asociación y correlación entre
+variables.</p>
+<p>La <strong>forma</strong> se refiere a la apariencia de los
+elementos, que puede ser útil para representar categorías o para
+resaltar ciertos datos, como pueden ser: circulos, cuadrados,
+triangulos, estrellas, entre otras formas.</p>
+<p>El <strong>tamaño</strong>, por otro lado, se utiliza para indicar
+magnitudes y hacer que ciertos elementos destaquen sobre otros.</p>
+<p>El <strong>color</strong> es una de las estéticas más poderosas en la
+visualización, ya que puede transmitir información de manera rápida y
+efectiva. Se puede utilizar para representar categorías, resaltar
+elementos importantes o crear jerarquías visuales. Tambien reforzando el
+significado de la variable, por ejemplo en presentación de resultados de
+clima laboral se utilizan colores relacionados con el semaforo (escalas
+entre rojo y verde), para representar magnitudes desde colores suaves a
+colores fuertes para indicar grandes cantidades. Por último tambien se
+emplean colores para resaltar un nivel u objeto dentro de todo el
+grupo.</p>
+<p>El <strong>ancho de línea</strong> y el <strong>tipo de
+línea</strong> se utilizan para diferenciar entre elementos y resaltar
+ciertos aspectos de la visualización.</p>
+<p>La dimensión (1D, 2D, 3D) se refiere a la cantidad de dimensiones que
+se utilizan en la visualización. Mientras que las visualizaciones 1D se
+limitan a una sola dimensión, como una línea de tiempo, las
+visualizaciones 2D y 3D pueden representar información en dos o tres
+dimensiones, lo que permite una representación más detallada y compleja
+de los datos. Es recomendable no utilizar 3D para que las
+visializaciones sean más limpias y sencillas</p>
+<p><br/><br/></p>
+<p><img src="img/formas.png" alt="" width="50%" style="display: block; margin: auto;" /></p>
+<p><br/><br/></p>
+</div>
+</div>
+<div id="formas" class="section level2">
+<h2><strong>Formas</strong></h2>
+<p>Es posible utilizar circulos, cuadrados, triangulos y en general
+figuras geométricas para resaltar puntos que represente valores
+numéricos en un plano 2D y de esta forma representar una secuencia o
+tendencia de la información.</p>
+<p><br/><br/></p>
+<p><img src="img/formas.png" alt="" width="50%" style="display: block; margin: auto;" /></p>
+<p><br/><br/></p>
+</div>
+<div id="paletas" class="section level2">
+<h2><strong>Paletas</strong></h2>
+<p><img src="img/paleta0.png" alt="" width="50%" style="display: block; margin: auto;" />
+Tomada de Pinteres</p>
+<p></br></br></p>
+<div id="normas-ieee" class="section level3">
+<h3><strong>Normas IEEE</strong></h3>
+<p>Las normas <strong>IEEE</strong> para la construcción de gráficos son
+principios fundamentales en la visualización de datos que garantizan
+claridad, precisión y eficacia en la comunicación. Estas normas son:</p>
+<p></br></br></p>
+<div id="eficiencia" class="section level4">
+<h4><strong>Eficiencia</strong>:</h4>
+<p>El gráfico debe transmitir la información de manera rápida y clara.
+Evita decoraciones innecesarias (chartjunk). Usa escalas adecuadas para
+facilitar la interpretación.</p>
+<p></br></br></p>
+</div>
+<div id="eficacia" class="section level4">
+<h4><strong>Eficacia</strong>:</h4>
+<p>El gráfico debe cumplir con su propósito comunicativo. Elige el tipo
+de gráfico más adecuado para los datos (barras, líneas, dispersión,
+etc.). Usa etiquetas, títulos y leyendas para orientar al lector.</p>
+<p></br></br></p>
+</div>
+<div id="exactitud" class="section level4">
+<h4><strong>Exactitud</strong>:</h4>
+<p>Representa los datos de forma fiel y sin distorsiones. Usa escalas
+proporcionales y evita manipulaciones visuales que alteren la
+percepción. Si se usan porcentajes, asegúrate de que la suma sea
+100%.</p>
+<p></br></br></p>
+</div>
+<div id="estética" class="section level4">
+<h4><strong>Estética</strong>:</h4>
+<p>El diseño debe ser limpio y atractivo sin afectar la legibilidad. Usa
+colores adecuados con suficiente contraste. Mantén coherencia en los
+estilos y fuentes. Siguiendo estas normas, se logra que los gráficos
+sean interpretados correctamente y comuniquen la información de manera
+efectiva</p>
+<p></br></br></p>
+<pre class="r"><code>ggplot(cars, aes(x = speed)) +
+  geom_histogram(fill = &quot;steelblue&quot;, bins = 10, color = &quot;black&quot;, alpha = 0.7) +
+  labs(
+    title = &quot;Distribución de la Velocidad de los Automóviles&quot;,
+    x = &quot;Velocidad (mph)&quot;,
+    y = &quot;Frecuencia&quot;,
+    caption = &quot;Fuente: Base de Datos &#39;cars&#39; de R&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-29-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+<pre class="r"><code>ggplot(cars, aes(x = speed, y = dist)) +
+  geom_point(color = &quot;#3B5B8A&quot;, size = 2, alpha = 0.7) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;#F2B33D&quot;, linetype = &quot;dashed&quot;) +
+  labs(
+    title = &quot;Relación entre Velocidad y Distancia de Frenado&quot;,
+    x = &quot;Velocidad (mph)&quot;,
+    y = &quot;Distancia de Frenado (ft)&quot;,
+    caption = &quot;Fuente: Base de Datos &#39;cars&#39; de R&quot;
+  ) +
+  theme_minimal()</code></pre>
+<p><img src="recurso13_files/figure-html/unnamed-chunk-30-1.png" alt="" width="672" /></p>
+<p></br></br></p>
+<p><img src="img/pujcali.jpeg" /></p>
+<p></br></br></p>
+</div>
+</div>
+<div id="una-imagen-dice-mas-que-mil-palabras" class="section level3">
+<h3><strong>Una imagen dice mas que mil palabras…</strong></h3>
+<p>Daniel Enrique González Gómez</p>
+<p>Imagen tomada de :<a
+href="https://javerianacali.edu.co/noticias/la-javeriana-bogota-y-cali-1-de-colombia"
+class="uri">https://javerianacali.edu.co/noticias/la-javeriana-bogota-y-cali-1-de-colombia</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

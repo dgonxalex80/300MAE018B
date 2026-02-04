@@ -389,7 +389,7 @@ div.tocify {
     </li>
     <li class="divider"></li>
     <li>
-      <a href="enconstruccion.html">Caso 1</a>
+      <a href="caso1.html">Caso 1</a>
     </li>
     <li class="divider"></li>
     <li>
@@ -710,7 +710,7 @@ fx(100) # funcion evaluada en x=100</code></pre>
 <p>En este caso la función es evaluada dentro de un otra función en la
 construcción de un gráfico</p>
 <pre class="r"><code>x=seq(from=2,to=10, by=0.01)  # genera secuencia de numeros entre 2 y 10 con paso 0.01
-plot(x, fx(x), type=&quot;l&quot;, col=c1, las=1) # genera gráfica</code></pre>
+plot(x, fx(x), type=&quot;l&quot;, col=c11, las=1) # genera gráfica</code></pre>
 <p><img src="introduccionR_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" /></p>
 <p>El siguiente ejemplo construye una función para la realización de un
 gráfico. En este caso los valores de entrada están conformados por un
@@ -724,7 +724,7 @@ grafica=function(x,color){
 }
 
 z=table(y) # generación de tabla de datos
-grafica(z,c1)  # evalúa la función en los datos z y color rojo</code></pre>
+grafica(z,&quot;#899DB9&quot;)  # evalúa la función en los datos z y color rojo</code></pre>
 <p><img src="introduccionR_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" /></p>
 <pre class="r"><code>w=round(prop.table(z)*100,2)  # genera datos y construye tabla en porcentaje
 grafica(w,c6)  # evalúa la función con w y color azul</code></pre>

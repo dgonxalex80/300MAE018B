@@ -39,7 +39,7 @@ navbar:
           href: codigo12.html        
         - text: "--------"  
         - text: "Caso 1"  
-          href: enconstruccion.html
+          href: caso1.html
         - text: "--------"  
         - text: "Monitoría 1"  
           href: monitoria1.html

@@ -238,7 +238,7 @@ En este caso la función es evaluada dentro de un otra función en la construcci
 
 ```{r }
 x=seq(from=2,to=10, by=0.01)  # genera secuencia de numeros entre 2 y 10 con paso 0.01
-plot(x, fx(x), type="l", col=c1, las=1) # genera gráfica
+plot(x, fx(x), type="l", col=c11, las=1) # genera gráfica
 ```
 
 El siguiente ejemplo construye una función para la realización de un gráfico. En este caso los valores de entrada están conformados por un vector de datos y un color
@@ -253,7 +253,7 @@ grafica=function(x,color){
 }
 
 z=table(y) # generación de tabla de datos
-grafica(z,c1)  # evalúa la función en los datos z y color rojo
+grafica(z,"#899DB9")  # evalúa la función en los datos z y color rojo
 ```
 
 

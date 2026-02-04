@@ -1,0 +1,23 @@
+<script>
+(function () {
+  function wrapCodeBlocks() {
+    var pres = document.querySelectorAll('.remark-slide-content pre');
+    pres.forEach(function (pre) {
+      if (pre.closest('details.code-toggle')) return;
+      var details = document.createElement('details');
+      details.className = 'code-toggle';
+      var summary = document.createElement('summary');
+      summary.textContent = 'Ver código';
+      pre.parentNode.insertBefore(details, pre);
+      details.appendChild(summary);
+      details.appendChild(pre);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wrapCodeBlocks);
+  } else {
+    wrapCodeBlocks();
+  }
+})();
+</script>

@@ -1,0 +1,56 @@
+:root {
+  --base-font-size: 18px;
+  --text-font-size: 0.95rem;
+  --code-font-size: 0.8rem;
+  --header-h1-font-size: 2.3rem;
+  --header-h2-font-size: 1.9rem;
+  --header-h3-font-size: 1.5rem;
+}
+
+.remark-slide-content {
+  padding: 12px 48px 12px 48px;
+}
+
+.small .remark-slide-content {
+  font-size: 0.85rem;
+}
+
+.compact .remark-slide-content {
+  font-size: 0.8rem;
+}
+
+.table-compact table {
+  font-size: 0.8rem;
+}
+
+.remark-slide-content img {
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+details.code-toggle {
+  margin: 0.4rem 0 0.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 0.2rem 0.6rem;
+  background: #fff;
+}
+
+details.code-toggle > summary {
+  cursor: pointer;
+  color: #2C5697;
+  font-weight: 600;
+  list-style: none;
+}
+
+details.code-toggle > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.code-toggle[open] > summary {
+  color: #1E2E4F;
+}
+
+details.code-toggle pre {
+  margin-top: 0.4rem;
+}

@@ -150,7 +150,7 @@ Las siguientes etapas comprenden el ciclo de los datos desde la importación has
 
 <br/><br/>
 
-```{r, echo=FALSE, out.width="60%", fig.align = "center"}
+```{r, echo=FALSE, out.width="80%", fig.align = "center"}
 knitr::include_graphics("img/proceso_datos.png")
 ```
 
@@ -312,8 +312,10 @@ casas <- read_delim("data/casas.csv", delim = ";", escape_double = FALSE, trim_w
 </div>
 
 ```{r, eval=FALSE}
+
 library(readr)
-casas <- read_delim("data/casas.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+casas <- read_csv("data/casas.csv")
+
 head(casas)
 ```
 
@@ -330,19 +332,6 @@ Otro ejemplo para importar una base de datos en formato csv :
 <div class="box4 with-label">
 <div class="label">Código R</div>
 
-<pre>
-library(DT)
-clasificacion=read.csv("data/spi_global_rankings_intl.csv")
-datatable(head(clasificacion, 218),fillContainer = FALSE, options = list(pageLength = 3))
-</pre>
-
-</div>
-
-```{r, echo=TRUE, warning=FALSE, message=FALSE, results='hide'}
-library(DT)
-clasificacion=read.csv("data/spi_global_rankings_intl.csv")
-datatable(head(clasificacion, 218),fillContainer = FALSE, options = list(pageLength = 3))
-```
 
 <br/><br/>
 
