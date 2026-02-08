@@ -76,7 +76,7 @@ Para alcanzar los objetivos planteados se propone realizar las siguientes activi
 
 |Actividad121   | Descripción                    | 
 |:--------------|:-----------------------------  |
-|Trabajo individual| **Actividad 121** - **Caso 1**: Realice las actividades consignadas en el **Caso1**, adjunte y envíe las respuestas a la plataforma de Brightspace en **formato pdf** |
+|Trabajo individual| **Actividad 121** - **Caso 1**: Realice las actividades consignadas en el **Caso1**, publique el informe final medianet la platarorma Publish que se ubica en la parte derecha del menú de RStudio. Coloqu el enlace URL generado en  la plataforma de Brightspace.  |
 |Recursos       |[Video indicadores estadísticos](https://youtu.be/dWVs-M7oCh4)         |
 || [Vídeo calculo indicadores con tablas de distribución](https://youtu.be/n2UCDZNncls)|
 | Fecha         | 09 de febrero  de 2026          |
@@ -86,7 +86,7 @@ Para alcanzar los objetivos planteados se propone realizar las siguientes activi
 
 |Actividad122   | Descripción                    | 
 |:--------------|:-----------------------------  |
-|Trabajo individual| **Actividad 122**: A partir de la información contenida en la **base de datos seleccionada en la Actividad 112**, realice un análisis de al menos dos variables cualitativas y dos cuantitativas teniendo como soporte las tablas de frecuencia y los indicadores estadísticos correspondientes. Adjunte y envíe las respuestas a la plataforma de Brightspace en **formato pdf** |
+|Trabajo individual| **Actividad 122**: A partir de la información contenida en la **base de datos seleccionada en la Actividad 112**, realice un análisis de al menos dos variables cualitativas y dos cuantitativas teniendo como soporte las tablas de frecuencia y los indicadores estadísticos correspondientes.  publique el informe final medianet la platarorma Publish que se ubica en la parte derecha del menú de RStudio. Coloqu el enlace URL generado en  la plataforma de Brightspace|
 |Recursos| Base de datos actividad-1 Unidad 1.1|
 |               |Excel                |
 |               |RStudio              |
@@ -113,7 +113,7 @@ Para alcanzar los objetivos planteados se propone realizar las siguientes activi
 
 | Entregable    |  Descripción                   |
 |:--------------|:-------------------------------|
-|**Actividad121.pdf**|  Desarrollo del Caso 1    |
-|**Actividad122.pdf**|  Aplicar lo aprendido en la unidad 1.2 a la base de datos seleccionada para la actividad112    |
+|**Actividad121.html**|  Desarrollo del Caso 1    |
+|**Actividad122.html**|  Aplicar lo aprendido en la unidad 1.2 a la base de datos seleccionada para la actividad112    |
 |Fecha          | 09 de febrero de 2026   | 
 |Hora límite    | 23:59  hora  local             |

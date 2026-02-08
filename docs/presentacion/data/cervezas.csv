@@ -1,0 +1,201 @@
+marca,producto,tipo_codigo,tipo,origen_codigo,origen,pais,alcohol,calorias,porcion,presentacion,precio
+Marca_G05,Cerveza_001,2,clara artesanal,1,nacional,Colombia,4.8,157,330,500,5.98
+Marca_U81,Cerveza_002,1,lager artesanal,1,nacional,Colombia,4.7,187,330,473,5.32
+Marca_E70,Cerveza_003,4,cerveza normal y helada,1,nacional,Colombia,6.1,208,330,330,3.49
+Marca_R92,Cerveza_004,1,lager artesanal,1,nacional,Colombia,4.0,185,330,269,3.01
+Marca_L39,Cerveza_005,1,lager artesanal,1,nacional,Colombia,5.4,191,330,473,5.84
+Marca_O37,Cerveza_006,2,clara artesanal,1,nacional,Colombia,4.5,171,330,500,5.36
+Marca_V10,Cerveza_007,4,cerveza normal y helada,1,nacional,Colombia,4.6,190,330,355,2.84
+Marca_O09,Cerveza_008,4,cerveza normal y helada,1,nacional,Colombia,5.3,178,330,355,0.89
+Marca_V58,Cerveza_009,4,cerveza normal y helada,2,importada,Japón,4.1,198,330,269,2.61
+Marca_G99,Cerveza_010,2,clara artesanal,1,nacional,Colombia,4.1,173,330,473,4.2
+Marca_E56,Cerveza_011,2,clara artesanal,2,importada,Brasil,4.7,182,330,269,4.15
+Marca_F20,Cerveza_012,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.3,51,330,750,5.9
+Marca_T73,Cerveza_013,2,clara artesanal,1,nacional,Colombia,4.6,201,330,355,4.59
+Marca_Z72,Cerveza_014,2,clara artesanal,1,nacional,Colombia,5.0,174,330,473,5.35
+Marca_O21,Cerveza_015,3,lager importada,2,importada,Brasil,4.2,190,330,750,15.39
+Marca_G79,Cerveza_016,1,lager artesanal,1,nacional,Colombia,4.3,185,330,500,5.81
+Marca_O62,Cerveza_017,3,lager importada,2,importada,República Checa,6.2,216,330,473,12.79
+Marca_A27,Cerveza_018,3,lager importada,2,importada,Alemania,5.1,220,330,750,13.78
+Marca_C90,Cerveza_019,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.1,31,330,269,2.54
+Marca_H79,Cerveza_020,4,cerveza normal y helada,1,nacional,Colombia,5.2,187,330,330,1.87
+Marca_X04,Cerveza_021,4,cerveza normal y helada,2,importada,Reino Unido,3.9,161,330,750,8.58
+Marca_X45,Cerveza_022,5,baja en calorías / sin alcohol,2,importada,Japón,0.4,55,330,750,6.39
+Marca_T01,Cerveza_023,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.7,55,330,330,3.59
+Marca_G62,Cerveza_024,3,lager importada,2,importada,Perú,4.4,172,330,750,10.78
+Marca_M96,Cerveza_025,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,30,330,269,2.86
+Marca_T77,Cerveza_026,5,baja en calorías / sin alcohol,2,importada,Países Bajos,0.3,25,330,330,2.67
+Marca_X84,Cerveza_027,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.3,42,330,500,4.29
+Marca_Y76,Cerveza_028,1,lager artesanal,2,importada,España,5.0,198,330,330,5.88
+Marca_Q54,Cerveza_029,2,clara artesanal,1,nacional,Colombia,4.6,176,330,750,7.12
+Marca_A20,Cerveza_030,4,cerveza normal y helada,2,importada,España,5.7,196,330,500,4.17
+Marca_Y14,Cerveza_031,1,lager artesanal,1,nacional,Colombia,5.9,199,330,355,3.56
+Marca_Y09,Cerveza_032,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.0,28,330,269,2.04
+Marca_W67,Cerveza_033,3,lager importada,2,importada,Reino Unido,4.9,216,330,500,9.49
+Marca_C86,Cerveza_034,5,baja en calorías / sin alcohol,2,importada,República Checa,0.3,42,330,473,6.31
+Marca_I18,Cerveza_035,2,clara artesanal,1,nacional,Colombia,4.9,191,330,330,3.33
+Marca_W56,Cerveza_036,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.0,46,330,473,3.66
+Marca_R59,Cerveza_037,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.5,36,330,355,2.54
+Marca_Z30,Cerveza_038,3,lager importada,2,importada,México,6.0,208,330,500,10.58
+Marca_N87,Cerveza_039,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.2,44,330,269,2.51
+Marca_Z89,Cerveza_040,4,cerveza normal y helada,1,nacional,Colombia,3.9,190,330,500,4.15
+Marca_D59,Cerveza_041,2,clara artesanal,2,importada,República Checa,5.3,197,330,355,5.13
+Marca_D21,Cerveza_042,1,lager artesanal,2,importada,Canadá,5.2,192,330,500,6.56
+Marca_F35,Cerveza_043,2,clara artesanal,1,nacional,Colombia,4.2,171,330,500,4.16
+Marca_P32,Cerveza_044,2,clara artesanal,1,nacional,Colombia,3.8,184,330,269,2.6
+Marca_Q40,Cerveza_045,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.6,50,330,750,6.63
+Marca_B17,Cerveza_046,4,cerveza normal y helada,2,importada,Chile,5.0,180,330,750,7.91
+Marca_Q86,Cerveza_047,1,lager artesanal,1,nacional,Colombia,4.8,168,330,330,2.91
+Marca_I47,Cerveza_048,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,34,330,269,2.13
+Marca_C61,Cerveza_049,5,baja en calorías / sin alcohol,2,importada,Chile,0.4,42,330,355,3.03
+Marca_B51,Cerveza_050,2,clara artesanal,1,nacional,Colombia,5.0,175,330,269,2.76
+Marca_M98,Cerveza_051,1,lager artesanal,1,nacional,Colombia,5.0,194,330,330,3.8
+Marca_N94,Cerveza_052,2,clara artesanal,2,importada,España,4.9,160,330,269,4.81
+Marca_S92,Cerveza_053,4,cerveza normal y helada,1,nacional,Colombia,5.1,191,330,500,4.18
+Marca_O72,Cerveza_054,4,cerveza normal y helada,1,nacional,Colombia,5.2,203,330,269,1.71
+Marca_Q69,Cerveza_055,1,lager artesanal,1,nacional,Colombia,6.0,216,330,473,6.18
+Marca_Y27,Cerveza_056,1,lager artesanal,1,nacional,Colombia,5.0,184,330,355,3.29
+Marca_T81,Cerveza_057,2,clara artesanal,1,nacional,Colombia,4.5,167,330,269,3.39
+Marca_A62,Cerveza_058,4,cerveza normal y helada,1,nacional,Colombia,4.3,172,330,750,4.88
+Marca_O60,Cerveza_059,1,lager artesanal,1,nacional,Colombia,5.1,190,330,750,8.07
+Marca_O35,Cerveza_060,4,cerveza normal y helada,2,importada,Reino Unido,5.1,191,330,473,4.49
+Marca_T81,Cerveza_061,3,lager importada,2,importada,Reino Unido,5.0,215,330,330,7.43
+Marca_A63,Cerveza_062,3,lager importada,2,importada,Bélgica,5.5,199,330,473,10.18
+Marca_K97,Cerveza_063,4,cerveza normal y helada,1,nacional,Colombia,4.8,177,330,355,2.7
+Marca_C51,Cerveza_064,2,clara artesanal,1,nacional,Colombia,6.4,176,330,750,9.86
+Marca_V37,Cerveza_065,3,lager importada,2,importada,Alemania,5.1,234,330,355,8.17
+Marca_N04,Cerveza_066,4,cerveza normal y helada,1,nacional,Colombia,5.4,174,330,500,3.45
+Marca_N58,Cerveza_067,4,cerveza normal y helada,1,nacional,Colombia,5.0,201,330,500,3.1
+Marca_N44,Cerveza_068,4,cerveza normal y helada,1,nacional,Colombia,4.8,187,330,269,2.27
+Marca_M16,Cerveza_069,2,clara artesanal,1,nacional,Colombia,4.8,183,330,473,4.52
+Marca_O55,Cerveza_070,1,lager artesanal,1,nacional,Colombia,5.2,203,330,500,5.69
+Marca_S26,Cerveza_071,1,lager artesanal,1,nacional,Colombia,5.0,186,330,500,5.92
+Marca_B64,Cerveza_072,5,baja en calorías / sin alcohol,2,importada,Canadá,0.1,34,330,750,8.48
+Marca_H50,Cerveza_073,2,clara artesanal,2,importada,España,4.6,158,330,750,13.21
+Marca_Z61,Cerveza_074,3,lager importada,2,importada,Italia,5.2,203,330,269,5.73
+Marca_D29,Cerveza_075,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.7,46,330,500,2.69
+Marca_H73,Cerveza_076,1,lager artesanal,1,nacional,Colombia,4.9,197,330,269,3.24
+Marca_D13,Cerveza_077,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.7,49,330,750,6.63
+Marca_J59,Cerveza_078,1,lager artesanal,1,nacional,Colombia,5.8,193,330,355,5.41
+Marca_N91,Cerveza_079,2,clara artesanal,1,nacional,Colombia,4.6,169,330,473,5.53
+Marca_L30,Cerveza_080,4,cerveza normal y helada,1,nacional,Colombia,4.7,204,330,750,3.84
+Marca_Q09,Cerveza_081,3,lager importada,2,importada,Chile,6.4,216,330,750,17.89
+Marca_D80,Cerveza_082,2,clara artesanal,2,importada,Argentina,4.8,179,330,330,4.61
+Marca_M07,Cerveza_083,3,lager importada,2,importada,Países Bajos,5.6,218,330,473,11.08
+Marca_X15,Cerveza_084,2,clara artesanal,2,importada,España,4.6,190,330,330,5.15
+Marca_V93,Cerveza_085,5,baja en calorías / sin alcohol,2,importada,Chile,0.0,33,330,750,4.88
+Marca_N16,Cerveza_086,3,lager importada,2,importada,Perú,6.4,219,330,330,7.35
+Marca_R58,Cerveza_087,4,cerveza normal y helada,2,importada,Brasil,5.4,176,330,473,4.32
+Marca_B49,Cerveza_088,2,clara artesanal,1,nacional,Colombia,4.1,173,330,750,7.44
+Marca_I43,Cerveza_089,1,lager artesanal,1,nacional,Colombia,4.5,168,330,330,3.53
+Marca_Z82,Cerveza_090,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,45,330,355,2.88
+Marca_M33,Cerveza_091,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.9,47,330,269,2.54
+Marca_Y20,Cerveza_092,5,baja en calorías / sin alcohol,2,importada,España,0.5,46,330,269,3.39
+Marca_H53,Cerveza_093,4,cerveza normal y helada,1,nacional,Colombia,3.7,168,330,500,4.2
+Marca_I80,Cerveza_094,1,lager artesanal,1,nacional,Colombia,5.8,193,330,330,4.0
+Marca_V31,Cerveza_095,1,lager artesanal,1,nacional,Colombia,4.3,170,330,330,3.65
+Marca_I26,Cerveza_096,4,cerveza normal y helada,2,importada,Bélgica,5.5,200,330,355,3.3
+Marca_M33,Cerveza_097,3,lager importada,2,importada,Países Bajos,4.6,192,330,355,7.89
+Marca_H58,Cerveza_098,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.1,37,330,750,4.59
+Marca_G10,Cerveza_099,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.0,32,330,269,1.56
+Marca_T45,Cerveza_100,3,lager importada,2,importada,Países Bajos,5.5,217,330,750,14.66
+Marca_A42,Cerveza_101,2,clara artesanal,1,nacional,Colombia,5.2,174,330,355,3.3
+Marca_C53,Cerveza_102,3,lager importada,2,importada,Perú,7.3,227,330,269,7.81
+Marca_J86,Cerveza_103,1,lager artesanal,1,nacional,Colombia,4.7,191,330,269,3.73
+Marca_L83,Cerveza_104,2,clara artesanal,2,importada,Argentina,4.3,173,330,473,4.73
+Marca_L59,Cerveza_105,2,clara artesanal,2,importada,Reino Unido,4.2,175,330,330,5.09
+Marca_L95,Cerveza_106,4,cerveza normal y helada,1,nacional,Colombia,4.0,192,330,750,4.93
+Marca_Y26,Cerveza_107,3,lager importada,2,importada,España,5.3,222,330,500,12.2
+Marca_W80,Cerveza_108,2,clara artesanal,2,importada,Estados Unidos,4.0,182,330,355,5.9
+Marca_M67,Cerveza_109,4,cerveza normal y helada,2,importada,Irlanda,3.7,176,330,330,1.85
+Marca_V42,Cerveza_110,1,lager artesanal,1,nacional,Colombia,4.6,186,330,269,3.84
+Marca_V48,Cerveza_111,1,lager artesanal,1,nacional,Colombia,6.0,193,330,750,10.73
+Marca_T59,Cerveza_112,3,lager importada,2,importada,Italia,5.7,234,330,500,10.46
+Marca_Q85,Cerveza_113,4,cerveza normal y helada,2,importada,Brasil,4.4,192,330,355,4.87
+Marca_M84,Cerveza_114,1,lager artesanal,1,nacional,Colombia,4.5,189,330,750,6.79
+Marca_P37,Cerveza_115,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.9,30,330,500,4.07
+Marca_K79,Cerveza_116,5,baja en calorías / sin alcohol,2,importada,Países Bajos,0.0,24,330,269,2.67
+Marca_L05,Cerveza_117,2,clara artesanal,2,importada,España,4.6,196,330,330,6.25
+Marca_I15,Cerveza_118,2,clara artesanal,1,nacional,Colombia,5.2,200,330,750,8.85
+Marca_I69,Cerveza_119,4,cerveza normal y helada,1,nacional,Colombia,4.9,158,330,500,4.01
+Marca_Y11,Cerveza_120,4,cerveza normal y helada,1,nacional,Colombia,4.6,195,330,473,3.16
+Marca_S85,Cerveza_121,3,lager importada,2,importada,Países Bajos,5.5,205,330,355,8.12
+Marca_B17,Cerveza_122,5,baja en calorías / sin alcohol,2,importada,Estados Unidos,0.0,18,330,355,4.79
+Marca_H53,Cerveza_123,3,lager importada,2,importada,Estados Unidos,6.4,203,330,500,11.83
+Marca_W20,Cerveza_124,4,cerveza normal y helada,1,nacional,Colombia,4.3,173,330,473,3.5
+Marca_R45,Cerveza_125,3,lager importada,2,importada,Alemania,5.4,203,330,473,11.05
+Marca_B69,Cerveza_126,4,cerveza normal y helada,1,nacional,Colombia,4.7,190,330,750,4.55
+Marca_N26,Cerveza_127,1,lager artesanal,1,nacional,Colombia,3.8,176,330,269,3.52
+Marca_X62,Cerveza_128,3,lager importada,2,importada,Canadá,5.0,185,330,500,10.27
+Marca_D34,Cerveza_129,4,cerveza normal y helada,1,nacional,Colombia,4.0,175,330,269,1.4
+Marca_V67,Cerveza_130,2,clara artesanal,1,nacional,Colombia,4.7,172,330,750,9.51
+Marca_X26,Cerveza_131,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.8,67,330,500,4.17
+Marca_W86,Cerveza_132,5,baja en calorías / sin alcohol,2,importada,Chile,0.6,46,330,355,4.12
+Marca_H74,Cerveza_133,4,cerveza normal y helada,1,nacional,Colombia,4.9,164,330,750,4.2
+Marca_D14,Cerveza_134,5,baja en calorías / sin alcohol,2,importada,Brasil,0.4,33,330,269,2.75
+Marca_B90,Cerveza_135,4,cerveza normal y helada,1,nacional,Colombia,4.8,185,330,269,1.67
+Marca_C97,Cerveza_136,1,lager artesanal,1,nacional,Colombia,5.3,202,330,330,4.91
+Marca_Z97,Cerveza_137,5,baja en calorías / sin alcohol,2,importada,Bélgica,0.5,35,330,330,4.48
+Marca_K55,Cerveza_138,4,cerveza normal y helada,2,importada,Argentina,5.0,188,330,269,2.78
+Marca_T65,Cerveza_139,2,clara artesanal,1,nacional,Colombia,4.3,190,330,750,8.68
+Marca_P91,Cerveza_140,3,lager importada,2,importada,Argentina,5.7,203,330,473,10.72
+Marca_G37,Cerveza_141,1,lager artesanal,1,nacional,Colombia,5.8,222,330,500,6.3
+Marca_S45,Cerveza_142,4,cerveza normal y helada,2,importada,México,5.1,205,330,473,4.97
+Marca_F15,Cerveza_143,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,46,330,355,3.52
+Marca_M96,Cerveza_144,5,baja en calorías / sin alcohol,2,importada,Japón,0.6,40,330,269,2.85
+Marca_U30,Cerveza_145,1,lager artesanal,2,importada,México,5.2,187,330,355,5.27
+Marca_O85,Cerveza_146,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,39,330,750,6.6
+Marca_W31,Cerveza_147,4,cerveza normal y helada,1,nacional,Colombia,4.6,175,330,355,3.53
+Marca_Q45,Cerveza_148,3,lager importada,2,importada,República Checa,5.5,214,330,750,15.62
+Marca_E39,Cerveza_149,1,lager artesanal,1,nacional,Colombia,5.1,211,330,330,3.4
+Marca_A52,Cerveza_150,4,cerveza normal y helada,1,nacional,Colombia,4.1,186,330,269,2.34
+Marca_M01,Cerveza_151,4,cerveza normal y helada,1,nacional,Colombia,5.2,169,330,355,2.53
+Marca_U83,Cerveza_152,4,cerveza normal y helada,2,importada,Canadá,4.8,167,330,750,6.1
+Marca_N32,Cerveza_153,4,cerveza normal y helada,2,importada,Países Bajos,4.9,200,330,473,2.49
+Marca_V85,Cerveza_154,4,cerveza normal y helada,2,importada,Países Bajos,4.8,191,330,473,6.28
+Marca_B33,Cerveza_155,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.5,51,330,269,2.66
+Marca_G92,Cerveza_156,4,cerveza normal y helada,1,nacional,Colombia,5.3,216,330,500,2.65
+Marca_V24,Cerveza_157,3,lager importada,2,importada,México,6.5,217,330,500,9.68
+Marca_A10,Cerveza_158,3,lager importada,2,importada,Bélgica,5.3,209,330,750,17.01
+Marca_Q29,Cerveza_159,3,lager importada,2,importada,Canadá,4.5,190,330,500,9.42
+Marca_G61,Cerveza_160,5,baja en calorías / sin alcohol,2,importada,Italia,0.4,36,330,330,2.99
+Marca_E61,Cerveza_161,4,cerveza normal y helada,2,importada,España,5.6,173,330,473,3.29
+Marca_Z36,Cerveza_162,2,clara artesanal,2,importada,República Checa,5.4,177,330,473,6.11
+Marca_E39,Cerveza_163,2,clara artesanal,1,nacional,Colombia,4.2,163,330,473,5.03
+Marca_V02,Cerveza_164,4,cerveza normal y helada,1,nacional,Colombia,5.4,167,330,330,2.82
+Marca_L20,Cerveza_165,2,clara artesanal,1,nacional,Colombia,3.9,161,330,500,5.5
+Marca_J26,Cerveza_166,2,clara artesanal,1,nacional,Colombia,4.5,186,330,750,7.76
+Marca_H18,Cerveza_167,3,lager importada,2,importada,Reino Unido,5.6,226,330,750,14.98
+Marca_X01,Cerveza_168,3,lager importada,2,importada,Estados Unidos,6.5,230,330,750,17.32
+Marca_V10,Cerveza_169,1,lager artesanal,1,nacional,Colombia,3.9,185,330,750,7.43
+Marca_Z13,Cerveza_170,2,clara artesanal,1,nacional,Colombia,3.9,182,330,500,6.44
+Marca_D85,Cerveza_171,3,lager importada,2,importada,Japón,3.9,194,330,269,5.73
+Marca_B38,Cerveza_172,3,lager importada,2,importada,Japón,4.8,214,330,330,7.69
+Marca_D43,Cerveza_173,2,clara artesanal,2,importada,Brasil,3.8,164,330,500,5.48
+Marca_S07,Cerveza_174,2,clara artesanal,2,importada,España,5.0,170,330,269,4.64
+Marca_R79,Cerveza_175,3,lager importada,2,importada,Bélgica,4.6,199,330,473,9.95
+Marca_F13,Cerveza_176,3,lager importada,2,importada,España,5.0,216,330,330,7.56
+Marca_R91,Cerveza_177,4,cerveza normal y helada,2,importada,Canadá,6.0,215,330,269,3.71
+Marca_B64,Cerveza_178,2,clara artesanal,1,nacional,Colombia,4.8,189,330,269,3.19
+Marca_V50,Cerveza_179,4,cerveza normal y helada,1,nacional,Colombia,4.5,153,330,500,3.6
+Marca_E81,Cerveza_180,4,cerveza normal y helada,2,importada,España,5.2,191,330,500,5.32
+Marca_I93,Cerveza_181,1,lager artesanal,1,nacional,Colombia,5.3,192,330,269,3.13
+Marca_X98,Cerveza_182,4,cerveza normal y helada,1,nacional,Colombia,5.4,183,330,355,2.96
+Marca_W05,Cerveza_183,1,lager artesanal,1,nacional,Colombia,4.5,192,330,750,8.08
+Marca_P78,Cerveza_184,1,lager artesanal,1,nacional,Colombia,5.1,194,330,473,4.54
+Marca_L83,Cerveza_185,1,lager artesanal,1,nacional,Colombia,5.0,204,330,473,6.63
+Marca_B80,Cerveza_186,1,lager artesanal,2,importada,Japón,5.1,204,330,355,5.81
+Marca_J75,Cerveza_187,5,baja en calorías / sin alcohol,2,importada,Chile,0.6,40,330,750,8.28
+Marca_W01,Cerveza_188,3,lager importada,2,importada,Irlanda,6.1,207,330,500,11.18
+Marca_S19,Cerveza_189,2,clara artesanal,1,nacional,Colombia,5.0,201,330,355,4.0
+Marca_Y93,Cerveza_190,2,clara artesanal,2,importada,Japón,4.0,174,330,500,7.4
+Marca_S97,Cerveza_191,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.1,34,330,750,6.12
+Marca_I67,Cerveza_192,1,lager artesanal,1,nacional,Colombia,4.9,202,330,355,4.69
+Marca_S73,Cerveza_193,2,clara artesanal,1,nacional,Colombia,5.0,204,330,330,2.64
+Marca_C20,Cerveza_194,2,clara artesanal,2,importada,España,4.9,193,330,355,6.79
+Marca_P76,Cerveza_195,2,clara artesanal,1,nacional,Colombia,5.0,203,330,269,3.59
+Marca_E33,Cerveza_196,4,cerveza normal y helada,1,nacional,Colombia,4.7,176,330,269,1.98
+Marca_W59,Cerveza_197,4,cerveza normal y helada,1,nacional,Colombia,4.5,182,330,269,1.85
+Marca_H83,Cerveza_198,3,lager importada,2,importada,Alemania,5.6,239,330,269,6.06
+Marca_B33,Cerveza_199,1,lager artesanal,2,importada,Brasil,6.0,198,330,355,5.27
+Marca_Y62,Cerveza_200,5,baja en calorías / sin alcohol,1,nacional,Colombia,0.4,50,330,269,2.74
