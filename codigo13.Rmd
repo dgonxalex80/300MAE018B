@@ -1,5 +1,5 @@
 ---
-title:  " "
+title:  "Código 13 - Gráficos en R"
 author: "dgonzalez "
 subtitle: " "
 output:
@@ -98,8 +98,14 @@ Algunas consideraciones
 
 ```{r}
 t1 <- table(clientes$categoria_preferida)
-cols_t1 <- if (length(t1) <= 4) paleta4 else paleta5
-pie(t1, col = cols_t1[1:length(t1)])
+pie(t1)
+```
+
+
+```{r}
+t1 <- table(clientes$categoria_preferida)
+cols <- c("#3B5B8A", "#5D7A9C", "#F28B30", "#F2B33D", "#F0D9BF" )
+pie(t1, col = cols)
 ```
 
 
@@ -141,8 +147,9 @@ barplot(table(clientes$edadR), ylim = c(0, 600))
 
 ```{r}
 ev <- table(clientes$edadR)
-cols_ev <- if (length(ev) <= 4) paleta4 else paleta
-barplot(ev,  col = cols_ev[1:length(ev)], 
+cols <- c("#3B5B8A",  "#F2B33D", "#F0D9BF")
+barplot(ev,  
+        col = cols, 
         main = "Edad de clientes (categorías)",
         las = 1,
         ylim =c(0,600))
@@ -161,10 +168,10 @@ barplot(conteo)
 
 ```{r}
 counts <- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
-cols_counts <- if (nrow(counts) <= 4) paleta4 else paleta5
+cols <- c("#3B5B8A", "#5D7A9C", "#F28B30", "#F2B33D", "#F0D9BF" )
 barplot(counts, main = "Método de pago por tipo de cliente",  
         xlab = "Tipo de cliente",
-        col = cols_counts[1:nrow(counts)],
+        col = cols,
         legend = rownames(counts),
         las = 1)
 ```
@@ -177,10 +184,9 @@ barplot(counts, main = "Método de pago por tipo de cliente",
 
 ```{r}
 counts <- table(ventas$Tipo_Cliente,ventas$Metodo_Pago)
-cols_counts <- if (nrow(counts) <= 4) paleta4 else 5
 barplot(counts, main = "Método de pago por tipo de cliente",  
         xlab = "Tipo de cliente",
-        col = cols_counts[1:nrow(counts)],
+        col = c( "#5D7A9C", "#F28B30"),
         legend = rownames(counts),
         las = 1)
 ```
@@ -241,7 +247,7 @@ h1=hist(beer$calorias,
         main = "Calorías", 
         xlab = " ", ylab="frecuencias absolutas", 
         labels=TRUE, 
-        col=c21,
+        col="#3B5B8A",
         ylim = c(0,50),
         las = 1)
 abline(v=mean(beer$calorias), col=c31, lwd=2)
@@ -318,7 +324,7 @@ serie <- aggregate(Ventas_Netas ~ mes, data = ventas, sum)
 
 plot(serie$mes, serie$Ventas_Netas, type = "l",
      main = "Ventas netas mensuales", 
-     col = c31, 
+     col = "#31487A", 
      lwd = 2, xlab = "mes", ylab = "ventas netas")
 ```
 
@@ -419,7 +425,7 @@ Luego de tener definida la base y las variables a utilizar se indica la geometri
 
 ```{r}
 fig=ggplot(data=clientes,  aes(x=edad_cliente , y=puntos))
-fig + geom_point(color = c11)
+fig + geom_point(color = "#2C5697")
 ```
 
 <br/><br/>
@@ -436,7 +442,7 @@ Otros elementos a utilizar son :
 
 ```{r}
 fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
-  geom_point(color = c21) + facet_wrap(~ Metodo_Pago)
+  geom_point(color = "#3B5B8A") + facet_wrap(~ Metodo_Pago)
 fig
 ```
 
@@ -451,9 +457,9 @@ fig
 
 ```{r, message=FALSE, warning=FALSE}
 fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
-  geom_point(color = c21) + 
+  geom_point(color = "#3B5B8A" ) + 
   facet_wrap(~ Metodo_Pago) +
-  stat_smooth(method = "loess" , formula =y ~ x, color = c31)
+  stat_smooth(method = "loess" , formula =y ~ x, color = "#F28B30")
 fig
 ```
 
@@ -468,9 +474,9 @@ fig
 
 
 ```{r, warning=FALSE, message=FALSE}
-fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = "#3B5B8A") +
         facet_wrap(~ Metodo_Pago) + 
-        stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
+        stat_smooth(method = "loess" , formula =y ~ x, color = "#F28B30") +
         coord_cartesian(xlim = c(18,70))
 fig
 ```
@@ -484,9 +490,9 @@ fig
 
 
 ```{r, warning=FALSE, message=FALSE}
-fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
+fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = "#3B5B8A") +
         facet_wrap(~ Metodo_Pago) + 
-        stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
+        stat_smooth(method = "loess" , formula =y ~ x, color = "#F28B30" ) +
         coord_cartesian(xlim = c(18,70)) +
         theme_classic()
 fig
@@ -499,7 +505,7 @@ fig
 ```{r}
 ventas$Tipo_Cliente = as.factor(ventas$Tipo_Cliente)
 fig2 = ggplot(data=ventas, aes(x=Ventas_Netas, y=Tipo_Cliente)) +
-  geom_boxplot(fill = c41, color = c1)+
+  geom_boxplot(fill = "#3B5B8A", color = "#F2B33D")+
   geom_point(color = c11, alpha = 0.5, position = position_jitter(width = 0.2))+
   ggtitle("Ventas netas por tipo de cliente")+
   labs(x="ventas netas" , y="tipo de cliente")
@@ -510,7 +516,7 @@ fig2
 
 ```{r}
 fig3=ggplot(clientes, aes(edad_cliente)) +
-       geom_histogram(bins = 7,fill=c21, color=c7, alpha=0.9)+
+       geom_histogram(bins = 7,fill="#5D7A9C", color="#F7F7F7", alpha=0.9)+
        theme_minimal() +
        labs(x = "edad", y = "frecuencia absoluta") +
        ggtitle("Edad de clientes")
@@ -520,9 +526,9 @@ fig3
 
 ```{r}
 fig=ggplot(data = ventas, aes(x = Tipo_Cliente, fill = Metodo_Pago)) + 
-      geom_bar(colour= c1, size = 0.3 ) +  
+      geom_bar(colour= "#3B5B8A", size = 0.3 ) +  
   coord_polar() +
-  scale_fill_manual(values = paleta5)
+  scale_fill_manual(values = c("#3B5B8A", "#5D7A9C", "#F28B30", "#F2B33D", "#F0D9BF" ))
 fig
 ```
 ```{r}
@@ -530,7 +536,7 @@ fig
 ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, fill = Tipo_Cliente)) +
   geom_boxplot(alpha = 0.6) +
   geom_jitter(color = c1, size = 0.4, alpha = 0.6) +
-  scale_fill_manual(values = paleta5) +
+  scale_fill_manual(values = c("#3B5B8A", "#5D7A9C")) +
   theme_minimal() +
   theme(legend.position = "none",
         plot.title = element_text(size = 11)) +
@@ -587,7 +593,7 @@ load_pkg("ggbeeswarm")
 if (load_pkg("ggbeeswarm")) {
   ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, color = Tipo_Cliente)) +
     geom_beeswarm(cex = 2) +
-    scale_color_manual(values = paleta5)
+    scale_color_manual(values = c("#3B5B8A", "#F28B30"))
 }
 ```
 
@@ -607,8 +613,8 @@ library(ggplot2)
 if (load_pkg("ggridges")) {
   ggplot(df, aes(x = precio, y = tipo, fill = tipo, color = tipo)) +
     geom_density_ridges(alpha = 0.6) +
-    scale_fill_manual(values = paleta5) +
-    scale_color_manual(values = paleta5)
+    scale_fill_manual(values =c("#3B5B8A", "#5D7A9C", "#F28B30", "#F2B33D", "#F0D9BF" )) +
+    scale_color_manual(values = c("#F0D9BF", "#F2B33D", "#F28B30", "#5D7A9C","#3B5B8A"))
 }
 ```
 
@@ -632,8 +638,8 @@ plot(denx,
 lines(deny)
 
 # Colorear las áreas
-polygon(denx, col = adjustcolor(c21, alpha.f = 0.6))
-polygon(deny, col = adjustcolor(c31, alpha.f = 0.6))
+polygon(denx, col = adjustcolor("#3B5B8A", alpha.f = 0.6))
+polygon(deny, col = adjustcolor("#F28B30", alpha.f = 0.6))
 ```
 
 <br/><br/>
@@ -710,7 +716,7 @@ resumen <- ventas %>%
 p <- ggplot(resumen, aes(x = mes, y = Ventas_Netas, color = Tipo_Cliente, group = Tipo_Cliente)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = paleta5) +   # paleta institucional (5 colores)
+  scale_color_manual(values = c("#3B5B8A", "#F28B30"))  +   # paleta institucional (5 colores)
   labs(
     title = "Ventas netas por tipo de cliente: {frame_along}",
     x = "Mes", y = "Ventas netas"
@@ -739,6 +745,11 @@ knitr::include_graphics("img/ventas_tiempo.gif")
 
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# install.packages(c("gganimate","gifski","transformr")) # instala paquetes
+library(dplyr)
+library(ggplot2)
+library(gganimate)
+library(gifski)
 
 p <- datos %>%
   filter(country == "Colombia") %>%
@@ -761,7 +772,7 @@ p <- datos %>%
     point.padding = 0.2,
     max.overlaps = Inf
   ) +
-  scale_color_manual(values = paleta4[1]) +
+  scale_color_manual(values = "#5D7A9C") +
   scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
   scale_y_continuous(
     labels = function(x) paste0(number(x, accuracy = 1), " MM"),
@@ -783,134 +794,142 @@ p <- datos %>%
   ) +
   transition_reveal(along = year)
 p
+```
 
-library(gapminder)
-library(dplyr)
-library(ggplot2)
-library(gganimate)
-library(scales)
-library(ggrepel)
+<br/><br/>
 
-datos <- gapminder
 
-p <- datos %>%
-  filter(country == "Colombia") %>%
-  mutate(
-    pop_mm = pop / 1e6,
-    # Etiquetas solo en algunos años para no saturar
-    etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
-                       paste0(number(pop_mm, accuracy = 0.1), " MM"),
-                       NA_character_)
-  ) %>%
-  ggplot(aes(year, pop_mm)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  geom_text_repel(
-    aes(label = etiqueta),
-    na.rm = TRUE,
-    size = 3.6,
-    min.segment.length = 0,
-    box.padding = 0.25,
-    point.padding = 0.2,
-    max.overlaps = Inf
-  ) +
-  scale_color_manual(values = paleta4[1]) +
-  scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
-  scale_y_continuous(
-    labels = function(x) paste0(number(x, accuracy = 1), " MM"),
-    expand = expansion(mult = c(0.02, 0.10))
-  ) +
-  labs(
-    title = "Población de Colombia",
-    subtitle = "Año: {frame_along}",
-    x = "Año",
-    y = "Población (MM)"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.minor = element_blank(),
-    panel.grid.major.x = element_blank(),
-    plot.title = element_text(face = "bold"),
-    axis.title = element_text(face = "bold"),
-    axis.text = element_text(color = "gray20")
-  ) +
-  transition_reveal(along = year)
+```{r, echo=FALSE, eval=FALSE, out.width="100%", fig.align = "center"}
+ok_anim <- load_pkg("gapminder") &&
+  load_pkg("gganimate") &&
+  load_pkg("gifski") &&
+  load_pkg("ggrepel")
 
-library(gganimate)
-library(gifski)   # si vas a exportar gif
-gif <- gganimate::animate(p, fps = 20, width = 900, height = 500,
-                          renderer = gifski_renderer())
-gganimate::anim_save("img/poblacion_colombia.gif", gif)
+if (ok_anim) {
+  datos <- gapminder::gapminder
 
+  p <- datos %>%
+    filter(country == "Colombia") %>%
+    mutate(
+      pop_mm = pop / 1e6,
+      # Etiquetas solo en algunos años para no saturar
+      etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
+                         paste0(scales::number(pop_mm, accuracy = 0.1), " MM"),
+                         NA_character_)
+    ) %>%
+    ggplot(aes(year, pop_mm)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    ggrepel::geom_text_repel(
+      aes(label = etiqueta),
+      na.rm = TRUE,
+      size = 3.6,
+      min.segment.length = 0,
+      box.padding = 0.25,
+      point.padding = 0.2,
+      max.overlaps = Inf
+    ) +
+    scale_color_manual(values = paleta4[1]) +
+    scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
+    scale_y_continuous(
+      labels = function(x) paste0(scales::number(x, accuracy = 1), " MM"),
+      expand = expansion(mult = c(0.02, 0.10))
+    ) +
+    labs(
+      title = "Población de Colombia",
+      subtitle = "Año: {frame_along}",
+      x = "Año",
+      y = "Población (MM)"
+    ) +
+    theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      plot.title = element_text(face = "bold"),
+      axis.title = element_text(face = "bold"),
+      axis.text = element_text(color = "#3B5B8A")
+    ) +
+    transition_reveal(along = year)
+
+  gif <- gganimate::animate(
+    p, fps = 20, width = 900, height = 500,
+    renderer = gganimate::gifski_renderer()
+  )
+  gganimate::anim_save("img/poblacion_colombia.gif", gif)
+} else {
+  message("Bloque omitido: faltan paquetes para generar poblacion_colombia.gif")
+}
 
 ```
 
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("img/poblacion_colombia.gif")
+if (file.exists("img/poblacion_colombia.gif")) {
+  knitr::include_graphics("img/poblacion_colombia.gif")
+} else {
+  plot.new()
+  text(0.5, 0.5, "GIF no disponible: revise paquetes opcionales", cex = 0.9)
+}
 ```
 
 ```{r, echo=FALSE}
-library(dplyr)
-library(gapminder)
-library(tidyverse)
-library(gganimate) 
-# options(gganimate.nframes = 20)
+ok_rank <- load_pkg("gapminder") && load_pkg("gganimate")
 
+if (ok_rank) {
+  gapminder::gapminder %>%
+    dplyr::select(country, pop, year, continent) %>%
+    # for each year we assign a rank
+    group_by(year) %>%
+    arrange(year, -pop) %>%
+    # assign ranking
+    mutate(rank = 1:n()) %>%
+    filter(rank <= 20) ->
+    ranked_by_year
 
-gapminder %>%  
-dplyr::select(country, pop, year, continent) %>%  
-  # for each year we assign a rank
-  group_by(year) %>%  
-  arrange(year, -pop) %>%  
-  # assign ranking
-  mutate(rank = 1:n()) %>%  
-  filter(rank <= 20) ->  
-  ranked_by_year
+  my_theme <- theme_minimal(base_family = "Times") +
+    theme(axis.text.y = element_blank()) +
+    theme(axis.ticks.y = element_blank()) +
+    theme(panel.grid.major.y = element_blank()) +
+    theme(panel.grid.minor = element_blank())
 
+  ranked_by_year %>%
+    ggplot() +
+    aes(xmin = 0,
+        xmax = pop / 1000000) +
+    aes(ymin = rank - .45,
+        ymax = rank + .45,
+        y = rank) +
+    facet_wrap(~ year) +
+    geom_rect(alpha = .7) +
+    aes(fill = continent) +
+    scale_fill_manual(values = c("#3B5B8A", "#F28B30", "#F2B33D", "#A7ABB9")) +
+    scale_x_continuous(
+      limits = c(-800, 1400),
+      breaks = c(0, 400, 800, 1200)) +
+    geom_text(col = "gray13",
+              hjust = "right",
+              aes(label = country),
+              x = -50) +
+    scale_y_reverse() +
+    labs(fill = NULL) +
+    labs(x = 'Population (millions)') +
+    labs(y = "") +
+    my_theme ->
+    my_plot
 
-my_theme <- theme_minimal(base_family = "Times") +
-  theme(axis.text.y = element_blank()) +
-  theme(axis.ticks.y = element_blank()) +
-  theme(panel.grid.major.y = element_blank()) +
-  theme(panel.grid.minor = element_blank())
-
-ranked_by_year %>%  
-  ggplot() +  
-  aes(xmin = 0 ,  
-      xmax = pop / 1000000) +  
-  aes(ymin = rank - .45,  
-      ymax = rank + .45,  
-      y = rank) +  
-  facet_wrap(~ year) +  
-  geom_rect(alpha = .7) +  
-  aes(fill = continent) +  
-  scale_fill_manual(values = paleta5) +  
-  scale_x_continuous(  
-    limits = c(-800, 1400),  
-    breaks = c(0, 400, 800, 1200)) +  
-  geom_text(col = "gray13",  
-            hjust = "right",  
-            aes(label = country),  
-            x = -50) +  
-  scale_y_reverse() +  
-  labs(fill = NULL) +  
-  labs(x = 'Population (millions)') +  
-  labs(y = "") +  
-  my_theme ->  
-  my_plot
-
-
-my_plot +  
-  facet_null() +  
-  scale_x_continuous(  
-    limits = c(-355, 1400),  
-    breaks = c(0, 400, 800, 1200)) +  
-  geom_text(x = 1000 , y = -10,  
-            family = "Times",  
-            aes(label = as.character(year)),  
-            size = 15, col = "grey18") +  
-  aes(group = country) +  
-  gganimate::transition_time(year)
+  my_plot +
+    facet_null() +
+    scale_x_continuous(
+      limits = c(-355, 1400),
+      breaks = c(0, 400, 800, 1200)) +
+    geom_text(x = 1000, y = -10,
+              family = "Times",
+              aes(label = as.character(year)),
+              size = 10, col = "grey18") +
+    aes(group = country) +
+    gganimate::transition_time(year)
+} else {
+  message("Bloque omitido: faltan paquetes para animación por ranking")
+}
 
 
 ```
@@ -983,7 +1002,6 @@ if (load_pkg("fmsb")) {
 ### **gráfico de barras polar**
 
 
-`
 ```{r, message=FALSE, warning=FALSE}
 
 
@@ -1015,7 +1033,7 @@ cali <- tryCatch( # intenta leer el shapefile
 if (is.null(cali)) { # valida que se haya cargado
   message("No se pudo leer map/cali/cali.shp. Verifique que exista el .dbf.") # aviso
 } else { # si existe, grafica
-  plot(sf::st_geometry(cali), col = c7, border = c1, # geometría y colores
+  plot(sf::st_geometry(cali), col = "#F0D9BF" , border = "#3B5B8A", # geometría y colores
        main = "Cali - mapa base") # título
 }
 ```
@@ -1083,11 +1101,6 @@ Para representar información en el mapa seden ingresar una vector con 33 valore
 
 <br/>
 
-```{r}
-# mapco$NOMBRE_DPT
-```
-<br/>
-
 Si se quiere representar un mapa con un indicador real por departamento, se debe construir una tabla con los valores en el mismo orden del archivo **depto.shp** y adicionarla como variable al objeto `mapco`.
 
 En este ejemplo se simula un indicador para evitar depender de archivos externos:
@@ -1096,19 +1109,23 @@ En este ejemplo se simula un indicador para evitar depender de archivos externos
 <br/><br/>
 
 ```{r}
-require(sp)
-require(rgdal)
-require(raster)
-require(RColorBrewer)
+ok_sp <- load_pkg("sp") &&
+  load_pkg("rgdal") &&
+  load_pkg("raster") &&
+  load_pkg("RColorBrewer")
 
-mi.palette <- brewer.pal(n = 7, name = "OrRd")   # paleta de colores
-mapco <- shapefile("map/colombia/depto.shp")  # importa mapa en formato .shp
+if (ok_sp) {
+  mi.palette <- RColorBrewer::brewer.pal(n = 7, name = "OrRd")   # paleta de colores
+  mapco <- raster::shapefile("map/colombia/depto.shp")  # importa mapa en formato .shp
 
-set.seed(3)
-indicador <- round(runif(nrow(mapco@data), min = 50, max = 500)) # indicador simulado
-mapco@data$indicador <- indicador # se adiciona variable con 33 valores = 33 dptos, en mismo orden
+  set.seed(3)
+  indicador <- round(runif(nrow(mapco@data), min = 50, max = 500)) # indicador simulado
+  mapco@data$indicador <- indicador # se adiciona variable con 33 valores = 33 dptos, en mismo orden
 
-spplot(mapco["indicador"], col.regions = mi.palette, cuts = 6)  # mapa
+  sp::spplot(mapco["indicador"], col.regions = mi.palette, cuts = 6)  # mapa
+} else {
+  message("Bloque omitido: faltan paquetes legacy de mapas (sp/rgdal/raster)")
+}
 ```
 
 
