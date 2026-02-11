@@ -36,11 +36,12 @@ Visitantes <- read_csv("data/Visitantes.csv")
 clientes <- read_csv("data/clientes.csv")
 ventas <- read_excel("data/ventas.xlsx")
 cervezas <- read_csv("data/cervezas.csv")
-
+beer <- read_csv("data/beer.csv")
 
 # colores
 source("colores.R")
-pal_admin <- c(c11, c21, c31, c41, c51)
+paleta5 <- c(c11, c21, c31, c41, c51)
+paleta4 <- c(c11, c21, c31, c41)
 
 ```
 
@@ -87,119 +88,22 @@ Algunas consideraciones
  + Diagrama de Mosaico
  + Diagramas de radar
  
- 
-<br/><br/><br/>
 
-# **Transformación de bases y relaciones**
+<br/><br/>
 
-En esta sección se integran las bases de **clientes** y **ventas** para caracterizar comportamientos de compra.
 
-```{r}
-# Limpieza y estandarización
-clientes_limpio <- clientes %>% 
-  mutate(
-    ultima_compra = as.numeric(gsub(",", ".", ultima_compra)),
-    genero_cliente = factor(genero_cliente),
-    categoria_preferida = factor(categoria_preferida)
-  )
-
-# Agregación de ventas por cliente
-ventas_cliente <- ventas %>% 
-  group_by(Cliente) %>% 
-  summarise(
-    ventas_total = sum(Ventas_Netas, na.rm = TRUE),
-    transacciones = n(),
-    items_total = sum(Items, na.rm = TRUE),
-    ticket_prom = ventas_total / transacciones,
-    .groups = "drop"
-  )
-
-# Relación clientes-ventas
-base_rel <- clientes_limpio %>% 
-  left_join(ventas_cliente, by = c("id" = "Cliente"))
-
-# Guardar bases transformadas
-write_csv(clientes_limpio, "data/clientes_limpio.csv")
-write_csv(ventas_cliente, "data/ventas_cliente.csv")
-write_csv(base_rel, "data/base_rel.csv")
-```
-
-```{r}
-# Segmentación de comportamiento (valor y frecuencia)
-seg_cortes <- function(x, labels3) {
-  q <- unique(quantile(x, probs = c(0, .33, .66, 1), na.rm = TRUE))
-  if (length(q) >= 4) {
-    return(cut(x, breaks = q, include.lowest = TRUE, labels = labels3))
-  }
-  # fallback si hay muchos empates
-  ntile(x, 3) |> factor(labels = labels3)
-}
-
-base_rel <- base_rel %>% 
-  mutate(
-    seg_valor = seg_cortes(ventas_total, c("Bajo", "Medio", "Alto")),
-    seg_frecuencia = seg_cortes(transacciones, c("Baja", "Media", "Alta"))
-  )
-```
-
-```{r}
-# Tabla de relaciones y comportamiento
-relaciones <- base_rel %>% 
-  group_by(seg_valor, seg_frecuencia, genero_cliente) %>% 
-  summarise(
-    clientes = n(),
-    ventas_prom = mean(ventas_total, na.rm = TRUE),
-    ticket_prom = mean(ticket_prom, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-write_csv(relaciones, "data/relaciones.csv")
-
-relaciones
-```
-
-```{r, message=FALSE, warning=FALSE}
-# Relación ingresos vs ventas totales
-ggplot(base_rel, aes(x = ingresos, y = ventas_total, color = seg_valor)) +
-  geom_point(alpha = 0.6) +
-  labs(title = "Ingresos vs Ventas Totales", x = "Ingresos", y = "Ventas totales") +
-  theme_minimal()
-```
-
-```{r}
-# Paleta (5 + 1 extra)
-pal <- c(
-  "Alimentos"     = "#F28B30",
-  "Deportes"      = "#F2B33D",
-  "Electrónica"   = "#3B5B8A",
-  "Hogar"         = "#5D7A9C",
-  "Ropa"          = "#F0D9BF",
-  "Extra"         = "#2F476E"  # por si luego agregas otra categoría
-)
-
-base_rel %>%
-  group_by(categoria_preferida) %>%
-  summarise(ticket_prom = mean(ticket_prom, na.rm = TRUE), .groups = "drop") %>%
-  ggplot(aes(x = categoria_preferida, y = ticket_prom, fill = categoria_preferida)) +
-  geom_col() +
-  labs(title = "Ticket promedio por categoría preferida",
-       x = "Categoría", y = "Ticket promedio") +
-  scale_fill_manual(values = pal) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-```
-
-<br/><br/><br/>
-
-# **Variable cualitativa-nominal**
+# **Cualitativa-nominal**
 
 ## **1. Gráfico de tortas**
 
 ```{r}
 t1 <- table(clientes$categoria_preferida)
-pie(t1, col = pal_admin)
+cols_t1 <- if (length(t1) <= 4) paleta4 else paleta5
+pie(t1, col = cols_t1[1:length(t1)])
 ```
+
+
+
 
 
 ```{r}
@@ -207,39 +111,41 @@ t1 <- table(clientes$categoria_preferida)
 labs <- names(t1)
 pct <- round(t1 / sum(t1) * 100)
 labs <- paste(labs, pct, "%")
+cols_t1 <- if (length(t1) <= 4) paleta4 else paleta5
 pie(t1, 
     labels = labs, 
     main = "Distribución por categoría preferida",
-    col = pal_admin)
+    col = cols_t1[1:length(t1)])
 ```
 
 <br/><br/><br/>
 
-# **Variable cualitativa-ordinal**
+# **Cualitativa-ordinal**
 
 ## **2.Gráfico de barras**
 
 ```{r}
-ingresos_cat <- cut(clientes$ingresos,
-                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
-                    include.lowest = TRUE,
-                    labels = c("Bajo", "Medio", "Alto"))
-barplot(table(ingresos_cat), ylim =c(0,400) )
+library(dplyr)
+
+clientes$edadR[clientes$edad_cliente <=30] = "1.Joven"
+clientes$edadR[clientes$edad_cliente>=31 & clientes$edad_cliente <=60] = "2.Adulto"
+clientes$edadR[clientes$edad_cliente>=61] = "3.Mayor"
+ 
+
+barplot(table(clientes$edadR), ylim = c(0, 600))
+
 ```
 
 
 
 
 ```{r}
-ingresos_cat <- cut(clientes$ingresos,
-                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
-                    include.lowest = TRUE,
-                    labels = c("Bajo", "Medio", "Alto"))
-ev <- table(ingresos_cat)
-barplot(ev,  col = pal[2:4], 
-        main = "Ingresos de clientes (nivel)",
+ev <- table(clientes$edadR)
+cols_ev <- if (length(ev) <= 4) paleta4 else paleta
+barplot(ev,  col = cols_ev[1:length(ev)], 
+        main = "Edad de clientes (categorías)",
         las = 1,
-        ylim =c(0,400))
+        ylim =c(0,600))
 ```
 <br/><br/><br/>
 
@@ -255,9 +161,26 @@ barplot(conteo)
 
 ```{r}
 counts <- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
+cols_counts <- if (nrow(counts) <= 4) paleta4 else paleta5
 barplot(counts, main = "Método de pago por tipo de cliente",  
         xlab = "Tipo de cliente",
-        col = pal[1:nrow(counts)],
+        col = cols_counts[1:nrow(counts)],
+        legend = rownames(counts),
+        las = 1)
+```
+
+
+
+
+
+
+
+```{r}
+counts <- table(ventas$Tipo_Cliente,ventas$Metodo_Pago)
+cols_counts <- if (nrow(counts) <= 4) paleta4 else 5
+barplot(counts, main = "Método de pago por tipo de cliente",  
+        xlab = "Tipo de cliente",
+        col = cols_counts[1:nrow(counts)],
         legend = rownames(counts),
         las = 1)
 ```
@@ -298,10 +221,8 @@ par(op)
 ## **5. Diagrama de tallos y hojas**
 
 ```{r}
-vn <- ventas$Ventas_Netas
-
 # Diagrama de tallos y hojas
-stem(vn)
+stem(beer$calorias)
 ```
 
 <br/><br/><br/>
@@ -309,20 +230,22 @@ stem(vn)
 ## **6. Histograma**
 
 ```{r}
-hist(vn)
+hist(beer$calorias)
 ```
 
 
 
 
 ```{r}
-h1=hist(vn, 
-        main = "Ventas netas", 
-        xlab = "ventas netas", ylab="frecuencias absolutas", 
+h1=hist(beer$calorias, 
+        main = "Calorías", 
+        xlab = " ", ylab="frecuencias absolutas", 
         labels=TRUE, 
         col=c21,
-        ylim = c(0,30))
-abline(v=mean(vn), col=c31, lwd=2)
+        ylim = c(0,50),
+        las = 1)
+abline(v=mean(beer$calorias), col=c31, lwd=2)
+grid()
 ```
 <br/><br/><br/>
 
@@ -337,7 +260,7 @@ plot(density(vn))
 
 
 ```{r}
-plot(density(vn),
+plot(density(beer$calorias),
      main="Distribución de ventas netas", 
      col=c11, 
      lwd=2,
@@ -355,12 +278,12 @@ boxplot(vn)
 ```
 
 
-```{r, fig.height=3}
-boxplot(vn, main="Ventas netas",
+```{r, fig.height=4}
+boxplot(beer$calorias, main="Calorías por unidad",
         col=c41,
         las=1,
         horizontal = TRUE)
-abline(v=mean(vn), col=c31, lwd=2)
+
 ```
 
 <br/><br/><br/>
@@ -377,7 +300,7 @@ boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas)
 par(oma = c(2, 5, 3, 4) )  # margenes de la imagen
 boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas,
         main = "Ventas netas por tipo de cliente", 
-        col = pal_admin,
+        col = paleta5,
         xlab = "ventas netas", ylab = " ", 
         horizontal = TRUE,
         las = 1)
@@ -526,7 +449,7 @@ fig
 
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
   geom_point(color = c21) + 
   facet_wrap(~ Metodo_Pago) +
@@ -544,7 +467,7 @@ fig
 
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
         facet_wrap(~ Metodo_Pago) + 
         stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
@@ -560,7 +483,7 @@ fig
 ### data + aesthetics + geometries + facets + statistics + coordinates + themes
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas)) + geom_point(color = c21) +
         facet_wrap(~ Metodo_Pago) + 
         stat_smooth(method = "loess" , formula =y ~ x, color = c31) +
@@ -599,7 +522,7 @@ fig3
 fig=ggplot(data = ventas, aes(x = Tipo_Cliente, fill = Metodo_Pago)) + 
       geom_bar(colour= c1, size = 0.3 ) +  
   coord_polar() +
-  scale_fill_manual(values = pal_admin)
+  scale_fill_manual(values = paleta5)
 fig
 ```
 ```{r}
@@ -607,7 +530,7 @@ fig
 ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, fill = Tipo_Cliente)) +
   geom_boxplot(alpha = 0.6) +
   geom_jitter(color = c1, size = 0.4, alpha = 0.6) +
-  scale_fill_manual(values = pal_admin) +
+  scale_fill_manual(values = paleta5) +
   theme_minimal() +
   theme(legend.position = "none",
         plot.title = element_text(size = 11)) +
@@ -619,7 +542,11 @@ ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, fill = Tipo_Cliente)) +
 
 ## **highcharter**  
 
-![](img/highcharter.png)
+
+```{r, echo=FALSE, out.width="10%", fig.align='left'}
+knitr::include_graphics("img/highcharter.png")
+```
+
 
 Este es un paquete especializado en la creación de gráficos dinámicos que emplea inrnamente  javascript.
 
@@ -647,6 +574,8 @@ if (load_pkg("highcharter")) {
 }
 ```
 
+<br/><br/>
+
 ```{r}
 # paquetes requeridos
 # install.packages("ggplot2")
@@ -658,10 +587,11 @@ load_pkg("ggbeeswarm")
 if (load_pkg("ggbeeswarm")) {
   ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, color = Tipo_Cliente)) +
     geom_beeswarm(cex = 2) +
-    scale_color_manual(values = pal_admin)
+    scale_color_manual(values = paleta5)
 }
 ```
 
+<br/><br/>
 
 ```{r}
 # construccion de la data
@@ -677,10 +607,12 @@ library(ggplot2)
 if (load_pkg("ggridges")) {
   ggplot(df, aes(x = precio, y = tipo, fill = tipo, color = tipo)) +
     geom_density_ridges(alpha = 0.6) +
-    scale_fill_manual(values = pal_admin) +
-    scale_color_manual(values = pal_admin)
+    scale_fill_manual(values = paleta5) +
+    scale_color_manual(values = paleta5)
 }
 ```
+
+<br/><br/>
 
 ```{r}
 # Datos
@@ -704,26 +636,47 @@ polygon(denx, col = adjustcolor(c21, alpha.f = 0.6))
 polygon(deny, col = adjustcolor(c31, alpha.f = 0.6))
 ```
 
-
-
-Tomado de  : https://r-charts.com/es/distribucion/ggbeeswarm/
+<br/><br/>
 
 ## **plotly**
- 
- ![](img/plotly.png)
 
-<br/><br/><br/><br/>
+
+```{r, echo=FALSE, out.width="10%", fig.align='left'}
+knitr::include_graphics("img/plotly.png")
+``` 
+
+<br/>
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# install.packages("plotly") # instala plotly
-library(plotly) # carga plotly
+library(dplyr)
+library(plotly)
 
-datos <- ventas %>% # data de ejemplo
-  group_by(Tipo_Cliente) %>% # agrupa por tipo
-  summarise(Ventas = sum(Ventas_Netas), .groups = "drop") # suma ventas
+set.seed(123)
 
-p <- plot_ly(datos, x = ~Tipo_Cliente, y = ~Ventas, type = "bar") # gráfico
-p # imprime gráfico
+# Datos de ejemplo (ambas cuantitativas)
+datos <- data.frame(
+  Gasto_Publicidad = runif(80, 200, 2000),                # X cuantitativa
+  Ventas           = 5000 + 8*runif(80, 200, 2000) + rnorm(80, 0, 800)  # Y cuantitativa
+)
+
+p <- plot_ly(
+  data = datos,
+  x = ~Gasto_Publicidad,
+  y = ~Ventas,
+  type = "scatter", mode = "markers",
+  text = ~paste0("Publicidad: $", round(Gasto_Publicidad, 0),
+                 "<br>Ventas: $", round(Ventas, 0)),
+  hoverinfo = "text",
+  marker = list(size = 10, opacity = 0.8)
+) %>%
+  layout(
+    title = "Relación entre publicidad y ventas",
+    xaxis = list(title = "Gasto en publicidad ($)"),
+    yaxis = list(title = "Ventas ($)")
+  )
+
+p
+
 ```
 
 ## **gganimate (GIF)** 
@@ -732,46 +685,239 @@ Ejemplo de gráfico dinámico que cambia en el tiempo y se exporta como GIF.
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 # install.packages(c("gganimate","gifski","transformr")) # instala paquetes
-library(gganimate) # carga gganimate
-library(gifski) # carga gifski
-library(transformr) # carga transformr
+library(dplyr)
+library(ggplot2)
+library(gganimate)
+library(gifski)
 
-ventas$fecha <- as.Date("2023-01-01") + 7 * (1:nrow(ventas)) # crea fechas
-ventas$mes <- as.Date(cut(ventas$fecha, "month")) # agrupa por mes
-resumen <- aggregate(Ventas_Netas ~ mes + Tipo_Cliente, data = ventas, sum) # resume
+# IMPORTANTE:
+# NO cargues el paquete {animation} en este documento, o se pisa animate().
+# Si lo necesitas en otro chunk, usa gganimate::animate() explícito.
 
-p <- ggplot(resumen, aes(mes, Ventas_Netas, color = Tipo_Cliente)) + # base
-  geom_line(size = 1) + # líneas
-  geom_point(size = 2) + # puntos
-  scale_color_manual(values = pal_admin) + # colores
-  labs(title = "Ventas netas por tipo de cliente: {frame_time}", # título
-       x = "mes", y = "ventas netas") + # ejes
-  transition_reveal(mes) # animación
+# 1) Crear fechas y mes
+ventas <- ventas %>%
+  mutate(
+    fecha = as.Date("2023-01-01") + 7 * (row_number() - 1),
+    mes   = as.Date(cut(fecha, "month"))
+  )
 
-anim <- animate(p, nframes = 80, fps = 10, width = 700, height = 400, # render
-                renderer = gifski_renderer()) # renderizador GIF
-anim_save("img/ventas_tiempo.gif", anim) # guarda GIF
+# 2) Resumir por mes y tipo de cliente
+resumen <- ventas %>%
+  group_by(mes, Tipo_Cliente) %>%
+  summarise(Ventas_Netas = sum(Ventas_Netas, na.rm = TRUE), .groups = "drop")
+
+# 3) Gráfico base
+p <- ggplot(resumen, aes(x = mes, y = Ventas_Netas, color = Tipo_Cliente, group = Tipo_Cliente)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = paleta5) +   # paleta institucional (5 colores)
+  labs(
+    title = "Ventas netas por tipo de cliente: {frame_along}",
+    x = "Mes", y = "Ventas netas"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor = element_blank()) +
+  transition_reveal(along = mes)
+
+# 4) Render GIF (usa gganimate::animate para evitar conflictos)
+anim <- gganimate::animate(
+  p, nframes = 80, fps = 10, width = 700, height = 400,
+  renderer = gifski_renderer()
+)
+
+dir.create("img", showWarnings = FALSE)
+anim_save("img/ventas_tiempo.gif", anim)
+
 ```
 
-<br/><br/><br/><br/>
 
-## **animation (GIF)** 
 
-Ejemplo sencillo con el paquete `animation` para crear un GIF.
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/ventas_tiempo.gif")
+```
+
+
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# install.packages("animation") # instala animation
-library(animation) # carga animation
 
-ani.options(interval = 0.15) # controla velocidad
+p <- datos %>%
+  filter(country == "Colombia") %>%
+  mutate(
+    pop_mm = pop / 1e6,
+    # Etiquetas solo en algunos años para no saturar
+    etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
+                       paste0(number(pop_mm, accuracy = 0.1), " MM"),
+                       NA_character_)
+  ) %>%
+  ggplot(aes(year, pop_mm)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_text_repel(
+    aes(label = etiqueta),
+    na.rm = TRUE,
+    size = 3.6,
+    min.segment.length = 0,
+    box.padding = 0.25,
+    point.padding = 0.2,
+    max.overlaps = Inf
+  ) +
+  scale_color_manual(values = paleta4[1]) +
+  scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
+  scale_y_continuous(
+    labels = function(x) paste0(number(x, accuracy = 1), " MM"),
+    expand = expansion(mult = c(0.02, 0.10))
+  ) +
+  labs(
+    title = "Población de Colombia",
+    subtitle = "Año: {frame_along}",
+    x = "Año",
+    y = "Población (MM)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "gray20")
+  ) +
+  transition_reveal(along = year)
+p
 
-saveGIF({ # guarda GIF
-  for (i in 1:20) { # recorre frames
-    plot(rnorm(100), # datos aleatorios
-         main = paste("Frame", i)) # título por frame
-  }
-}, movie.name = "img/animacion.gif") # nombre del archivo
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+library(gganimate)
+library(scales)
+library(ggrepel)
+
+datos <- gapminder
+
+p <- datos %>%
+  filter(country == "Colombia") %>%
+  mutate(
+    pop_mm = pop / 1e6,
+    # Etiquetas solo en algunos años para no saturar
+    etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
+                       paste0(number(pop_mm, accuracy = 0.1), " MM"),
+                       NA_character_)
+  ) %>%
+  ggplot(aes(year, pop_mm)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_text_repel(
+    aes(label = etiqueta),
+    na.rm = TRUE,
+    size = 3.6,
+    min.segment.length = 0,
+    box.padding = 0.25,
+    point.padding = 0.2,
+    max.overlaps = Inf
+  ) +
+  scale_color_manual(values = paleta4[1]) +
+  scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
+  scale_y_continuous(
+    labels = function(x) paste0(number(x, accuracy = 1), " MM"),
+    expand = expansion(mult = c(0.02, 0.10))
+  ) +
+  labs(
+    title = "Población de Colombia",
+    subtitle = "Año: {frame_along}",
+    x = "Año",
+    y = "Población (MM)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(color = "gray20")
+  ) +
+  transition_reveal(along = year)
+
+library(gganimate)
+library(gifski)   # si vas a exportar gif
+gif <- gganimate::animate(p, fps = 20, width = 900, height = 500,
+                          renderer = gifski_renderer())
+gganimate::anim_save("img/poblacion_colombia.gif", gif)
+
+
 ```
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/poblacion_colombia.gif")
+```
+
+```{r, echo=FALSE}
+library(dplyr)
+library(gapminder)
+library(tidyverse)
+library(gganimate) 
+# options(gganimate.nframes = 20)
+
+
+gapminder %>%  
+dplyr::select(country, pop, year, continent) %>%  
+  # for each year we assign a rank
+  group_by(year) %>%  
+  arrange(year, -pop) %>%  
+  # assign ranking
+  mutate(rank = 1:n()) %>%  
+  filter(rank <= 20) ->  
+  ranked_by_year
+
+
+my_theme <- theme_minimal(base_family = "Times") +
+  theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.y = element_blank()) +
+  theme(panel.grid.major.y = element_blank()) +
+  theme(panel.grid.minor = element_blank())
+
+ranked_by_year %>%  
+  ggplot() +  
+  aes(xmin = 0 ,  
+      xmax = pop / 1000000) +  
+  aes(ymin = rank - .45,  
+      ymax = rank + .45,  
+      y = rank) +  
+  facet_wrap(~ year) +  
+  geom_rect(alpha = .7) +  
+  aes(fill = continent) +  
+  scale_fill_manual(values = paleta5) +  
+  scale_x_continuous(  
+    limits = c(-800, 1400),  
+    breaks = c(0, 400, 800, 1200)) +  
+  geom_text(col = "gray13",  
+            hjust = "right",  
+            aes(label = country),  
+            x = -50) +  
+  scale_y_reverse() +  
+  labs(fill = NULL) +  
+  labs(x = 'Population (millions)') +  
+  labs(y = "") +  
+  my_theme ->  
+  my_plot
+
+
+my_plot +  
+  facet_null() +  
+  scale_x_continuous(  
+    limits = c(-355, 1400),  
+    breaks = c(0, 400, 800, 1200)) +  
+  geom_text(x = 1000 , y = -10,  
+            family = "Times",  
+            aes(label = as.character(year)),  
+            size = 15, col = "grey18") +  
+  aes(group = country) +  
+  gganimate::transition_time(year)
+
+
+```
+
+
+
+
 
 ## **fmsb** 
 
@@ -837,34 +983,8 @@ if (load_pkg("fmsb")) {
 ### **gráfico de barras polar**
 
 
-```{r}
-
-# Datos por método de pago
-data <- as.data.frame(table(ventas$Metodo_Pago))
-colnames(data) <- c("variable", "value")
-
-# Create grafico en coordenadas 
-plot <- ggplot(data,aes(x = variable,y = value,
-                 fill = variable)) +
-          geom_col(width = 1, color = "white") +
-          coord_polar() +                         # vonvierte en grafico circular
-          labs(x = "", y = "",title = "Titulo",   # add titulo, subtitulo, nota
-                             subtitle = "Subtitulo", 
-                              caption = "Nota" ) +
-         theme_minimal() +                     # borra caracteristicas del grafico
-         scale_fill_manual(values = pal_admin) +
-         theme(                                # asigna caracteristicas
-            legend.position = "none",
-            axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
-            axis.ticks = element_blank(),
-            axis.text.y = element_blank(),
-            axis.text.x = element_text(face = "bold"),
-           plot.title = element_text(size = 24, face = "bold"),
-          plot.subtitle = element_text(size = 12))
-
-plot # imprime grafico
-
+`
+```{r, message=FALSE, warning=FALSE}
 
 
 
@@ -968,54 +1088,31 @@ Para representar información en el mapa seden ingresar una vector con 33 valore
 ```
 <br/>
 
- Si se quiere representar un mapa con las muertes causadas por covid en Colombia por departamento debemos crear una tabla con la información relacionada con esta variable por departamento en el mismo orden contenida en el archivo **depto.shp** y adicionarla como variable : mapcol@data$muertes
+Si se quiere representar un mapa con un indicador real por departamento, se debe construir una tabla con los valores en el mismo orden del archivo **depto.shp** y adicionarla como variable al objeto `mapco`.
 
-De la base de datos abiertos Colombia se obtiene la siguiente información correspondiente al número de fallecidos por Covid19, durante el periodo marzo 2019 a agosto 25 de 2021
-
-```{r, eval=FALSE}
-# colombia=readRDS("data/Colombia.RDS") # lee archivo RDS (si existe)
-# colombia$departamento_nom= str_to_upper(colombia$departamento_nom) # normaliza texto
-# t=table(colombia$departamento_nom,colombia$estado) # tabla de frecuencias
-# fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880, # vector
-#             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
-#             620,249,29,87,17,45,133)
-```
+En este ejemplo se simula un indicador para evitar depender de archivos externos:
  
 
 <br/><br/>
 
-```{r }
- require(sp)
- require(rgdal)
- require(raster)
- require(RColorBrewer)
+```{r}
+require(sp)
+require(rgdal)
+require(raster)
+require(RColorBrewer)
 
- mi.palette <- brewer.pal(n = 7, name = "OrRd")   # paleta de colores
- mapco=shapefile("map/colombia/depto.shp")  # importa mapa en formato .shp
- colombia=readRDS("data/Colombia.RDS")
- colombia$departamento_nom= str_to_upper(colombia$departamento_nom)
- t=table(colombia$departamento_nom,colombia$estado)
- fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880,
-             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
-             620,249,29,87,17,45,133) # vector con información
- mapco@data$fallecidos=fallecidos # se adiciona variable con 33 valores = 33 dptos, en mismo orden
- spplot(mapco[,6], col.regions = mi.palette, cuts = 6)  # mapa
+mi.palette <- brewer.pal(n = 7, name = "OrRd")   # paleta de colores
+mapco <- shapefile("map/colombia/depto.shp")  # importa mapa en formato .shp
+
+set.seed(3)
+indicador <- round(runif(nrow(mapco@data), min = 50, max = 500)) # indicador simulado
+mapco@data$indicador <- indicador # se adiciona variable con 33 valores = 33 dptos, en mismo orden
+
+spplot(mapco["indicador"], col.regions = mi.palette, cuts = 6)  # mapa
 ```
 
 
-```{r map4, echo=FALSE, out.width="40%", fig.align = "center"}
-knitr::include_graphics("img/mapColombia2.png")
-```
 <br/><br/>
-
-
-
-
-## **tmap**
-
-https://www.jstatsoft.org/article/view/v084i06
-
-
 
 
 <br/><br/><br/> 
@@ -1167,6 +1264,8 @@ http://brandcolors.net/
 knitr::include_graphics("img/tablero-01.png")
 ```
 
+<br/> <br/> 
+
 <html>
 <button id="dl-rmd" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
   📥 Descargar código Rmd
@@ -1187,3 +1286,31 @@ document.getElementById('dl-rmd').addEventListener('click', async () => {
 });
 </script>
 </html>
+
+<br/> <br/> 
+
+## Descarga de practica
+
+<html>
+<button id="dl-practica" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
+  📥 Descargar práctica (R)
+</button>
+<script>
+document.getElementById('dl-practica').addEventListener('click', async () => {
+  const urlRaw = 'practica_beer.R';
+  const resp = await fetch(urlRaw);
+  const blob = await resp.blob();
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'practica_beer.R';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+</script>
+</html>
+
+
+<br/> <br/> 

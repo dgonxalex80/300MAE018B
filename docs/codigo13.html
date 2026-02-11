@@ -436,6 +436,16 @@ div.tocify {
     </li>
     <li class="divider"></li>
     <li>
+      <a href="guia13.html">Guía 1.3</a>
+    </li>
+    <li>
+      <a href="recurso13.html">Recursos 1.3</a>
+    </li>
+    <li>
+      <a href="codigo13.html">Código 1.3</a>
+    </li>
+    <li class="divider"></li>
+    <li>
       <a href="monitoria1.html">Monitoría 1</a>
     </li>
     <li class="divider"></li>
@@ -642,163 +652,73 @@ gráfica existen otras formas que combinan variables como:</p>
 <li>Diagrama de Mosaico</li>
 <li>Diagramas de radar</li>
 </ul>
-<p><br/><br/><br/></p>
+<p><br/><br/></p>
 </div>
-<div id="transformación-de-bases-y-relaciones" class="section level1">
-<h1><strong>Transformación de bases y relaciones</strong></h1>
-<p>En esta sección se integran las bases de <strong>clientes</strong> y
-<strong>ventas</strong> para caracterizar comportamientos de compra.</p>
-<pre class="r"><code># Limpieza y estandarización
-clientes_limpio &lt;- clientes %&gt;% 
-  mutate(
-    ultima_compra = as.numeric(gsub(&quot;,&quot;, &quot;.&quot;, ultima_compra)),
-    genero_cliente = factor(genero_cliente),
-    categoria_preferida = factor(categoria_preferida)
-  )
-
-# Agregación de ventas por cliente
-ventas_cliente &lt;- ventas %&gt;% 
-  group_by(Cliente) %&gt;% 
-  summarise(
-    ventas_total = sum(Ventas_Netas, na.rm = TRUE),
-    transacciones = n(),
-    items_total = sum(Items, na.rm = TRUE),
-    ticket_prom = ventas_total / transacciones,
-    .groups = &quot;drop&quot;
-  )
-
-# Relación clientes-ventas
-base_rel &lt;- clientes_limpio %&gt;% 
-  left_join(ventas_cliente, by = c(&quot;id&quot; = &quot;Cliente&quot;))
-
-# Guardar bases transformadas
-write_csv(clientes_limpio, &quot;data/clientes_limpio.csv&quot;)
-write_csv(ventas_cliente, &quot;data/ventas_cliente.csv&quot;)
-write_csv(base_rel, &quot;data/base_rel.csv&quot;)</code></pre>
-<pre class="r"><code># Segmentación de comportamiento (valor y frecuencia)
-seg_cortes &lt;- function(x, labels3) {
-  q &lt;- unique(quantile(x, probs = c(0, .33, .66, 1), na.rm = TRUE))
-  if (length(q) &gt;= 4) {
-    return(cut(x, breaks = q, include.lowest = TRUE, labels = labels3))
-  }
-  # fallback si hay muchos empates
-  ntile(x, 3) |&gt; factor(labels = labels3)
-}
-
-base_rel &lt;- base_rel %&gt;% 
-  mutate(
-    seg_valor = seg_cortes(ventas_total, c(&quot;Bajo&quot;, &quot;Medio&quot;, &quot;Alto&quot;)),
-    seg_frecuencia = seg_cortes(transacciones, c(&quot;Baja&quot;, &quot;Media&quot;, &quot;Alta&quot;))
-  )</code></pre>
-<pre class="r"><code># Tabla de relaciones y comportamiento
-relaciones &lt;- base_rel %&gt;% 
-  group_by(seg_valor, seg_frecuencia, genero_cliente) %&gt;% 
-  summarise(
-    clientes = n(),
-    ventas_prom = mean(ventas_total, na.rm = TRUE),
-    ticket_prom = mean(ticket_prom, na.rm = TRUE),
-    .groups = &quot;drop&quot;
-  )
-
-write_csv(relaciones, &quot;data/relaciones.csv&quot;)
-
-relaciones</code></pre>
-<pre><code># A tibble: 27 × 6
-   seg_valor seg_frecuencia genero_cliente clientes ventas_prom ticket_prom
-   &lt;fct&gt;     &lt;fct&gt;          &lt;fct&gt;             &lt;int&gt;       &lt;dbl&gt;       &lt;dbl&gt;
- 1 Bajo      Baja           Femenino             19        70.1        70.1
- 2 Bajo      Baja           Masculino             5        87.5        87.5
- 3 Bajo      Media          Femenino             10        79.1        79.1
- 4 Bajo      Media          Masculino             9        81.5        81.5
- 5 Bajo      Media          Otro                  7        87.9        87.9
- 6 Bajo      Alta           Femenino              7        52.1        52.1
- 7 Bajo      Alta           Masculino             4        53.5        53.5
- 8 Bajo      Alta           Otro                  5        61.8        61.8
- 9 Medio     Baja           Femenino             10       166.        166. 
-10 Medio     Baja           Masculino             8       162.        162. 
-# ℹ 17 more rows</code></pre>
-<pre class="r"><code># Relación ingresos vs ventas totales
-ggplot(base_rel, aes(x = ingresos, y = ventas_total, color = seg_valor)) +
-  geom_point(alpha = 0.6) +
-  labs(title = &quot;Ingresos vs Ventas Totales&quot;, x = &quot;Ingresos&quot;, y = &quot;Ventas totales&quot;) +
-  theme_minimal()</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" /></p>
-<pre class="r"><code># Paleta (5 + 1 extra)
-pal &lt;- c(
-  &quot;Alimentos&quot;     = &quot;#F28B30&quot;,
-  &quot;Deportes&quot;      = &quot;#F2B33D&quot;,
-  &quot;Electrónica&quot;   = &quot;#3B5B8A&quot;,
-  &quot;Hogar&quot;         = &quot;#5D7A9C&quot;,
-  &quot;Ropa&quot;          = &quot;#F0D9BF&quot;,
-  &quot;Extra&quot;         = &quot;#2F476E&quot;  # por si luego agregas otra categoría
-)
-
-base_rel %&gt;%
-  group_by(categoria_preferida) %&gt;%
-  summarise(ticket_prom = mean(ticket_prom, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;%
-  ggplot(aes(x = categoria_preferida, y = ticket_prom, fill = categoria_preferida)) +
-  geom_col() +
-  labs(title = &quot;Ticket promedio por categoría preferida&quot;,
-       x = &quot;Categoría&quot;, y = &quot;Ticket promedio&quot;) +
-  scale_fill_manual(values = pal) +
-  theme_minimal() +
-  theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
-<p><br/><br/><br/></p>
-</div>
-<div id="variable-cualitativa-nominal" class="section level1">
-<h1><strong>Variable cualitativa-nominal</strong></h1>
+<div id="cualitativa-nominal" class="section level1">
+<h1><strong>Cualitativa-nominal</strong></h1>
 <div id="gráfico-de-tortas" class="section level2">
 <h2><strong>1. Gráfico de tortas</strong></h2>
 <pre class="r"><code>t1 &lt;- table(clientes$categoria_preferida)
-pie(t1, col = pal_admin)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
+cols_t1 &lt;- if (length(t1) &lt;= 4) paleta4 else paleta5
+pie(t1, col = cols_t1[1:length(t1)])</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-2-1.png" alt="" width="672" /></p>
 <pre class="r"><code>t1 &lt;- table(clientes$categoria_preferida)
 labs &lt;- names(t1)
 pct &lt;- round(t1 / sum(t1) * 100)
 labs &lt;- paste(labs, pct, &quot;%&quot;)
+cols_t1 &lt;- if (length(t1) &lt;= 4) paleta4 else paleta5
 pie(t1, 
     labels = labs, 
     main = &quot;Distribución por categoría preferida&quot;,
-    col = pal_admin)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-8-1.png" alt="" width="672" /></p>
+    col = cols_t1[1:length(t1)])</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-3-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 </div>
-<div id="variable-cualitativa-ordinal" class="section level1">
-<h1><strong>Variable cualitativa-ordinal</strong></h1>
+<div id="cualitativa-ordinal" class="section level1">
+<h1><strong>Cualitativa-ordinal</strong></h1>
 <div id="gráfico-de-barras" class="section level2">
 <h2><strong>2.Gráfico de barras</strong></h2>
-<pre class="r"><code>ingresos_cat &lt;- cut(clientes$ingresos,
-                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
-                    include.lowest = TRUE,
-                    labels = c(&quot;Bajo&quot;, &quot;Medio&quot;, &quot;Alto&quot;))
-barplot(table(ingresos_cat), ylim =c(0,400) )</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-9-1.png" alt="" width="672" /></p>
-<pre class="r"><code>ingresos_cat &lt;- cut(clientes$ingresos,
-                    breaks = quantile(clientes$ingresos, probs = c(0, .33, .66, 1)),
-                    include.lowest = TRUE,
-                    labels = c(&quot;Bajo&quot;, &quot;Medio&quot;, &quot;Alto&quot;))
-ev &lt;- table(ingresos_cat)
-barplot(ev,  col = pal[2:4], 
-        main = &quot;Ingresos de clientes (nivel)&quot;,
+<pre class="r"><code>library(dplyr)
+
+clientes$edadR[clientes$edad_cliente &lt;=30] = &quot;1.Joven&quot;</code></pre>
+<pre><code>Warning: Unknown or uninitialised column: `edadR`.</code></pre>
+<pre class="r"><code>clientes$edadR[clientes$edad_cliente&gt;=31 &amp; clientes$edad_cliente &lt;=60] = &quot;2.Adulto&quot;
+clientes$edadR[clientes$edad_cliente&gt;=61] = &quot;3.Mayor&quot;
+ 
+
+barplot(table(clientes$edadR), ylim = c(0, 600))</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-4-1.png" alt="" width="672" /></p>
+<pre class="r"><code>ev &lt;- table(clientes$edadR)
+cols_ev &lt;- if (length(ev) &lt;= 4) paleta4 else paleta
+barplot(ev,  col = cols_ev[1:length(ev)], 
+        main = &quot;Edad de clientes (categorías)&quot;,
         las = 1,
-        ylim =c(0,400))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-10-1.png" alt="" width="672" />
+        ylim =c(0,600))</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-5-1.png" alt="" width="672" />
 <br/><br/><br/></p>
 </div>
 <div id="gráfico-de-barras-2" class="section level2">
 <h2><strong>3. Gráfico de barras 2 </strong></h2>
 <pre class="r"><code>conteo &lt;- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
 barplot(conteo)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-6-1.png" alt="" width="672" /></p>
 <pre class="r"><code>counts &lt;- table(ventas$Metodo_Pago, ventas$Tipo_Cliente)
+cols_counts &lt;- if (nrow(counts) &lt;= 4) paleta4 else paleta5
 barplot(counts, main = &quot;Método de pago por tipo de cliente&quot;,  
         xlab = &quot;Tipo de cliente&quot;,
-        col = pal[1:nrow(counts)],
+        col = cols_counts[1:nrow(counts)],
         legend = rownames(counts),
         las = 1)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-7-1.png" alt="" width="672" /></p>
+<pre class="r"><code>counts &lt;- table(ventas$Tipo_Cliente,ventas$Metodo_Pago)
+cols_counts &lt;- if (nrow(counts) &lt;= 4) paleta4 else 5
+barplot(counts, main = &quot;Método de pago por tipo de cliente&quot;,  
+        xlab = &quot;Tipo de cliente&quot;,
+        col = cols_counts[1:nrow(counts)],
+        legend = rownames(counts),
+        las = 1)</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-8-1.png" alt="" width="672" /></p>
 </div>
 <div id="diagrama-de-mosaico" class="section level2">
 <h2><strong>4. Diagrama de mosaico </strong></h2>
@@ -821,7 +741,7 @@ mosaicplot(
   border    = &quot;white&quot;,
   off       = 0.02
 )</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-9-1.png" alt="" width="672" /></p>
 <pre class="r"><code>par(op)</code></pre>
 <p><br/><br/><br/></p>
 </div>
@@ -830,89 +750,77 @@ mosaicplot(
 <h1><strong>Variables cuantitativas</strong></h1>
 <div id="diagrama-de-tallos-y-hojas" class="section level2">
 <h2><strong>5. Diagrama de tallos y hojas</strong></h2>
-<pre class="r"><code>vn &lt;- ventas$Ventas_Netas
-
-# Diagrama de tallos y hojas
-stem(vn)</code></pre>
+<pre class="r"><code># Diagrama de tallos y hojas
+stem(beer$calorias)</code></pre>
 <pre><code>
   The decimal point is 1 digit(s) to the right of the |
 
-   0 | 045567
-   2 | 03770002448
-   4 | 590056
-   6 | 1561233456789
-   8 | 0057901238
-  10 | 000677801234579
-  12 | 024588901147
-  14 | 0011335566801237899
-  16 | 00067778901357789
-  18 | 002356667994456
-  20 | 224023356
-  22 | 033488913334
-  24 | 012338027
-  26 | 2355127
-  28 | 388026
-  30 | 233660189
-  32 | 2336614679
-  34 | 22678
-  36 | 29
-  38 | 0000000</code></pre>
+   4 | 8
+   6 | 0012
+   8 | 2566
+  10 | 500
+  12 | 3457
+  14 | 02223333456678888888900011355578999
+  16 | 000000223800027
+  18 | 46
+  20 | 1</code></pre>
 <p><br/><br/><br/></p>
 </div>
 <div id="histograma" class="section level2">
 <h2><strong>6. Histograma</strong></h2>
-<pre class="r"><code>hist(vn)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
-<pre class="r"><code>h1=hist(vn, 
-        main = &quot;Ventas netas&quot;, 
-        xlab = &quot;ventas netas&quot;, ylab=&quot;frecuencias absolutas&quot;, 
+<pre class="r"><code>hist(beer$calorias)</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" /></p>
+<pre class="r"><code>h1=hist(beer$calorias, 
+        main = &quot;Calorías&quot;, 
+        xlab = &quot; &quot;, ylab=&quot;frecuencias absolutas&quot;, 
         labels=TRUE, 
         col=c21,
-        ylim = c(0,30))
-abline(v=mean(vn), col=c31, lwd=2)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-16-1.png" alt="" width="672" />
+        ylim = c(0,50),
+        las = 1)
+abline(v=mean(beer$calorias), col=c31, lwd=2)
+grid()</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" />
 <br/><br/><br/></p>
 </div>
 <div id="diagrama-de-densidad" class="section level2">
 <h2><strong>7. Diagrama de densidad</strong></h2>
 <pre class="r"><code>vn &lt;- ventas$Ventas_Netas
 plot(density(vn))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-17-1.png" alt="" width="672" /></p>
-<pre class="r"><code>plot(density(vn),
+<p><img src="codigo13_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" /></p>
+<pre class="r"><code>plot(density(beer$calorias),
      main=&quot;Distribución de ventas netas&quot;, 
      col=c11, 
      lwd=2,
      las=1, 
      xlab = &quot;Ventas netas&quot;,
      ylab = &quot;Densidad&quot;)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 <div id="diagrama-de-cajas" class="section level2">
 <h2><strong>8. Diagrama de cajas</strong></h2>
 <pre class="r"><code>boxplot(vn)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-19-1.png" alt="" width="672" /></p>
-<pre class="r"><code>boxplot(vn, main=&quot;Ventas netas&quot;,
+<p><img src="codigo13_files/figure-html/unnamed-chunk-15-1.png" alt="" width="672" /></p>
+<pre class="r"><code>boxplot(beer$calorias, main=&quot;Calorías por unidad&quot;,
         col=c41,
         las=1,
-        horizontal = TRUE)
-abline(v=mean(vn), col=c31, lwd=2)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-20-1.png" alt="" width="672" /></p>
+        horizontal = TRUE)</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-16-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 <div id="comparación-diagrama-de-cajas" class="section level2">
 <h2><strong>9. Comparación diagrama de cajas</strong></h2>
 <pre class="r"><code>boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-21-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-17-1.png" alt="" width="672" /></p>
 <pre class="r"><code>par(oma = c(2, 5, 3, 4) )  # margenes de la imagen
 boxplot(Ventas_Netas ~ Tipo_Cliente, data = ventas,
         main = &quot;Ventas netas por tipo de cliente&quot;, 
-        col = pal_admin,
+        col = paleta5,
         xlab = &quot;ventas netas&quot;, ylab = &quot; &quot;, 
         horizontal = TRUE,
         las = 1)
 abline(v = mean(ventas$Ventas_Netas), col = c31, lwd = 2)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-22-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-18-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 <div id="gráfico-de-series-de-tiempo" class="section level2">
@@ -925,7 +833,7 @@ plot(serie$mes, serie$Ventas_Netas, type = &quot;l&quot;,
      main = &quot;Ventas netas mensuales&quot;, 
      col = c31, 
      lwd = 2, xlab = &quot;mes&quot;, ylab = &quot;ventas netas&quot;)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-23-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-19-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 <div id="resumen" class="section level2">
@@ -985,7 +893,7 @@ vamos a utilizar</p>
 <h3>data</h3>
 <pre class="r"><code>fig=ggplot(data=clientes)
 fig</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-28-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-24-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 <p>Como segundo paso se definen las variables que se van a utilizar en
 la construcción del gráfico</p>
@@ -994,7 +902,7 @@ la construcción del gráfico</p>
 <h3>data + aesthetics</h3>
 <pre class="r"><code>fig=ggplot(data=clientes,  aes(x=edad_cliente , y=puntos))
 fig</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-29-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-25-1.png" alt="" width="672" /></p>
 <p>Luego de tener definida la base y las variables a utilizar se indica
 la geometria a utilizar, en este caso se trata de puntos</p>
 </div>
@@ -1002,7 +910,7 @@ la geometria a utilizar, en este caso se trata de puntos</p>
 <h3>data + aesthetics + geometries</h3>
 <pre class="r"><code>fig=ggplot(data=clientes,  aes(x=edad_cliente , y=puntos))
 fig + geom_point(color = c11)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-30-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-26-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 <p>Otros elementos a utilizar son :</p>
 <p><br/></p>
@@ -1014,7 +922,7 @@ factor, construyendo la gráfica para cada mes en este caso</p>
 <pre class="r"><code>fig=ggplot(data=ventas,  aes(x=Edad , y=Ventas_Netas))+
   geom_point(color = c21) + facet_wrap(~ Metodo_Pago)
 fig</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-31-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-27-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 <p><strong>stat</strong> permite realizar modelos lineales y mostrar asi
 la relación existente entre las variables</p>
@@ -1027,61 +935,7 @@ class="section level3">
   facet_wrap(~ Metodo_Pago) +
   stat_smooth(method = &quot;loess&quot; , formula =y ~ x, color = c31)
 fig</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: span too small.  fewer data values than degrees of freedom.</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 45.98</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 4.02</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 0</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 16.16</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : span too small.  fewer
-data values than degrees of freedom.</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-45.98</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-4.02</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 0</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 16.16</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 31.77</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 22.23</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 3.395e-17</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 1461.5</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-31.77</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-22.23</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 3.395e-17</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 1461.5</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-32-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-28-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 <p><strong>coordinates</strong> la cual permite ajustar los ejes , por
 ejemplo podemos determian el rango de que queremos presentar en la
@@ -1096,61 +950,7 @@ coordinates</h3>
         stat_smooth(method = &quot;loess&quot; , formula =y ~ x, color = c31) +
         coord_cartesian(xlim = c(18,70))
 fig</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: span too small.  fewer data values than degrees of freedom.</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 45.98</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 4.02</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 0</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 16.16</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : span too small.  fewer
-data values than degrees of freedom.</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-45.98</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-4.02</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 0</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 16.16</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 31.77</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 22.23</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 3.395e-17</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 1461.5</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-31.77</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-22.23</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 3.395e-17</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 1461.5</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-33-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-29-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 <p><strong>themes</strong> finalmente la capa del tema o fondo de la
 gráfica</p>
@@ -1166,61 +966,7 @@ themes</h3>
         coord_cartesian(xlim = c(18,70)) +
         theme_classic()
 fig</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: span too small.  fewer data values than degrees of freedom.</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 45.98</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 4.02</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 0</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 16.16</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : span too small.  fewer
-data values than degrees of freedom.</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-45.98</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-4.02</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 0</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 16.16</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: pseudoinverse used at 31.77</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: neighborhood radius 22.23</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: reciprocal condition number 3.395e-17</code></pre>
-<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
-: There are other near singularities as well. 1461.5</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : pseudoinverse used at
-31.77</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : neighborhood radius
-22.23</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : reciprocal condition
-number 3.395e-17</code></pre>
-<pre><code>Warning in predLoess(object$y, object$x, newx = if (is.null(newdata)) object$x
-else if (is.data.frame(newdata))
-as.matrix(model.frame(delete.response(terms(object)), : There are other near
-singularities as well. 1461.5</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-34-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-30-1.png" alt="" width="672" /></p>
 <p><br/><br/><br/></p>
 </div>
 <div id="otros-ejemplos-de-ggplot2" class="section level3">
@@ -1233,38 +979,38 @@ fig2 = ggplot(data=ventas, aes(x=Ventas_Netas, y=Tipo_Cliente)) +
   labs(x=&quot;ventas netas&quot; , y=&quot;tipo de cliente&quot;)
   
 fig2        </code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-35-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-31-1.png" alt="" width="672" /></p>
 <pre class="r"><code>fig3=ggplot(clientes, aes(edad_cliente)) +
        geom_histogram(bins = 7,fill=c21, color=c7, alpha=0.9)+
        theme_minimal() +
        labs(x = &quot;edad&quot;, y = &quot;frecuencia absoluta&quot;) +
        ggtitle(&quot;Edad de clientes&quot;)
 fig3 </code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-36-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-32-1.png" alt="" width="672" /></p>
 <pre class="r"><code>fig=ggplot(data = ventas, aes(x = Tipo_Cliente, fill = Metodo_Pago)) + 
       geom_bar(colour= c1, size = 0.3 ) +  
   coord_polar() +
-  scale_fill_manual(values = pal_admin)</code></pre>
+  scale_fill_manual(values = paleta5)</code></pre>
 <pre><code>Warning in geom_bar(colour = c1, size = 0.3): Ignoring unknown parameters:
 `size`</code></pre>
 <pre class="r"><code>fig</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-37-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-33-1.png" alt="" width="672" /></p>
 <pre class="r"><code># Plot
 ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, fill = Tipo_Cliente)) +
   geom_boxplot(alpha = 0.6) +
   geom_jitter(color = c1, size = 0.4, alpha = 0.6) +
-  scale_fill_manual(values = pal_admin) +
+  scale_fill_manual(values = paleta5) +
   theme_minimal() +
   theme(legend.position = &quot;none&quot;,
         plot.title = element_text(size = 11)) +
   ggtitle(&quot;Ventas netas por tipo de cliente (geom_jitter)&quot;) +
   xlab(&quot;&quot;)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-38-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-34-1.png" alt="" width="672" /></p>
 </div>
 </div>
 <div id="highcharter" class="section level2">
 <h2><strong>highcharter</strong></h2>
-<p><img src="img/highcharter.png" /></p>
+<p><img src="img/highcharter.png" alt="" width="10%" style="display: block; margin: auto auto auto 0;" /></p>
 <p>Este es un paquete especializado en la creación de gráficos dinámicos
 que emplea inrnamente javascript.</p>
 <p>Este paquete permite crear varios tipos de gráficos como: diagramas
@@ -1277,8 +1023,9 @@ treemap, gráficos de barras, redes, entre otros.</p>
 <p>Luego se carga para utilizar sus funciones</p>
 <pre class="r"><code>load_pkg(&quot;highcharter&quot;)</code></pre>
 <pre><code>[1] TRUE</code></pre>
-<div class="highchart html-widget html-fill-item" id="htmlwidget-8597c876919c509b167a" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-8597c876919c509b167a">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Ventas netas vs edad por método de pago"},"yAxis":{"title":{"text":"Ventas_Netas"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"name":"American Express","data":[{"Cliente":151,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":212.02,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-11-23","mes":"2025-11-01","x":46,"y":212.02},{"Cliente":178,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":322.05,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-05-31","mes":"2026-05-01","x":46,"y":322.05},{"Cliente":181,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":380,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-06-21","mes":"2026-06-01","x":50,"y":380},{"Cliente":185,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":288.45,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-07-19","mes":"2026-07-01","x":50,"y":288.45}],"type":"scatter"},{"name":"Discover","data":[{"Cliente":34,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":380,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Soltero","Edad":78,"fecha":"2023-08-27","mes":"2023-08-01","x":78,"y":380},{"Cliente":38,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":231.3,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-09-24","mes":"2023-09-01","x":40,"y":231.3},{"Cliente":57,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":301.89,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Soltero","Edad":78,"fecha":"2024-02-04","mes":"2024-02-01","x":78,"y":301.89},{"Cliente":100,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":159.77,"Metodo_Pago":"Discover","Genero":"Hombre","Estado_Civil":"Casado","Edad":32,"fecha":"2024-12-01","mes":"2024-12-01","x":32,"y":159.77},{"Cliente":166,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":228.39,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-03-08","mes":"2026-03-01","x":54,"y":228.39},{"Cliente":175,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":224.35,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2026-05-10","mes":"2026-05-01","x":40,"y":224.35},{"Cliente":188,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":302.67,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-08-09","mes":"2026-08-01","x":54,"y":302.67},{"Cliente":190,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":322.7,"Metodo_Pago":"Discover","Genero":"Hombre","Estado_Civil":"Casado","Edad":32,"fecha":"2026-08-23","mes":"2026-08-01","x":32,"y":322.7}],"type":"scatter"},{"name":"MasterCard","data":[{"Cliente":3,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":19.98,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-01-22","mes":"2023-01-01","x":46,"y":19.98},{"Cliente":10,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":80.25,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-03-12","mes":"2023-03-01","x":28,"y":80.25},{"Cliente":20,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":159.26,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-05-21","mes":"2023-05-01","x":46,"y":159.26},{"Cliente":28,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":306.09,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":68,"fecha":"2023-07-16","mes":"2023-07-01","x":68,"y":306.09},{"Cliente":31,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":180.43,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-08-06","mes":"2023-08-01","x":44,"y":180.43},{"Cliente":45,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":178.61,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-11-12","mes":"2023-11-01","x":46,"y":178.61},{"Cliente":49,"Tipo_Cliente":"Regular","Items":17,"Ventas_Netas":380,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Soltero","Edad":48,"fecha":"2023-12-10","mes":"2023-12-01","x":48,"y":380},{"Cliente":50,"Tipo_Cliente":"Regular","Items":18,"Ventas_Netas":380,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-12-17","mes":"2023-12-01","x":44,"y":380},{"Cliente":64,"Tipo_Cliente":"Regular","Items":4,"Ventas_Netas":98.23999999999999,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-03-24","mes":"2024-03-01","x":34,"y":98.23999999999999},{"Cliente":69,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":131.2,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Soltero","Edad":48,"fecha":"2024-04-28","mes":"2024-04-01","x":48,"y":131.2},{"Cliente":81,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":330.53,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2024-07-21","mes":"2024-07-01","x":46,"y":330.53},{"Cliente":93,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":73.48999999999999,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-10-13","mes":"2024-10-01","x":34,"y":73.48999999999999},{"Cliente":94,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":167.03,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-10-20","mes":"2024-10-01","x":44,"y":167.03},{"Cliente":95,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":272.21,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-10-27","mes":"2024-10-01","x":32,"y":272.21},{"Cliente":96,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":243.09,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-11-03","mes":"2024-11-01","x":32,"y":243.09},{"Cliente":116,"Tipo_Cliente":"Regular","Items":13,"Ventas_Netas":326.42,"Metodo_Pago":"MasterCard","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2025-03-23","mes":"2025-03-01","x":36,"y":326.42},{"Cliente":120,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":127.9,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2025-04-20","mes":"2025-04-01","x":28,"y":127.9},{"Cliente":121,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":203.81,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-04-27","mes":"2025-04-01","x":32,"y":203.81},{"Cliente":127,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":186.37,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2025-06-08","mes":"2025-06-01","x":56,"y":186.37},{"Cliente":128,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":227.5,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-06-15","mes":"2025-06-01","x":32,"y":227.5},{"Cliente":142,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":71.86,"Metodo_Pago":"MasterCard","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2025-09-21","mes":"2025-09-01","x":36,"y":71.86},{"Cliente":144,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":292.16,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":68,"fecha":"2025-10-05","mes":"2025-10-01","x":68,"y":292.16},{"Cliente":157,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":232.85,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-01-04","mes":"2026-01-01","x":46,"y":232.85},{"Cliente":160,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":270.56,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-01-25","mes":"2026-01-01","x":32,"y":270.56},{"Cliente":161,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":341.87,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2026-02-01","mes":"2026-02-01","x":56,"y":341.87},{"Cliente":176,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":30.49,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-05-17","mes":"2026-05-01","x":46,"y":30.49},{"Cliente":182,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":143.36,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-06-28","mes":"2026-06-01","x":32,"y":143.36},{"Cliente":184,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":212.9,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2026-07-12","mes":"2026-07-01","x":44,"y":212.9}],"type":"scatter"},{"name":"Star Card","data":[{"Cliente":1,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":88.87,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-01-08","mes":"2023-01-01","x":44,"y":88.87},{"Cliente":2,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":27.49,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-01-15","mes":"2023-01-01","x":22,"y":27.49},{"Cliente":4,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":305.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-01-29","mes":"2023-01-01","x":54,"y":305.84},{"Cliente":5,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":74.84999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2023-02-05","mes":"2023-02-01","x":20,"y":74.84999999999999},{"Cliente":6,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":91.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-02-12","mes":"2023-02-01","x":30,"y":91.77},{"Cliente":7,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":99.75,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-02-19","mes":"2023-02-01","x":38,"y":99.75},{"Cliente":8,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":146.42,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2023-02-26","mes":"2023-02-01","x":36,"y":146.42},{"Cliente":11,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":178.11,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-03-19","mes":"2023-03-01","x":44,"y":178.11},{"Cliente":12,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":251.97,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2023-03-26","mes":"2023-03-01","x":32,"y":251.97},{"Cliente":13,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":133.68,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-04-02","mes":"2023-04-01","x":30,"y":133.68},{"Cliente":14,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":55.19,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-04-09","mes":"2023-04-01","x":28,"y":55.19},{"Cliente":15,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":265.41,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-04-16","mes":"2023-04-01","x":42,"y":265.41},{"Cliente":16,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":100.42,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-04-23","mes":"2023-04-01","x":44,"y":100.42},{"Cliente":17,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.83,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2023-04-30","mes":"2023-04-01","x":52,"y":140.83},{"Cliente":18,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":113.08,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-05-07","mes":"2023-05-01","x":28,"y":113.08},{"Cliente":21,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":10,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-05-28","mes":"2023-05-01","x":22,"y":10},{"Cliente":22,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":167.22,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-06-04","mes":"2023-06-01","x":38,"y":167.22},{"Cliente":23,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":177.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2023-06-11","mes":"2023-06-01","x":62,"y":177.15},{"Cliente":25,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":318.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-06-25","mes":"2023-06-01","x":42,"y":318.27},{"Cliente":26,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":121.88,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2023-07-02","mes":"2023-07-01","x":20,"y":121.88},{"Cliente":27,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":34,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-07-09","mes":"2023-07-01","x":30,"y":34},{"Cliente":29,"Tipo_Cliente":"Regular","Items":1,"Ventas_Netas":27.48,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-07-23","mes":"2023-07-01","x":22,"y":27.48},{"Cliente":30,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":220.37,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-07-30","mes":"2023-07-01","x":54,"y":220.37},{"Cliente":32,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":356.26,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-08-13","mes":"2023-08-01","x":54,"y":356.26},{"Cliente":33,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":241.44,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-08-20","mes":"2023-08-01","x":42,"y":241.44},{"Cliente":35,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":265.3,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2023-09-03","mes":"2023-09-01","x":52,"y":265.3},{"Cliente":36,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":188.53,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-09-10","mes":"2023-09-01","x":54,"y":188.53},{"Cliente":37,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":179.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":74,"fecha":"2023-09-17","mes":"2023-09-01","x":74,"y":179.98},{"Cliente":39,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":261.68,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":70,"fecha":"2023-10-01","mes":"2023-10-01","x":70,"y":261.68},{"Cliente":40,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":222.83,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-10-08","mes":"2023-10-01","x":38,"y":222.83},{"Cliente":41,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":336.01,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2023-10-15","mes":"2023-10-01","x":36,"y":336.01},{"Cliente":43,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":124.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-10-29","mes":"2023-10-01","x":46,"y":124.61},{"Cliente":44,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":151.64,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-11-05","mes":"2023-11-01","x":30,"y":151.64},{"Cliente":46,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":159.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-11-19","mes":"2023-11-01","x":30,"y":159.84},{"Cliente":47,"Tipo_Cliente":"Promocional","Items":14,"Ventas_Netas":290.29,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-11-26","mes":"2023-11-01","x":44,"y":290.29},{"Cliente":51,"Tipo_Cliente":"Regular","Items":16,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2023-12-24","mes":"2023-12-01","x":48,"y":380},{"Cliente":53,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":117.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2024-01-07","mes":"2024-01-01","x":56,"y":117.15},{"Cliente":54,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":243.17,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-01-14","mes":"2024-01-01","x":54,"y":243.17},{"Cliente":55,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":114.9,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2024-01-21","mes":"2024-01-01","x":38,"y":114.9},{"Cliente":56,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":70.86,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2024-01-28","mes":"2024-01-01","x":36,"y":70.86},{"Cliente":58,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":341.5,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2024-02-11","mes":"2024-02-01","x":42,"y":341.5},{"Cliente":59,"Tipo_Cliente":"Regular","Items":15,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-02-18","mes":"2024-02-01","x":48,"y":380},{"Cliente":60,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":76.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-02-25","mes":"2024-02-01","x":44,"y":76.77},{"Cliente":61,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":156.9,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-03-03","mes":"2024-03-01","x":60,"y":156.9},{"Cliente":62,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":148.17,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-03-10","mes":"2024-03-01","x":48,"y":148.17},{"Cliente":63,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":16.54,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-03-17","mes":"2024-03-01","x":32,"y":16.54},{"Cliente":65,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":15.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-03-31","mes":"2024-03-01","x":30,"y":15.57},{"Cliente":66,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":338.7,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2024-04-07","mes":"2024-04-01","x":42,"y":338.7},{"Cliente":67,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":124.2,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2024-04-14","mes":"2024-04-01","x":62,"y":124.2},{"Cliente":68,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":37.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":28,"fecha":"2024-04-21","mes":"2024-04-01","x":28,"y":37.89},{"Cliente":70,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":201.53,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-05-05","mes":"2024-05-01","x":54,"y":201.53},{"Cliente":71,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":90.20999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2024-05-12","mes":"2024-05-01","x":36,"y":90.20999999999999},{"Cliente":72,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":276.86,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":58,"fecha":"2024-05-19","mes":"2024-05-01","x":58,"y":276.86},{"Cliente":73,"Tipo_Cliente":"Promocional","Items":15,"Ventas_Netas":322.56,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-05-26","mes":"2024-05-01","x":54,"y":322.56},{"Cliente":74,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":72.93000000000001,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-06-02","mes":"2024-06-01","x":32,"y":72.93000000000001},{"Cliente":75,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":302.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2024-06-09","mes":"2024-06-01","x":36,"y":302.89},{"Cliente":76,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":111.8,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-06-16","mes":"2024-06-01","x":30,"y":111.8},{"Cliente":77,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":168.89,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":46,"fecha":"2024-06-23","mes":"2024-06-01","x":46,"y":168.89},{"Cliente":78,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":153.09,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-06-30","mes":"2024-06-01","x":34,"y":153.09},{"Cliente":80,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":90.94,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-07-14","mes":"2024-07-01","x":30,"y":90.94},{"Cliente":82,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":105.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-07-28","mes":"2024-07-01","x":44,"y":105.65},{"Cliente":83,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":130.11,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2024-08-04","mes":"2024-08-01","x":38,"y":130.11},{"Cliente":85,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":282.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2024-08-18","mes":"2024-08-01","x":62,"y":282.61},{"Cliente":87,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":55.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-09-01","mes":"2024-09-01","x":34,"y":55.57},{"Cliente":88,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":318.69,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":72,"fecha":"2024-09-08","mes":"2024-09-01","x":72,"y":318.69},{"Cliente":89,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":73.52,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2024-09-15","mes":"2024-09-01","x":40,"y":73.52},{"Cliente":90,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":213.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-09-22","mes":"2024-09-01","x":32,"y":213.27},{"Cliente":91,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":107.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-09-29","mes":"2024-09-01","x":30,"y":107.06},{"Cliente":92,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":34.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-10-06","mes":"2024-10-01","x":54,"y":34.06},{"Cliente":97,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":120.1,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-11-10","mes":"2024-11-01","x":48,"y":120.1},{"Cliente":98,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":158.76,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-11-17","mes":"2024-11-01","x":30,"y":158.76},{"Cliente":99,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":128.93,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-11-24","mes":"2024-11-01","x":60,"y":128.93},{"Cliente":101,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":44.56,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2024-12-08","mes":"2024-12-01","x":42,"y":44.56},{"Cliente":102,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":185.18,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-12-15","mes":"2024-12-01","x":60,"y":185.18},{"Cliente":103,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":128.48,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-12-22","mes":"2024-12-01","x":30,"y":128.48},{"Cliente":105,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":174.87,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-01-05","mes":"2025-01-01","x":30,"y":174.87},{"Cliente":106,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":99.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2025-01-12","mes":"2025-01-01","x":30,"y":99.84},{"Cliente":107,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":186.88,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-01-19","mes":"2025-01-01","x":54,"y":186.88},{"Cliente":108,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":84.81999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-01-26","mes":"2025-01-01","x":32,"y":84.81999999999999},{"Cliente":110,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":140.45,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2025-02-09","mes":"2025-02-01","x":28,"y":140.45},{"Cliente":111,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":130.67,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2025-02-16","mes":"2025-02-01","x":62,"y":130.67},{"Cliente":113,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":109.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2025-03-02","mes":"2025-03-01","x":22,"y":109.65},{"Cliente":114,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":185.96,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":68,"fecha":"2025-03-09","mes":"2025-03-01","x":68,"y":185.96},{"Cliente":117,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":86.86,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":70,"fecha":"2025-03-30","mes":"2025-03-01","x":70,"y":86.86},{"Cliente":118,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":176.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-04-06","mes":"2025-04-01","x":42,"y":176.84},{"Cliente":119,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":247.76,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2025-04-13","mes":"2025-04-01","x":44,"y":247.76},{"Cliente":122,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":118.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-05-04","mes":"2025-05-01","x":46,"y":118.58},{"Cliente":124,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":113.81,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":28,"fecha":"2025-05-18","mes":"2025-05-01","x":28,"y":113.81},{"Cliente":125,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":232.85,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-05-25","mes":"2025-05-01","x":54,"y":232.85},{"Cliente":126,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":296.12,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2025-06-01","mes":"2025-06-01","x":62,"y":296.12},{"Cliente":129,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":159.82,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-06-22","mes":"2025-06-01","x":54,"y":159.82},{"Cliente":130,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":76.47,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2025-06-29","mes":"2025-06-01","x":42,"y":76.47},{"Cliente":131,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":29.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2025-07-06","mes":"2025-07-01","x":38,"y":29.65},{"Cliente":132,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":23.46,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-07-13","mes":"2025-07-01","x":30,"y":23.46},{"Cliente":133,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":209.71,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2025-07-20","mes":"2025-07-01","x":48,"y":209.71},{"Cliente":134,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":167.3,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-07-27","mes":"2025-07-01","x":54,"y":167.3},{"Cliente":136,"Tipo_Cliente":"Promocional","Items":15,"Ventas_Netas":310.6,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2025-08-10","mes":"2025-08-01","x":50,"y":310.6},{"Cliente":137,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":249.57,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":46,"fecha":"2025-08-17","mes":"2025-08-01","x":46,"y":249.57},{"Cliente":139,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":48.74,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2025-08-31","mes":"2025-08-01","x":36,"y":48.74},{"Cliente":140,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":14.66,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2025-09-07","mes":"2025-09-01","x":38,"y":14.66},{"Cliente":141,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":185.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2025-09-14","mes":"2025-09-01","x":34,"y":185.77},{"Cliente":143,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":144.63,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2025-09-28","mes":"2025-09-01","x":44,"y":144.63},{"Cliente":145,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":50.25,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-10-12","mes":"2025-10-01","x":32,"y":50.25},{"Cliente":146,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":222.51,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2025-10-19","mes":"2025-10-01","x":36,"y":222.51},{"Cliente":148,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":173.36,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2025-11-02","mes":"2025-11-01","x":40,"y":173.36},{"Cliente":149,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":196.35,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2025-11-09","mes":"2025-11-01","x":48,"y":196.35},{"Cliente":150,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":150.6,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2025-11-16","mes":"2025-11-01","x":42,"y":150.6},{"Cliente":152,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":309.66,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-11-30","mes":"2025-11-01","x":54,"y":309.66},{"Cliente":153,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":333.91,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2025-12-07","mes":"2025-12-01","x":52,"y":333.91},{"Cliente":154,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":30.21,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-12-14","mes":"2025-12-01","x":32,"y":30.21},{"Cliente":155,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":229.33,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-12-21","mes":"2025-12-01","x":46,"y":229.33},{"Cliente":156,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":15.01,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-12-28","mes":"2025-12-01","x":30,"y":15.01},{"Cliente":158,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":14.04,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-01-11","mes":"2026-01-01","x":50,"y":14.04},{"Cliente":159,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":106.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-01-18","mes":"2026-01-01","x":28,"y":106.98},{"Cliente":163,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":232.67,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2026-02-15","mes":"2026-02-01","x":62,"y":232.67},{"Cliente":164,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":107.7,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-02-22","mes":"2026-02-01","x":54,"y":107.7},{"Cliente":165,"Tipo_Cliente":"Promocional","Items":16,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2026-03-01","mes":"2026-03-01","x":48,"y":380},{"Cliente":167,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":358.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":58,"fecha":"2026-03-15","mes":"2026-03-01","x":58,"y":358.06},{"Cliente":168,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":189.24,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2026-03-22","mes":"2026-03-01","x":42,"y":189.24},{"Cliente":170,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":166.37,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-04-05","mes":"2026-04-01","x":28,"y":166.37},{"Cliente":171,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":50,"fecha":"2026-04-12","mes":"2026-04-01","x":50,"y":140.58},{"Cliente":172,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2026-04-19","mes":"2026-04-01","x":42,"y":140.27},{"Cliente":173,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":49.59,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2026-04-26","mes":"2026-04-01","x":30,"y":49.59},{"Cliente":174,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":262.52,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-05-03","mes":"2026-05-01","x":38,"y":262.52},{"Cliente":179,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":181.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-06-07","mes":"2026-06-01","x":46,"y":181.57},{"Cliente":180,"Tipo_Cliente":"Promocional","Items":14,"Ventas_Netas":337.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2026-06-14","mes":"2026-06-01","x":48,"y":337.06},{"Cliente":183,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":215.51,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2026-07-05","mes":"2026-07-01","x":36,"y":215.51},{"Cliente":186,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":170.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-07-26","mes":"2026-07-01","x":28,"y":170.61},{"Cliente":187,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":362.16,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":72,"fecha":"2026-08-02","mes":"2026-08-01","x":72,"y":362.16},{"Cliente":189,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":31.62,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-08-16","mes":"2026-08-01","x":32,"y":31.62},{"Cliente":191,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":193.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2026-08-30","mes":"2026-08-01","x":52,"y":193.98},{"Cliente":192,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":146.18,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":68,"fecha":"2026-09-06","mes":"2026-09-01","x":68,"y":146.18},{"Cliente":193,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":157.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-09-13","mes":"2026-09-01","x":38,"y":157.58},{"Cliente":194,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":170.33,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":50,"fecha":"2026-09-20","mes":"2026-09-01","x":50,"y":170.33},{"Cliente":195,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":150.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-09-27","mes":"2026-09-01","x":38,"y":150.15},{"Cliente":196,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":79.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2026-10-04","mes":"2026-10-01","x":56,"y":79.89},{"Cliente":197,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":93.45999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2026-10-11","mes":"2026-10-01","x":60,"y":93.45999999999999},{"Cliente":198,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":239.97,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2026-10-18","mes":"2026-10-01","x":34,"y":239.97},{"Cliente":199,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":214.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":74,"fecha":"2026-10-25","mes":"2026-10-01","x":74,"y":214.89},{"Cliente":200,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":143.39,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2026-11-01","mes":"2026-11-01","x":42,"y":143.39}],"type":"scatter"},{"name":"Visa","data":[{"Cliente":9,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":168.05,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Casado","Edad":48,"fecha":"2023-03-05","mes":"2023-03-01","x":48,"y":168.05},{"Cliente":19,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":234.1,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-05-14","mes":"2023-05-01","x":44,"y":234.1},{"Cliente":24,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":145.22,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-06-18","mes":"2023-06-01","x":46,"y":145.22},{"Cliente":42,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":241.86,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-10-22","mes":"2023-10-01","x":40,"y":241.86},{"Cliente":48,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":65.43000000000001,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-12-03","mes":"2023-12-01","x":40,"y":65.43000000000001},{"Cliente":52,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":201.94,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2023-12-31","mes":"2023-12-01","x":36,"y":201.94},{"Cliente":79,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":325.52,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2024-07-07","mes":"2024-07-01","x":40,"y":325.52},{"Cliente":84,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":287.82,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-08-11","mes":"2024-08-01","x":44,"y":287.82},{"Cliente":86,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":78.51000000000001,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2024-08-25","mes":"2024-08-01","x":46,"y":78.51000000000001},{"Cliente":104,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":182.81,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Casado","Edad":48,"fecha":"2024-12-29","mes":"2024-12-01","x":48,"y":182.81},{"Cliente":109,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":193.9,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-02-02","mes":"2025-02-01","x":46,"y":193.9},{"Cliente":112,"Tipo_Cliente":"Regular","Items":1,"Ventas_Netas":61.18,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-02-23","mes":"2025-02-01","x":42,"y":61.18},{"Cliente":115,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":137,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Soltero","Edad":24,"fecha":"2025-03-16","mes":"2025-03-01","x":24,"y":137},{"Cliente":123,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":111.22,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2025-05-11","mes":"2025-05-01","x":40,"y":111.22},{"Cliente":135,"Tipo_Cliente":"Regular","Items":4,"Ventas_Netas":77.61,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Soltero","Edad":24,"fecha":"2025-08-03","mes":"2025-08-01","x":24,"y":77.61},{"Cliente":138,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":356.59,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-08-24","mes":"2025-08-01","x":42,"y":356.59},{"Cliente":147,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":257.1,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2025-10-26","mes":"2025-10-01","x":20,"y":257.1},{"Cliente":162,"Tipo_Cliente":"Promocional","Items":17,"Ventas_Netas":379.48,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-02-08","mes":"2026-02-01","x":46,"y":379.48},{"Cliente":169,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":65.89,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2026-03-29","mes":"2026-03-01","x":36,"y":65.89},{"Cliente":177,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":194.56,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2026-05-24","mes":"2026-05-01","x":20,"y":194.56}],"type":"scatter"}],"xAxis":{"type":"linear","title":{"text":"Edad"},"categories":null}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+<div class="highchart html-widget html-fill-item" id="htmlwidget-079d84e4d1d73547df9a" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-079d84e4d1d73547df9a">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Ventas netas vs edad por método de pago"},"yAxis":{"title":{"text":"Ventas_Netas"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"name":"American Express","data":[{"Cliente":151,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":212.02,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-11-23","mes":"2025-11-01","x":46,"y":212.02},{"Cliente":178,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":322.05,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-05-31","mes":"2026-05-01","x":46,"y":322.05},{"Cliente":181,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":380,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-06-21","mes":"2026-06-01","x":50,"y":380},{"Cliente":185,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":288.45,"Metodo_Pago":"American Express","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-07-19","mes":"2026-07-01","x":50,"y":288.45}],"type":"scatter"},{"name":"Discover","data":[{"Cliente":34,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":380,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Soltero","Edad":78,"fecha":"2023-08-27","mes":"2023-08-01","x":78,"y":380},{"Cliente":38,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":231.3,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-09-24","mes":"2023-09-01","x":40,"y":231.3},{"Cliente":57,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":301.89,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Soltero","Edad":78,"fecha":"2024-02-04","mes":"2024-02-01","x":78,"y":301.89},{"Cliente":100,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":159.77,"Metodo_Pago":"Discover","Genero":"Hombre","Estado_Civil":"Casado","Edad":32,"fecha":"2024-12-01","mes":"2024-12-01","x":32,"y":159.77},{"Cliente":166,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":228.39,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-03-08","mes":"2026-03-01","x":54,"y":228.39},{"Cliente":175,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":224.35,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2026-05-10","mes":"2026-05-01","x":40,"y":224.35},{"Cliente":188,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":302.67,"Metodo_Pago":"Discover","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-08-09","mes":"2026-08-01","x":54,"y":302.67},{"Cliente":190,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":322.7,"Metodo_Pago":"Discover","Genero":"Hombre","Estado_Civil":"Casado","Edad":32,"fecha":"2026-08-23","mes":"2026-08-01","x":32,"y":322.7}],"type":"scatter"},{"name":"MasterCard","data":[{"Cliente":3,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":19.98,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-01-22","mes":"2023-01-01","x":46,"y":19.98},{"Cliente":10,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":80.25,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-03-12","mes":"2023-03-01","x":28,"y":80.25},{"Cliente":20,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":159.26,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-05-21","mes":"2023-05-01","x":46,"y":159.26},{"Cliente":28,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":306.09,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":68,"fecha":"2023-07-16","mes":"2023-07-01","x":68,"y":306.09},{"Cliente":31,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":180.43,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-08-06","mes":"2023-08-01","x":44,"y":180.43},{"Cliente":45,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":178.61,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-11-12","mes":"2023-11-01","x":46,"y":178.61},{"Cliente":49,"Tipo_Cliente":"Regular","Items":17,"Ventas_Netas":380,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Soltero","Edad":48,"fecha":"2023-12-10","mes":"2023-12-01","x":48,"y":380},{"Cliente":50,"Tipo_Cliente":"Regular","Items":18,"Ventas_Netas":380,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-12-17","mes":"2023-12-01","x":44,"y":380},{"Cliente":64,"Tipo_Cliente":"Regular","Items":4,"Ventas_Netas":98.23999999999999,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-03-24","mes":"2024-03-01","x":34,"y":98.23999999999999},{"Cliente":69,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":131.2,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Soltero","Edad":48,"fecha":"2024-04-28","mes":"2024-04-01","x":48,"y":131.2},{"Cliente":81,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":330.53,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2024-07-21","mes":"2024-07-01","x":46,"y":330.53},{"Cliente":93,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":73.48999999999999,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-10-13","mes":"2024-10-01","x":34,"y":73.48999999999999},{"Cliente":94,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":167.03,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-10-20","mes":"2024-10-01","x":44,"y":167.03},{"Cliente":95,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":272.21,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-10-27","mes":"2024-10-01","x":32,"y":272.21},{"Cliente":96,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":243.09,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-11-03","mes":"2024-11-01","x":32,"y":243.09},{"Cliente":116,"Tipo_Cliente":"Regular","Items":13,"Ventas_Netas":326.42,"Metodo_Pago":"MasterCard","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2025-03-23","mes":"2025-03-01","x":36,"y":326.42},{"Cliente":120,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":127.9,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2025-04-20","mes":"2025-04-01","x":28,"y":127.9},{"Cliente":121,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":203.81,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-04-27","mes":"2025-04-01","x":32,"y":203.81},{"Cliente":127,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":186.37,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2025-06-08","mes":"2025-06-01","x":56,"y":186.37},{"Cliente":128,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":227.5,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-06-15","mes":"2025-06-01","x":32,"y":227.5},{"Cliente":142,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":71.86,"Metodo_Pago":"MasterCard","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2025-09-21","mes":"2025-09-01","x":36,"y":71.86},{"Cliente":144,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":292.16,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":68,"fecha":"2025-10-05","mes":"2025-10-01","x":68,"y":292.16},{"Cliente":157,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":232.85,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-01-04","mes":"2026-01-01","x":46,"y":232.85},{"Cliente":160,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":270.56,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-01-25","mes":"2026-01-01","x":32,"y":270.56},{"Cliente":161,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":341.87,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2026-02-01","mes":"2026-02-01","x":56,"y":341.87},{"Cliente":176,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":30.49,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-05-17","mes":"2026-05-01","x":46,"y":30.49},{"Cliente":182,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":143.36,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-06-28","mes":"2026-06-01","x":32,"y":143.36},{"Cliente":184,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":212.9,"Metodo_Pago":"MasterCard","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2026-07-12","mes":"2026-07-01","x":44,"y":212.9}],"type":"scatter"},{"name":"Star Card","data":[{"Cliente":1,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":88.87,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-01-08","mes":"2023-01-01","x":44,"y":88.87},{"Cliente":2,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":27.49,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-01-15","mes":"2023-01-01","x":22,"y":27.49},{"Cliente":4,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":305.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-01-29","mes":"2023-01-01","x":54,"y":305.84},{"Cliente":5,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":74.84999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2023-02-05","mes":"2023-02-01","x":20,"y":74.84999999999999},{"Cliente":6,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":91.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-02-12","mes":"2023-02-01","x":30,"y":91.77},{"Cliente":7,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":99.75,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-02-19","mes":"2023-02-01","x":38,"y":99.75},{"Cliente":8,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":146.42,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2023-02-26","mes":"2023-02-01","x":36,"y":146.42},{"Cliente":11,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":178.11,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-03-19","mes":"2023-03-01","x":44,"y":178.11},{"Cliente":12,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":251.97,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2023-03-26","mes":"2023-03-01","x":32,"y":251.97},{"Cliente":13,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":133.68,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-04-02","mes":"2023-04-01","x":30,"y":133.68},{"Cliente":14,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":55.19,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-04-09","mes":"2023-04-01","x":28,"y":55.19},{"Cliente":15,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":265.41,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-04-16","mes":"2023-04-01","x":42,"y":265.41},{"Cliente":16,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":100.42,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-04-23","mes":"2023-04-01","x":44,"y":100.42},{"Cliente":17,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.83,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2023-04-30","mes":"2023-04-01","x":52,"y":140.83},{"Cliente":18,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":113.08,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2023-05-07","mes":"2023-05-01","x":28,"y":113.08},{"Cliente":21,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":10,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-05-28","mes":"2023-05-01","x":22,"y":10},{"Cliente":22,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":167.22,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-06-04","mes":"2023-06-01","x":38,"y":167.22},{"Cliente":23,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":177.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2023-06-11","mes":"2023-06-01","x":62,"y":177.15},{"Cliente":25,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":318.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-06-25","mes":"2023-06-01","x":42,"y":318.27},{"Cliente":26,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":121.88,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2023-07-02","mes":"2023-07-01","x":20,"y":121.88},{"Cliente":27,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":34,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-07-09","mes":"2023-07-01","x":30,"y":34},{"Cliente":29,"Tipo_Cliente":"Regular","Items":1,"Ventas_Netas":27.48,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2023-07-23","mes":"2023-07-01","x":22,"y":27.48},{"Cliente":30,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":220.37,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-07-30","mes":"2023-07-01","x":54,"y":220.37},{"Cliente":32,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":356.26,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-08-13","mes":"2023-08-01","x":54,"y":356.26},{"Cliente":33,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":241.44,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2023-08-20","mes":"2023-08-01","x":42,"y":241.44},{"Cliente":35,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":265.3,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2023-09-03","mes":"2023-09-01","x":52,"y":265.3},{"Cliente":36,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":188.53,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2023-09-10","mes":"2023-09-01","x":54,"y":188.53},{"Cliente":37,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":179.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":74,"fecha":"2023-09-17","mes":"2023-09-01","x":74,"y":179.98},{"Cliente":39,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":261.68,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":70,"fecha":"2023-10-01","mes":"2023-10-01","x":70,"y":261.68},{"Cliente":40,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":222.83,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2023-10-08","mes":"2023-10-01","x":38,"y":222.83},{"Cliente":41,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":336.01,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2023-10-15","mes":"2023-10-01","x":36,"y":336.01},{"Cliente":43,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":124.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-10-29","mes":"2023-10-01","x":46,"y":124.61},{"Cliente":44,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":151.64,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-11-05","mes":"2023-11-01","x":30,"y":151.64},{"Cliente":46,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":159.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2023-11-19","mes":"2023-11-01","x":30,"y":159.84},{"Cliente":47,"Tipo_Cliente":"Promocional","Items":14,"Ventas_Netas":290.29,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-11-26","mes":"2023-11-01","x":44,"y":290.29},{"Cliente":51,"Tipo_Cliente":"Regular","Items":16,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2023-12-24","mes":"2023-12-01","x":48,"y":380},{"Cliente":53,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":117.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2024-01-07","mes":"2024-01-01","x":56,"y":117.15},{"Cliente":54,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":243.17,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-01-14","mes":"2024-01-01","x":54,"y":243.17},{"Cliente":55,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":114.9,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2024-01-21","mes":"2024-01-01","x":38,"y":114.9},{"Cliente":56,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":70.86,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Soltero","Edad":36,"fecha":"2024-01-28","mes":"2024-01-01","x":36,"y":70.86},{"Cliente":58,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":341.5,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2024-02-11","mes":"2024-02-01","x":42,"y":341.5},{"Cliente":59,"Tipo_Cliente":"Regular","Items":15,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-02-18","mes":"2024-02-01","x":48,"y":380},{"Cliente":60,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":76.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-02-25","mes":"2024-02-01","x":44,"y":76.77},{"Cliente":61,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":156.9,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-03-03","mes":"2024-03-01","x":60,"y":156.9},{"Cliente":62,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":148.17,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-03-10","mes":"2024-03-01","x":48,"y":148.17},{"Cliente":63,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":16.54,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-03-17","mes":"2024-03-01","x":32,"y":16.54},{"Cliente":65,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":15.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-03-31","mes":"2024-03-01","x":30,"y":15.57},{"Cliente":66,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":338.7,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2024-04-07","mes":"2024-04-01","x":42,"y":338.7},{"Cliente":67,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":124.2,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2024-04-14","mes":"2024-04-01","x":62,"y":124.2},{"Cliente":68,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":37.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":28,"fecha":"2024-04-21","mes":"2024-04-01","x":28,"y":37.89},{"Cliente":70,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":201.53,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-05-05","mes":"2024-05-01","x":54,"y":201.53},{"Cliente":71,"Tipo_Cliente":"Regular","Items":3,"Ventas_Netas":90.20999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2024-05-12","mes":"2024-05-01","x":36,"y":90.20999999999999},{"Cliente":72,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":276.86,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":58,"fecha":"2024-05-19","mes":"2024-05-01","x":58,"y":276.86},{"Cliente":73,"Tipo_Cliente":"Promocional","Items":15,"Ventas_Netas":322.56,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-05-26","mes":"2024-05-01","x":54,"y":322.56},{"Cliente":74,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":72.93000000000001,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-06-02","mes":"2024-06-01","x":32,"y":72.93000000000001},{"Cliente":75,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":302.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2024-06-09","mes":"2024-06-01","x":36,"y":302.89},{"Cliente":76,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":111.8,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-06-16","mes":"2024-06-01","x":30,"y":111.8},{"Cliente":77,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":168.89,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":46,"fecha":"2024-06-23","mes":"2024-06-01","x":46,"y":168.89},{"Cliente":78,"Tipo_Cliente":"Regular","Items":6,"Ventas_Netas":153.09,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-06-30","mes":"2024-06-01","x":34,"y":153.09},{"Cliente":80,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":90.94,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-07-14","mes":"2024-07-01","x":30,"y":90.94},{"Cliente":82,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":105.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-07-28","mes":"2024-07-01","x":44,"y":105.65},{"Cliente":83,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":130.11,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2024-08-04","mes":"2024-08-01","x":38,"y":130.11},{"Cliente":85,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":282.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2024-08-18","mes":"2024-08-01","x":62,"y":282.61},{"Cliente":87,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":55.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2024-09-01","mes":"2024-09-01","x":34,"y":55.57},{"Cliente":88,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":318.69,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":72,"fecha":"2024-09-08","mes":"2024-09-01","x":72,"y":318.69},{"Cliente":89,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":73.52,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2024-09-15","mes":"2024-09-01","x":40,"y":73.52},{"Cliente":90,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":213.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2024-09-22","mes":"2024-09-01","x":32,"y":213.27},{"Cliente":91,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":107.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-09-29","mes":"2024-09-01","x":30,"y":107.06},{"Cliente":92,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":34.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2024-10-06","mes":"2024-10-01","x":54,"y":34.06},{"Cliente":97,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":120.1,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2024-11-10","mes":"2024-11-01","x":48,"y":120.1},{"Cliente":98,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":158.76,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2024-11-17","mes":"2024-11-01","x":30,"y":158.76},{"Cliente":99,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":128.93,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-11-24","mes":"2024-11-01","x":60,"y":128.93},{"Cliente":101,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":44.56,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2024-12-08","mes":"2024-12-01","x":42,"y":44.56},{"Cliente":102,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":185.18,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2024-12-15","mes":"2024-12-01","x":60,"y":185.18},{"Cliente":103,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":128.48,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2024-12-22","mes":"2024-12-01","x":30,"y":128.48},{"Cliente":105,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":174.87,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-01-05","mes":"2025-01-01","x":30,"y":174.87},{"Cliente":106,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":99.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":30,"fecha":"2025-01-12","mes":"2025-01-01","x":30,"y":99.84},{"Cliente":107,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":186.88,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-01-19","mes":"2025-01-01","x":54,"y":186.88},{"Cliente":108,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":84.81999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-01-26","mes":"2025-01-01","x":32,"y":84.81999999999999},{"Cliente":110,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":140.45,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2025-02-09","mes":"2025-02-01","x":28,"y":140.45},{"Cliente":111,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":130.67,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2025-02-16","mes":"2025-02-01","x":62,"y":130.67},{"Cliente":113,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":109.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":22,"fecha":"2025-03-02","mes":"2025-03-01","x":22,"y":109.65},{"Cliente":114,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":185.96,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":68,"fecha":"2025-03-09","mes":"2025-03-01","x":68,"y":185.96},{"Cliente":117,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":86.86,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":70,"fecha":"2025-03-30","mes":"2025-03-01","x":70,"y":86.86},{"Cliente":118,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":176.84,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-04-06","mes":"2025-04-01","x":42,"y":176.84},{"Cliente":119,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":247.76,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2025-04-13","mes":"2025-04-01","x":44,"y":247.76},{"Cliente":122,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":118.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-05-04","mes":"2025-05-01","x":46,"y":118.58},{"Cliente":124,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":113.81,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":28,"fecha":"2025-05-18","mes":"2025-05-01","x":28,"y":113.81},{"Cliente":125,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":232.85,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-05-25","mes":"2025-05-01","x":54,"y":232.85},{"Cliente":126,"Tipo_Cliente":"Promocional","Items":13,"Ventas_Netas":296.12,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2025-06-01","mes":"2025-06-01","x":62,"y":296.12},{"Cliente":129,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":159.82,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-06-22","mes":"2025-06-01","x":54,"y":159.82},{"Cliente":130,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":76.47,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2025-06-29","mes":"2025-06-01","x":42,"y":76.47},{"Cliente":131,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":29.65,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2025-07-06","mes":"2025-07-01","x":38,"y":29.65},{"Cliente":132,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":23.46,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-07-13","mes":"2025-07-01","x":30,"y":23.46},{"Cliente":133,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":209.71,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2025-07-20","mes":"2025-07-01","x":48,"y":209.71},{"Cliente":134,"Tipo_Cliente":"Regular","Items":7,"Ventas_Netas":167.3,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-07-27","mes":"2025-07-01","x":54,"y":167.3},{"Cliente":136,"Tipo_Cliente":"Promocional","Items":15,"Ventas_Netas":310.6,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2025-08-10","mes":"2025-08-01","x":50,"y":310.6},{"Cliente":137,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":249.57,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":46,"fecha":"2025-08-17","mes":"2025-08-01","x":46,"y":249.57},{"Cliente":139,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":48.74,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2025-08-31","mes":"2025-08-01","x":36,"y":48.74},{"Cliente":140,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":14.66,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2025-09-07","mes":"2025-09-01","x":38,"y":14.66},{"Cliente":141,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":185.77,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2025-09-14","mes":"2025-09-01","x":34,"y":185.77},{"Cliente":143,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":144.63,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2025-09-28","mes":"2025-09-01","x":44,"y":144.63},{"Cliente":145,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":50.25,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-10-12","mes":"2025-10-01","x":32,"y":50.25},{"Cliente":146,"Tipo_Cliente":"Promocional","Items":11,"Ventas_Netas":222.51,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2025-10-19","mes":"2025-10-01","x":36,"y":222.51},{"Cliente":148,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":173.36,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2025-11-02","mes":"2025-11-01","x":40,"y":173.36},{"Cliente":149,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":196.35,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2025-11-09","mes":"2025-11-01","x":48,"y":196.35},{"Cliente":150,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":150.6,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2025-11-16","mes":"2025-11-01","x":42,"y":150.6},{"Cliente":152,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":309.66,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2025-11-30","mes":"2025-11-01","x":54,"y":309.66},{"Cliente":153,"Tipo_Cliente":"Regular","Items":11,"Ventas_Netas":333.91,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2025-12-07","mes":"2025-12-01","x":52,"y":333.91},{"Cliente":154,"Tipo_Cliente":"Promocional","Items":2,"Ventas_Netas":30.21,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2025-12-14","mes":"2025-12-01","x":32,"y":30.21},{"Cliente":155,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":229.33,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-12-21","mes":"2025-12-01","x":46,"y":229.33},{"Cliente":156,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":15.01,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2025-12-28","mes":"2025-12-01","x":30,"y":15.01},{"Cliente":158,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":14.04,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":50,"fecha":"2026-01-11","mes":"2026-01-01","x":50,"y":14.04},{"Cliente":159,"Tipo_Cliente":"Promocional","Items":6,"Ventas_Netas":106.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-01-18","mes":"2026-01-01","x":28,"y":106.98},{"Cliente":163,"Tipo_Cliente":"Promocional","Items":12,"Ventas_Netas":232.67,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":62,"fecha":"2026-02-15","mes":"2026-02-01","x":62,"y":232.67},{"Cliente":164,"Tipo_Cliente":"Promocional","Items":5,"Ventas_Netas":107.7,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":54,"fecha":"2026-02-22","mes":"2026-02-01","x":54,"y":107.7},{"Cliente":165,"Tipo_Cliente":"Promocional","Items":16,"Ventas_Netas":380,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2026-03-01","mes":"2026-03-01","x":48,"y":380},{"Cliente":167,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":358.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":58,"fecha":"2026-03-15","mes":"2026-03-01","x":58,"y":358.06},{"Cliente":168,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":189.24,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2026-03-22","mes":"2026-03-01","x":42,"y":189.24},{"Cliente":170,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":166.37,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-04-05","mes":"2026-04-01","x":28,"y":166.37},{"Cliente":171,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":50,"fecha":"2026-04-12","mes":"2026-04-01","x":50,"y":140.58},{"Cliente":172,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":140.27,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2026-04-19","mes":"2026-04-01","x":42,"y":140.27},{"Cliente":173,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":49.59,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":30,"fecha":"2026-04-26","mes":"2026-04-01","x":30,"y":49.59},{"Cliente":174,"Tipo_Cliente":"Promocional","Items":10,"Ventas_Netas":262.52,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-05-03","mes":"2026-05-01","x":38,"y":262.52},{"Cliente":179,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":181.57,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-06-07","mes":"2026-06-01","x":46,"y":181.57},{"Cliente":180,"Tipo_Cliente":"Promocional","Items":14,"Ventas_Netas":337.06,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":48,"fecha":"2026-06-14","mes":"2026-06-01","x":48,"y":337.06},{"Cliente":183,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":215.51,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2026-07-05","mes":"2026-07-01","x":36,"y":215.51},{"Cliente":186,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":170.61,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":28,"fecha":"2026-07-26","mes":"2026-07-01","x":28,"y":170.61},{"Cliente":187,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":362.16,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":72,"fecha":"2026-08-02","mes":"2026-08-01","x":72,"y":362.16},{"Cliente":189,"Tipo_Cliente":"Promocional","Items":1,"Ventas_Netas":31.62,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":32,"fecha":"2026-08-16","mes":"2026-08-01","x":32,"y":31.62},{"Cliente":191,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":193.98,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":52,"fecha":"2026-08-30","mes":"2026-08-01","x":52,"y":193.98},{"Cliente":192,"Tipo_Cliente":"Promocional","Items":8,"Ventas_Netas":146.18,"Metodo_Pago":"Star Card","Genero":"Hombre","Estado_Civil":"Casado","Edad":68,"fecha":"2026-09-06","mes":"2026-09-01","x":68,"y":146.18},{"Cliente":193,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":157.58,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-09-13","mes":"2026-09-01","x":38,"y":157.58},{"Cliente":194,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":170.33,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Soltero","Edad":50,"fecha":"2026-09-20","mes":"2026-09-01","x":50,"y":170.33},{"Cliente":195,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":150.15,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":38,"fecha":"2026-09-27","mes":"2026-09-01","x":38,"y":150.15},{"Cliente":196,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":79.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":56,"fecha":"2026-10-04","mes":"2026-10-01","x":56,"y":79.89},{"Cliente":197,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":93.45999999999999,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":60,"fecha":"2026-10-11","mes":"2026-10-01","x":60,"y":93.45999999999999},{"Cliente":198,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":239.97,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":34,"fecha":"2026-10-18","mes":"2026-10-01","x":34,"y":239.97},{"Cliente":199,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":214.89,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":74,"fecha":"2026-10-25","mes":"2026-10-01","x":74,"y":214.89},{"Cliente":200,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":143.39,"Metodo_Pago":"Star Card","Genero":"Mujer","Estado_Civil":"Casado","Edad":42,"fecha":"2026-11-01","mes":"2026-11-01","x":42,"y":143.39}],"type":"scatter"},{"name":"Visa","data":[{"Cliente":9,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":168.05,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Casado","Edad":48,"fecha":"2023-03-05","mes":"2023-03-01","x":48,"y":168.05},{"Cliente":19,"Tipo_Cliente":"Regular","Items":10,"Ventas_Netas":234.1,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2023-05-14","mes":"2023-05-01","x":44,"y":234.1},{"Cliente":24,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":145.22,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2023-06-18","mes":"2023-06-01","x":46,"y":145.22},{"Cliente":42,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":241.86,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-10-22","mes":"2023-10-01","x":40,"y":241.86},{"Cliente":48,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":65.43000000000001,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2023-12-03","mes":"2023-12-01","x":40,"y":65.43000000000001},{"Cliente":52,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":201.94,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2023-12-31","mes":"2023-12-01","x":36,"y":201.94},{"Cliente":79,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":325.52,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2024-07-07","mes":"2024-07-01","x":40,"y":325.52},{"Cliente":84,"Tipo_Cliente":"Regular","Items":12,"Ventas_Netas":287.82,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":44,"fecha":"2024-08-11","mes":"2024-08-01","x":44,"y":287.82},{"Cliente":86,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":78.51000000000001,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2024-08-25","mes":"2024-08-01","x":46,"y":78.51000000000001},{"Cliente":104,"Tipo_Cliente":"Promocional","Items":7,"Ventas_Netas":182.81,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Casado","Edad":48,"fecha":"2024-12-29","mes":"2024-12-01","x":48,"y":182.81},{"Cliente":109,"Tipo_Cliente":"Promocional","Items":9,"Ventas_Netas":193.9,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2025-02-02","mes":"2025-02-01","x":46,"y":193.9},{"Cliente":112,"Tipo_Cliente":"Regular","Items":1,"Ventas_Netas":61.18,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-02-23","mes":"2025-02-01","x":42,"y":61.18},{"Cliente":115,"Tipo_Cliente":"Regular","Items":5,"Ventas_Netas":137,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Soltero","Edad":24,"fecha":"2025-03-16","mes":"2025-03-01","x":24,"y":137},{"Cliente":123,"Tipo_Cliente":"Promocional","Items":4,"Ventas_Netas":111.22,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":40,"fecha":"2025-05-11","mes":"2025-05-01","x":40,"y":111.22},{"Cliente":135,"Tipo_Cliente":"Regular","Items":4,"Ventas_Netas":77.61,"Metodo_Pago":"Visa","Genero":"Hombre","Estado_Civil":"Soltero","Edad":24,"fecha":"2025-08-03","mes":"2025-08-01","x":24,"y":77.61},{"Cliente":138,"Tipo_Cliente":"Regular","Items":14,"Ventas_Netas":356.59,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":42,"fecha":"2025-08-24","mes":"2025-08-01","x":42,"y":356.59},{"Cliente":147,"Tipo_Cliente":"Regular","Items":9,"Ventas_Netas":257.1,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2025-10-26","mes":"2025-10-01","x":20,"y":257.1},{"Cliente":162,"Tipo_Cliente":"Promocional","Items":17,"Ventas_Netas":379.48,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":46,"fecha":"2026-02-08","mes":"2026-02-01","x":46,"y":379.48},{"Cliente":169,"Tipo_Cliente":"Promocional","Items":3,"Ventas_Netas":65.89,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Casado","Edad":36,"fecha":"2026-03-29","mes":"2026-03-01","x":36,"y":65.89},{"Cliente":177,"Tipo_Cliente":"Regular","Items":8,"Ventas_Netas":194.56,"Metodo_Pago":"Visa","Genero":"Mujer","Estado_Civil":"Soltero","Edad":20,"fecha":"2026-05-24","mes":"2026-05-01","x":20,"y":194.56}],"type":"scatter"}],"xAxis":{"type":"linear","title":{"text":"Edad"},"categories":null}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+<p><br/><br/></p>
 <pre class="r"><code># paquetes requeridos
 # install.packages(&quot;ggplot2&quot;)
 library(ggplot2)
@@ -1289,9 +1036,10 @@ load_pkg(&quot;ggbeeswarm&quot;)</code></pre>
 if (load_pkg(&quot;ggbeeswarm&quot;)) {
   ggplot(ventas, aes(x = Tipo_Cliente, y = Ventas_Netas, color = Tipo_Cliente)) +
     geom_beeswarm(cex = 2) +
-    scale_color_manual(values = pal_admin)
+    scale_color_manual(values = paleta5)
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-42-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-39-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
 <pre class="r"><code># construccion de la data
 df &lt;- cervezas[, c(&quot;tipo&quot;, &quot;precio&quot;)]
 
@@ -1306,11 +1054,12 @@ library(ggplot2)
 if (load_pkg(&quot;ggridges&quot;)) {
   ggplot(df, aes(x = precio, y = tipo, fill = tipo, color = tipo)) +
     geom_density_ridges(alpha = 0.6) +
-    scale_fill_manual(values = pal_admin) +
-    scale_color_manual(values = pal_admin)
+    scale_fill_manual(values = paleta5) +
+    scale_color_manual(values = paleta5)
 }</code></pre>
 <pre><code>Picking joint bandwidth of 0.831</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-43-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-40-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
 <pre class="r"><code># Datos
 v_m &lt;- ventas$Ventas_Netas[ventas$Genero == &quot;Mujer&quot;]
 v_h &lt;- ventas$Ventas_Netas[ventas$Genero == &quot;Hombre&quot;]
@@ -1330,41 +1079,196 @@ lines(deny)
 # Colorear las áreas
 polygon(denx, col = adjustcolor(c21, alpha.f = 0.6))
 polygon(deny, col = adjustcolor(c31, alpha.f = 0.6))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-44-1.png" alt="" width="672" /></p>
-<p>Tomado de : <a
-href="https://r-charts.com/es/distribucion/ggbeeswarm/"
-class="uri">https://r-charts.com/es/distribucion/ggbeeswarm/</a></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-41-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
 </div>
 <div id="plotly" class="section level2">
 <h2><strong>plotly</strong></h2>
-<p><img src="img/plotly.png" /></p>
-<p><br/><br/><br/><br/></p>
+<p><img src="img/plotly.png" alt="" width="10%" style="display: block; margin: auto auto auto 0;" /></p>
+<p><br/></p>
+<pre class="r"><code>library(dplyr)
+library(plotly)
+
+set.seed(123)
+
+# Datos de ejemplo (ambas cuantitativas)
+datos &lt;- data.frame(
+  Gasto_Publicidad = runif(80, 200, 2000),                # X cuantitativa
+  Ventas           = 5000 + 8*runif(80, 200, 2000) + rnorm(80, 0, 800)  # Y cuantitativa
+)
+
+p &lt;- plot_ly(
+  data = datos,
+  x = ~Gasto_Publicidad,
+  y = ~Ventas,
+  type = &quot;scatter&quot;, mode = &quot;markers&quot;,
+  text = ~paste0(&quot;Publicidad: $&quot;, round(Gasto_Publicidad, 0),
+                 &quot;&lt;br&gt;Ventas: $&quot;, round(Ventas, 0)),
+  hoverinfo = &quot;text&quot;,
+  marker = list(size = 10, opacity = 0.8)
+) %&gt;%
+  layout(
+    title = &quot;Relación entre publicidad y ventas&quot;,
+    xaxis = list(title = &quot;Gasto en publicidad ($)&quot;),
+    yaxis = list(title = &quot;Ventas ($)&quot;)
+  )
+
+p</code></pre>
 </div>
 <div id="gganimate-gif" class="section level2">
 <h2><strong>gganimate (GIF)</strong></h2>
 <p>Ejemplo de gráfico dinámico que cambia en el tiempo y se exporta como
 GIF.</p>
-<pre class="r"><code># install.packages(c(&quot;gganimate&quot;,&quot;gifski&quot;,&quot;transformr&quot;))
+<pre class="r"><code># install.packages(c(&quot;gganimate&quot;,&quot;gifski&quot;,&quot;transformr&quot;)) # instala paquetes
+library(dplyr)
+library(ggplot2)
 library(gganimate)
 library(gifski)
-library(transformr)
 
-ventas$fecha &lt;- as.Date(&quot;2023-01-01&quot;) + 7 * (1:nrow(ventas))
-ventas$mes &lt;- as.Date(cut(ventas$fecha, &quot;month&quot;))
-resumen &lt;- aggregate(Ventas_Netas ~ mes + Tipo_Cliente, data = ventas, sum)
+# IMPORTANTE:
+# NO cargues el paquete {animation} en este documento, o se pisa animate().
+# Si lo necesitas en otro chunk, usa gganimate::animate() explícito.
 
-p &lt;- ggplot(resumen, aes(mes, Ventas_Netas, color = Tipo_Cliente)) +
-  geom_line(size = 1) +
+# 1) Crear fechas y mes
+ventas &lt;- ventas %&gt;%
+  mutate(
+    fecha = as.Date(&quot;2023-01-01&quot;) + 7 * (row_number() - 1),
+    mes   = as.Date(cut(fecha, &quot;month&quot;))
+  )
+
+# 2) Resumir por mes y tipo de cliente
+resumen &lt;- ventas %&gt;%
+  group_by(mes, Tipo_Cliente) %&gt;%
+  summarise(Ventas_Netas = sum(Ventas_Netas, na.rm = TRUE), .groups = &quot;drop&quot;)
+
+# 3) Gráfico base
+p &lt;- ggplot(resumen, aes(x = mes, y = Ventas_Netas, color = Tipo_Cliente, group = Tipo_Cliente)) +
+  geom_line(linewidth = 1) +
   geom_point(size = 2) +
-  scale_color_manual(values = pal_admin) +
-  labs(title = &quot;Ventas netas por tipo de cliente: {frame_time}&quot;,
-       x = &quot;mes&quot;, y = &quot;ventas netas&quot;) +
-  transition_reveal(mes)
+  scale_color_manual(values = paleta5) +   # paleta institucional (5 colores)
+  labs(
+    title = &quot;Ventas netas por tipo de cliente: {frame_along}&quot;,
+    x = &quot;Mes&quot;, y = &quot;Ventas netas&quot;
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor = element_blank()) +
+  transition_reveal(along = mes)
 
-anim &lt;- animate(p, nframes = 80, fps = 10, width = 700, height = 400,
-                renderer = gifski_renderer())
+# 4) Render GIF (usa gganimate::animate para evitar conflictos)
+anim &lt;- gganimate::animate(
+  p, nframes = 80, fps = 10, width = 700, height = 400,
+  renderer = gifski_renderer()
+)
+
+dir.create(&quot;img&quot;, showWarnings = FALSE)
 anim_save(&quot;img/ventas_tiempo.gif&quot;, anim)</code></pre>
-<p><br/><br/><br/><br/></p>
+<p><img src="img/ventas_tiempo.gif" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- datos %&gt;%
+  filter(country == &quot;Colombia&quot;) %&gt;%
+  mutate(
+    pop_mm = pop / 1e6,
+    # Etiquetas solo en algunos años para no saturar
+    etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
+                       paste0(number(pop_mm, accuracy = 0.1), &quot; MM&quot;),
+                       NA_character_)
+  ) %&gt;%
+  ggplot(aes(year, pop_mm)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_text_repel(
+    aes(label = etiqueta),
+    na.rm = TRUE,
+    size = 3.6,
+    min.segment.length = 0,
+    box.padding = 0.25,
+    point.padding = 0.2,
+    max.overlaps = Inf
+  ) +
+  scale_color_manual(values = paleta4[1]) +
+  scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
+  scale_y_continuous(
+    labels = function(x) paste0(number(x, accuracy = 1), &quot; MM&quot;),
+    expand = expansion(mult = c(0.02, 0.10))
+  ) +
+  labs(
+    title = &quot;Población de Colombia&quot;,
+    subtitle = &quot;Año: {frame_along}&quot;,
+    x = &quot;Año&quot;,
+    y = &quot;Población (MM)&quot;
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = &quot;bold&quot;),
+    axis.title = element_text(face = &quot;bold&quot;),
+    axis.text = element_text(color = &quot;gray20&quot;)
+  ) +
+  transition_reveal(along = year)
+p
+
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+library(gganimate)
+library(scales)
+library(ggrepel)
+
+datos &lt;- gapminder
+
+p &lt;- datos %&gt;%
+  filter(country == &quot;Colombia&quot;) %&gt;%
+  mutate(
+    pop_mm = pop / 1e6,
+    # Etiquetas solo en algunos años para no saturar
+    etiqueta = if_else(year %in% c(min(year), 1970, 1990, 2010, max(year)),
+                       paste0(number(pop_mm, accuracy = 0.1), &quot; MM&quot;),
+                       NA_character_)
+  ) %&gt;%
+  ggplot(aes(year, pop_mm)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_text_repel(
+    aes(label = etiqueta),
+    na.rm = TRUE,
+    size = 3.6,
+    min.segment.length = 0,
+    box.padding = 0.25,
+    point.padding = 0.2,
+    max.overlaps = Inf
+  ) +
+  scale_color_manual(values = paleta4[1]) +
+  scale_x_continuous(breaks = seq(1952, 2007, by = 5)) +
+  scale_y_continuous(
+    labels = function(x) paste0(number(x, accuracy = 1), &quot; MM&quot;),
+    expand = expansion(mult = c(0.02, 0.10))
+  ) +
+  labs(
+    title = &quot;Población de Colombia&quot;,
+    subtitle = &quot;Año: {frame_along}&quot;,
+    x = &quot;Año&quot;,
+    y = &quot;Población (MM)&quot;
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.title = element_text(face = &quot;bold&quot;),
+    axis.title = element_text(face = &quot;bold&quot;),
+    axis.text = element_text(color = &quot;gray20&quot;)
+  ) +
+  transition_reveal(along = year)
+
+library(gganimate)
+library(gifski)   # si vas a exportar gif
+gif &lt;- gganimate::animate(p, fps = 20, width = 900, height = 500,
+                          renderer = gifski_renderer())
+gganimate::anim_save(&quot;img/poblacion_colombia.gif&quot;, gif)</code></pre>
+<p><img src="img/poblacion_colombia.gif" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<pre><code>Scale for x is already present.
+Adding another scale for x, which will replace the existing scale.</code></pre>
+<p><img
+src="codigo13_files/figure-html/unnamed-chunk-48-1.gif" /><!-- --></p>
 </div>
 <div id="fmsb" class="section level2">
 <h2><strong>fmsb</strong></h2>
@@ -1374,81 +1278,56 @@ anim_save(&quot;img/ventas_tiempo.gif&quot;, anim)</code></pre>
 <p>Paquete para el trabajo en Estadística Medica que se utiliza para la
 construcción de un diagrama de radar</p>
 <pre class="r"><code># install.packages(&quot;fmsb&quot;)
-load_pkg(&quot;fmsb&quot;)</code></pre>
+load_pkg(&quot;fmsb&quot;) # carga fmsb si está disponible</code></pre>
 <pre><code>[1] TRUE</code></pre>
 <pre class="r"><code>if (load_pkg(&quot;fmsb&quot;)) {
-  set.seed(1)
-  df &lt;- data.frame(rbind(rep(10, 8), 
-                         rep(0, 8),
-                         matrix(sample(0:10, 8), nrow = 1)))
-  colnames(df) &lt;- paste(&quot;Var&quot;, 1:8)
+  set.seed(1) # fija semilla
+  df &lt;- data.frame(rbind(rep(10, 8), # máximos
+                         rep(0, 8), # mínimos
+                         matrix(sample(0:10, 8), nrow = 1))) # datos
+  colnames(df) &lt;- paste(&quot;Var&quot;, 1:8) # nombres
 
-  radarchart(df,
-             cglty = 1, cglcol = &quot;gray&quot;,
-             pcol = c11, plwd = 2,
-             pfcol = adjustcolor(c21, alpha.f = 0.25)) 
+  radarchart(df, # radar
+             cglty = 1, cglcol = &quot;gray&quot;, # grid
+             pcol = c11, plwd = 2, # línea
+             pfcol = adjustcolor(c21, alpha.f = 0.25)) # relleno
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-46-1.png" alt="" width="672" />
+<p><img src="codigo13_files/figure-html/unnamed-chunk-49-1.png" alt="" width="672" />
 <br/><br/></p>
 <pre class="r"><code># install.packages(&quot;fmsb&quot;)
-load_pkg(&quot;fmsb&quot;)</code></pre>
+load_pkg(&quot;fmsb&quot;) # carga fmsb si está disponible</code></pre>
 <pre><code>[1] TRUE</code></pre>
 <pre class="r"><code># matriz de datos
 if (load_pkg(&quot;fmsb&quot;)) {
-  df2 &lt;- data.frame(rbind(rep(10, 8), rep(0, 8),
+  df2 &lt;- data.frame(rbind(rep(10, 8), rep(0, 8), # máximos y mínimos
                           matrix(sample(0:10, 24,
-                                        replace = TRUE),
+                                        replace = TRUE), # datos
                                  nrow = 3)))
-  colnames(df2) &lt;- paste(&quot;Var&quot;, 1:8)
+  colnames(df2) &lt;- paste(&quot;Var&quot;, 1:8) # nombres
   # colores de areas
-  areas &lt;- c(adjustcolor(c11, alpha.f = 0.25),
-             adjustcolor(c31, alpha.f = 0.25),
-             adjustcolor(c41, alpha.f = 0.25))
+  areas &lt;- c(adjustcolor(c11, alpha.f = 0.25), # grupo 1
+             adjustcolor(c31, alpha.f = 0.25), # grupo 2
+             adjustcolor(c41, alpha.f = 0.25)) # grupo 3
 
-  radarchart(df2,
-             cglty = 1,       # Tipo de línea del grid
-             cglcol = &quot;gray&quot;, # Color líneas grid
-             pcol = c(c11, c31, c41),      # Color para cada línea
-             plwd = 2,        # Ancho para cada línea
-             plty = 1,        # Tipos de línea
-             pfcol = areas)   # Color de las áreas 
+  radarchart(df2, # radar
+             cglty = 1,       # tipo de línea del grid
+             cglcol = &quot;gray&quot;, # color líneas grid
+             pcol = c(c11, c31, c41),      # color de líneas
+             plwd = 2,        # ancho de línea
+             plty = 1,        # tipo de línea
+             pfcol = areas)   # color de las áreas 
 
-  legend(&quot;topright&quot;,
-         legend = paste(&quot;Grupo&quot;, 1:3),
-         bty = &quot;n&quot;, pch = 20, col = areas,
-         text.col = &quot;grey25&quot;, pt.cex = 2)
+  legend(&quot;topright&quot;, # leyenda
+         legend = paste(&quot;Grupo&quot;, 1:3), # etiquetas
+         bty = &quot;n&quot;, pch = 20, col = areas, # estilo
+         text.col = &quot;grey25&quot;, pt.cex = 2) # estilo texto
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-47-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-50-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 </div>
 <div id="gráfico-de-barras-polar" class="section level3">
 <h3><strong>gráfico de barras polar</strong></h3>
-<pre class="r"><code># Datos por método de pago
-data &lt;- as.data.frame(table(ventas$Metodo_Pago))
-colnames(data) &lt;- c(&quot;variable&quot;, &quot;value&quot;)
-
-# Create grafico en coordenadas 
-plot &lt;- ggplot(data,aes(x = variable,y = value,
-                 fill = variable)) +
-          geom_col(width = 1, color = &quot;white&quot;) +
-          coord_polar() +                         # vonvierte en grafico circular
-          labs(x = &quot;&quot;, y = &quot;&quot;,title = &quot;Titulo&quot;,   # add titulo, subtitulo, nota
-                             subtitle = &quot;Subtitulo&quot;, 
-                              caption = &quot;Nota&quot; ) +
-         theme_minimal() +                     # borra caracteristicas del grafico
-         scale_fill_manual(values = pal_admin) +
-         theme(                                # asigna caracteristicas
-            legend.position = &quot;none&quot;,
-            axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
-            axis.ticks = element_blank(),
-            axis.text.y = element_blank(),
-            axis.text.x = element_text(face = &quot;bold&quot;),
-           plot.title = element_text(size = 24, face = &quot;bold&quot;),
-          plot.subtitle = element_text(size = 12))
-
-plot # imprime grafico</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-48-1.png" alt="" width="672" /></p>
+<p>`</p>
 <p><br/><br/><br/></p>
 </div>
 </div>
@@ -1465,21 +1344,21 @@ class="uri">https://sites.google.com/site/seriescol/shapes</a></p>
 <p><br/></p>
 <div id="mapa-de-cali" class="section level3">
 <h3><strong>Mapa de Cali</strong></h3>
-<pre class="r"><code>load_pkg(&quot;sf&quot;)</code></pre>
+<pre class="r"><code>load_pkg(&quot;sf&quot;) # carga sf si está disponible</code></pre>
 <pre><code>Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</code></pre>
 <pre><code>[1] TRUE</code></pre>
-<pre class="r"><code>cali &lt;- tryCatch(
-  sf::st_read(&quot;map/cali/cali.shp&quot;, quiet = TRUE),
-  error = function(e) NULL
+<pre class="r"><code>cali &lt;- tryCatch( # intenta leer el shapefile
+  sf::st_read(&quot;map/cali/cali.shp&quot;, quiet = TRUE), # ruta del .shp
+  error = function(e) NULL # si falla, devuelve NULL
 )
 
-if (is.null(cali)) {
-  message(&quot;No se pudo leer map/cali/cali.shp. Verifique que exista el .dbf.&quot;)
-} else {
-  plot(sf::st_geometry(cali), col = c7, border = c1,
-       main = &quot;Cali - mapa base&quot;)
+if (is.null(cali)) { # valida que se haya cargado
+  message(&quot;No se pudo leer map/cali/cali.shp. Verifique que exista el .dbf.&quot;) # aviso
+} else { # si existe, grafica
+  plot(sf::st_geometry(cali), col = c7, border = c1, # geometría y colores
+       main = &quot;Cali - mapa base&quot;) # título
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-49-1.png" alt="" width="672" />
+<p><img src="codigo13_files/figure-html/unnamed-chunk-52-1.png" alt="" width="672" />
 <br/></p>
 </div>
 <div id="mapa-de-cali-con-indice" class="section level3">
@@ -1491,17 +1370,17 @@ columnas al cual se le adiciona la información a publicar.</p>
 <p>En el caso de Cali tiene 22 comunas se adiciona un vector con 22
 valores con el nombre de indice</p>
 <p><br/><br/></p>
-<pre class="r"><code>if (!is.null(cali)) {
-  set.seed(1)
-  cali$indice &lt;- runif(nrow(cali), min = 0, max = 100)
+<pre class="r"><code>if (!is.null(cali)) { # solo si el mapa existe
+  set.seed(1) # reproducibilidad
+  cali$indice &lt;- runif(nrow(cali), min = 0, max = 100) # indicador simulado
 
-  ggplot(cali) +
-    geom_sf(aes(fill = indice), color = &quot;white&quot;, linewidth = 0.2) +
-    scale_fill_viridis_c(option = &quot;C&quot;) +
-    labs(title = &quot;Cali - índice simulado&quot;, fill = &quot;Índice&quot;) +
-    theme_minimal()
+  ggplot(cali) + # inicia gráfico
+    geom_sf(aes(fill = indice), color = &quot;white&quot;, linewidth = 0.2) + # polígonos
+    scale_fill_viridis_c(option = &quot;C&quot;) + # paleta
+    labs(title = &quot;Cali - índice simulado&quot;, fill = &quot;Índice&quot;) + # etiquetas
+    theme_minimal() # tema
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-50-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-53-1.png" alt="" width="672" /></p>
 <p><br/><br/></p>
 </div>
 <div id="mapa-de-colombia" class="section level3">
@@ -1510,26 +1389,26 @@ valores con el nombre de indice</p>
 que contiene la información por departamentos (33). A continuación se
 simula un indicador y se presenta en el mapa.</p>
 <p><br/><br/></p>
-<pre class="r"><code>load_pkg(&quot;sf&quot;)</code></pre>
+<pre class="r"><code>load_pkg(&quot;sf&quot;) # carga sf si está disponible</code></pre>
 <pre><code>[1] TRUE</code></pre>
-<pre class="r"><code>mapco &lt;- tryCatch(
-  sf::st_read(&quot;map/colombia/depto.shp&quot;, quiet = TRUE),
-  error = function(e) NULL
+<pre class="r"><code>mapco &lt;- tryCatch( # intenta leer el shapefile
+  sf::st_read(&quot;map/colombia/depto.shp&quot;, quiet = TRUE), # ruta del .shp
+  error = function(e) NULL # si falla, devuelve NULL
 )
 
-if (is.null(mapco)) {
-  message(&quot;No se pudo leer map/colombia/depto.shp.&quot;)
-} else {
-  set.seed(2)
-  mapco$indice &lt;- runif(nrow(mapco), min = 0, max = 100)
+if (is.null(mapco)) { # valida que se haya cargado
+  message(&quot;No se pudo leer map/colombia/depto.shp.&quot;) # aviso
+} else { # si existe, simula y grafica
+  set.seed(2) # reproducibilidad
+  mapco$indice &lt;- runif(nrow(mapco), min = 0, max = 100) # indicador simulado
 
-  ggplot(mapco) +
-    geom_sf(aes(fill = indice), color = &quot;white&quot;, linewidth = 0.1) +
-    scale_fill_viridis_c(option = &quot;D&quot;) +
-    labs(title = &quot;Colombia - indicador simulado&quot;, fill = &quot;Índice&quot;) +
-    theme_minimal()
+  ggplot(mapco) + # inicia gráfico
+    geom_sf(aes(fill = indice), color = &quot;white&quot;, linewidth = 0.1) + # polígonos
+    scale_fill_viridis_c(option = &quot;D&quot;) + # paleta
+    labs(title = &quot;Colombia - indicador simulado&quot;, fill = &quot;Índice&quot;) + # etiquetas
+    theme_minimal() # tema
 }</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-51-1.png" alt="" width="672" />
+<p><img src="codigo13_files/figure-html/unnamed-chunk-54-1.png" alt="" width="672" />
 <br/></p>
 <p>Para representar información en el mapa seden ingresar una vector con
 33 valores, igual numero de departamentos en el mismo orden en que se
@@ -1537,44 +1416,38 @@ encuentran los nombre de los departamento en el archivo mapco</p>
 <p><br/></p>
 <pre class="r"><code># mapco$NOMBRE_DPT</code></pre>
 <p><br/></p>
-<p>Si se quiere representar un mapa con las muertes causadas por covid
-en Colombia por departamento debemos crear una tabla con la información
-relacionada con esta variable por departamento en el mismo orden
-contenida en el archivo <strong>depto.shp</strong> y adicionarla como
-variable : <a href="mailto:mapcol@data"
-class="email">mapcol@data</a>$muertes</p>
-<p>De la base de datos abiertos Colombia se obtiene la siguiente
-información correspondiente al número de fallecidos por Covid19, durante
-el periodo marzo 2019 a agosto 25 de 2021</p>
-<pre class="r"><code># colombia=readRDS(&quot;data/Colombia.RDS&quot;)
-# colombia$departamento_nom= str_to_upper(colombia$departamento_nom)
-# t=table(colombia$departamento_nom,colombia$estado)
-# fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880,
-#             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
-#             620,249,29,87,17,45,133)</code></pre>
+<p>Si se quiere representar un mapa con un indicador real por
+departamento, se debe construir una tabla con los valores en el mismo
+orden del archivo <strong>depto.shp</strong> y adicionarla como variable
+al objeto <code>mapco</code>.</p>
+<p>En este ejemplo se simula un indicador para evitar depender de
+archivos externos:</p>
 <p><br/><br/></p>
-<pre class="r"><code># require(sp)
-# require(rgdal)
-# require(raster)
-# require(RColorBrewer)
+<pre class="r"><code>require(sp)</code></pre>
+<pre><code>Cargando paquete requerido: sp</code></pre>
+<pre class="r"><code>require(rgdal)</code></pre>
+<pre><code>Cargando paquete requerido: rgdal</code></pre>
+<pre><code>Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
+logical.return = TRUE, : no hay paquete llamado &#39;rgdal&#39;</code></pre>
+<pre class="r"><code>require(raster)</code></pre>
+<pre><code>Cargando paquete requerido: raster</code></pre>
+<pre><code>
+Adjuntando el paquete: &#39;raster&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:dplyr&#39;:
 
-# mi.palette &lt;- brewer.pal(n = 7, name = &quot;OrRd&quot;)   # paleta de colores
-# mapco=shapefile(&quot;map/colombia/depto.shp&quot;)  # importa mapa en formato .shp
-# colombia=readRDS(&quot;data/Colombia.RDS&quot;)
-# colombia$departamento_nom= str_to_upper(colombia$departamento_nom)
-# t=table(colombia$departamento_nom,colombia$estado)
-# fallecidos=c(15174,3876,26516,807,2417,2151,880,1333,2388,3487,6495,382,2880,
-#             1296,1380,2076,2861,3961,1635,2119,6934,1546,3411,11929,400,844,
-#             620,249,29,87,17,45,133) # vector con información
-# mapco@data$fallecidos=fallecidos # se adiciona variable con 33 valores = 33 dptos, en mismo orden
-# spplot(mapco[,6], col.regions = mi.palette, cuts = 6)  # mapa</code></pre>
-<p><img src="img/mapColombia2.png" alt="" width="40%" style="display: block; margin: auto;" />
-<br/><br/></p>
-</div>
-<div id="tmap" class="section level2">
-<h2><strong>tmap</strong></h2>
-<p><a href="https://www.jstatsoft.org/article/view/v084i06"
-class="uri">https://www.jstatsoft.org/article/view/v084i06</a></p>
+    select</code></pre>
+<pre class="r"><code>require(RColorBrewer)
+
+mi.palette &lt;- brewer.pal(n = 7, name = &quot;OrRd&quot;)   # paleta de colores
+mapco &lt;- shapefile(&quot;map/colombia/depto.shp&quot;)  # importa mapa en formato .shp
+
+set.seed(3)
+indicador &lt;- round(runif(nrow(mapco@data), min = 50, max = 500)) # indicador simulado
+mapco@data$indicador &lt;- indicador # se adiciona variable con 33 valores = 33 dptos, en mismo orden
+
+spplot(mapco[&quot;indicador&quot;], col.regions = mi.palette, cuts = 6)  # mapa</code></pre>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-56-1.png" alt="" width="672" /></p>
+<p><br/><br/></p>
 <p><br/><br/><br/></p>
 </div>
 </div>
@@ -1583,7 +1456,7 @@ class="uri">https://www.jstatsoft.org/article/view/v084i06</a></p>
 <pre class="r"><code># Grafico normal
 x=rnorm(100,100,20)
 plot(density(x))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-55-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-57-1.png" alt="" width="672" /></p>
 <p><br/> <br/></p>
 <div id="margenes-de-la-grafica-cbottom-left-top-right"
 class="section level3">
@@ -1592,7 +1465,7 @@ right)</strong></h3>
 <pre class="r"><code>par(mar = c(5, 4, 4, 2) + 0.1)
 x=rnorm(100,100,20)
 plot(density(x))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-56-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-58-1.png" alt="" width="672" /></p>
 <p><br/> <br/></p>
 </div>
 <div id="margenes-de-la-gráfica" class="section level3">
@@ -1600,7 +1473,7 @@ plot(density(x))</code></pre>
 <pre class="r"><code>par(mai = c(1.5, 1.5, 1.5, 1.5))
 x=rnorm(100,100,20)
 plot(density(x))</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-57-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-59-1.png" alt="" width="672" /></p>
 <p><br/> <br/></p>
 </div>
 <div id="matriz-de-gráficos-mfrow-c2-2" class="section level3">
@@ -1615,7 +1488,7 @@ plot(density(x))
 barplot(table(z))
 hist(x)
 plot(x,y)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-58-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-60-1.png" alt="" width="672" /></p>
 <p><br/> <br/></p>
 </div>
 <div id="margenes-exteriores-cbottom-left-top-right"
@@ -1628,7 +1501,7 @@ plot(density(x))
 barplot(table(z))
 hist(x)
 plot(x,y)</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-59-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-61-1.png" alt="" width="672" /></p>
 <p><br/> <br/></p>
 </div>
 </div>
@@ -1639,7 +1512,7 @@ plot(density(x),cex.lab=.8,  # tamaño de etiqueta ejes
                 cex.axis=2, # tamaño escalas de los ejes 
                 cex.main=1.5, # tamaño del titulo
                 cex.sub=1)    # tamaño del subtitulo</code></pre>
-<p><img src="codigo13_files/figure-html/unnamed-chunk-60-1.png" alt="" width="672" /></p>
+<p><img src="codigo13_files/figure-html/unnamed-chunk-62-1.png" alt="" width="672" /></p>
 <p><a href="https://r-charts.com/es/r-base/margenes/"
 class="uri">https://r-charts.com/es/r-base/margenes/</a></p>
 <p><br/> <br/> <br/></p>
@@ -1696,6 +1569,7 @@ de paquetes de Sharpm Machis</a></p>
 <h2><strong>Ejemplo de tablero</strong></h2>
 <p><br/> <br/></p>
 <p><img src="img/tablero-01.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p><br/> <br/></p>
 <html>
 <button id="dl-rmd" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
 📥 Descargar código Rmd
@@ -1716,6 +1590,31 @@ document.getElementById('dl-rmd').addEventListener('click', async () => {
 });
 </script>
 </html>
+<p><br/> <br/></p>
+</div>
+<div id="descarga-de-practica" class="section level2">
+<h2>Descarga de practica</h2>
+<html>
+<button id="dl-practica" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
+📥 Descargar práctica (R)
+</button>
+<script>
+document.getElementById('dl-practica').addEventListener('click', async () => {
+  const urlRaw = 'practica_beer.R';
+  const resp = await fetch(urlRaw);
+  const blob = await resp.blob();
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'practica_beer.R';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+</script>
+</html>
+<p><br/> <br/></p>
 </div>
 </div>
 

@@ -60,9 +60,13 @@ knitr::include_graphics("img/recurso1.png")
 
 Wikipedia
 
+En esta unidad vamos a revisar cómo elegir y construir gráficos que apoyen el análisis en administración y mercadeo. La idea es que cada visualización responda a una pregunta concreta (por ejemplo: ¿qué producto vende más?, ¿cómo se comporta la demanda en el tiempo?, ¿qué segmentos son diferentes?) y no sea solo un adorno.
+
 ## **Paquetes de R para gráficos**
 
 R posee una serie de paquetes construido para la visualización de datos que hacen que tengan una excelente presentación. Empezando por funciones del núcleo base, hasta paquetes que elaboran gráficos interactivos
+
+En el trabajo profesional, el objetivo es comunicar hallazgos a equipos y directivos. Por eso aquí verás opciones desde gráficos rápidos en R base hasta alternativas más flexibles e interactivas, útiles para reportes ejecutivos y tableros.
 
 
 <img src="img/RStudio.jpeg" width="90">
@@ -72,28 +76,139 @@ R posee una serie de paquetes construido para la visualización de datos que hac
 <img src="img/plotly.png" width="80">
 <img src="img/dashboard.png" width="80">
 
+
+## Paquetes de R para gráficos y soluciones gráficas
+
+| Categoría | Paquetes (ejemplos) | ¿Para qué sirven? |
+|---|---|---|
+| Gráficos base / extensiones de **ggplot2** | `ggthemes`, `ggrepel`, `patchwork`, `cowplot`, `ggpubr`, `ggridges`, `GGally` | Mejorar estética, etiquetas, combinar gráficos, figuras tipo “paper”, ridgelines, matrices de dispersión |
+| Dashboards y reportes | `rmarkdown`, `quarto`, `shinydashboard`, `bslib`, `golem`, `htmlwidgets` | Reportes reproducibles, dashboards en Shiny, estilos Bootstrap, estructura profesional de apps, widgets embebibles |
+| Interactivos (además de plotly) | `leaflet`, `mapview`, `DT`, `echarts4r`, `apexcharter`, `ggiraph` | Mapas interactivos, tablas interactivas, gráficos web modernos, interactividad (hover/click) sobre ggplot |
+| Mapas y análisis espacial | `sf`, `terra`, `raster`, `tmap`, `ggspatial` | Manejo de datos espaciales (vectores/raster), cartografía estática/interactiva, elementos cartográficos en ggplot |
+| Redes y diagramas | `igraph`, `ggraph`, `DiagrammeR`, `networkD3` | Redes (nodos/aristas), grafos con gramática tipo ggplot, diagramas de flujo, redes interactivas tipo D3 |
+| Visualizaciones “especiales” | `corrplot`, `ggcorrplot`, `pheatmap`, `ComplexHeatmap`, `treemapify`, `waffle` | Correlaciones, heatmaps avanzados, treemaps, gráficos waffle |
+
+
 Elegir el gráfico adecuado es muy importante pues existen diferentes alternativos  y se debe escoger el apropiado para representar los datos. El tipo de dato determina el tipo de grafico asi:
 
-|Tipo de variable  | Escala          | Gráfico                                   |
-|:-----------------|:----------------|:------------------------------------------|
-|Cualitativas      |                 |                                           |
-|                  |Nominal          | torta                                     |
-|                  |Ordinal          | barras                                    |
-|                  |                 |                                           |
-|Cuantitativas     |Intervalo-razón  | diagrama de tallos y hojas                |
-|                  |                 | histograma                                |
-|                  |                 | diagrama de cajas                         |
-|                  |                 | diagrama de densidad                      |
-|                  |                 | diagrama de puntos                        |
-|                  |                 | diagrama de lineas                        |
-|                  |                 | diagrama de radar                         |
-|                  |                 | gráfico likert                            |
-|                  |                 | mapa de calor                             |
+Antes de graficar, identifica la variable principal (cualitativa o cuantitativa) y el objetivo del análisis (comparar, describir distribución, identificar tendencias, etc.). Esa decisión guía el tipo de gráfico.
 
+En términos prácticos, los gráficos se pueden agrupar según la pregunta que quieres responder:
+
+- **Comparación**: barras y columnas para contrastar categorías (marcas, productos, canales).
+- **Composición**: tortas o barras apiladas para mostrar participación o cuota.
+- **Distribución**: histogramas, densidades y cajas para entender cómo se dispersan los datos.
+- **Relación**: dispersión para ver asociaciones entre dos variables (precio vs. demanda).
+- **Evolución en el tiempo**: líneas o series de tiempo para observar tendencias y estacionalidad.
+
+También es clave considerar el público. Si el gráfico va dirigido a directivos o clientes, prioriza claridad y mensajes clave. Si es para análisis técnico, puedes incluir más detalle (como distribución o valores atípicos).
+
+Ejemplos aplicados:
+
+- Comparación: ventas por línea de producto en un trimestre.
+- Composición: participación de mercado por marca en un sector.
+- Distribución: variabilidad del ticket promedio por cliente.
+- Relación: inversión en pauta digital vs. conversiones.
+- Evolución en el tiempo: visitas al sitio web mes a mes y picos en campañas.
+
+```{r, fig.height=4}
+# Comparación: ventas por línea de producto
+ventas_prod <- data.frame(
+  producto = c("A", "B", "C", "D"),
+  ventas = c(120, 95, 140, 80)
+)
+barplot(
+  ventas_prod$ventas,
+  names.arg = ventas_prod$producto,
+  col = c11,
+  main = "Ventas por línea de producto",
+  ylab = "Unidades"
+)
+```
+
+```{r, fig.height=4}
+# Composición: participación de mercado por marca
+participacion <- data.frame(
+  marca = c("Marca 1", "Marca 2", "Marca 3", "Otros"),
+  share = c(35, 25, 20, 20)
+)
+pie(
+  participacion$share,
+  labels = paste0(participacion$marca, " (", participacion$share, "%)"),
+  main = "Participación de mercado por marca",
+  col = paleta4
+)
+```
+
+```{r, fig.height=4}
+# Distribución: ticket promedio por cliente
+set.seed(123)
+ticket <- rnorm(120, mean = 85, sd = 20)
+hist(
+  ticket,
+  col = c21,
+  main = "Distribución del ticket promedio",
+  xlab = "Ticket (miles de $)",
+  ylab = "Frecuencia"
+)
+```
+
+```{r, fig.height=4}
+# Relación: inversión en pauta digital vs conversiones
+inv <- c(10, 15, 20, 25, 30, 35, 40)
+conv <- c(120, 150, 190, 210, 260, 300, 330)
+plot(
+  inv, conv,
+  pch = 19, col = c11,
+  main = "Inversión vs conversiones",
+  xlab = "Inversión (millones)",
+  ylab = "Conversiones"
+)
+```
+
+```{r, fig.height=4}
+# Evolución en el tiempo: visitas al sitio web
+mes <- c("Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic")
+visitas <- c(12, 14, 15, 18, 22, 25, 30, 28, 24, 20, 18, 16)
+plot(
+  visitas,
+  type = "o", col = c31, lwd = 2, pch = 19,
+  xaxt = "n",
+  main = "Visitas al sitio web por mes",
+  xlab = "Mes",
+  ylab = "Miles de visitas"
+)
+axis(1, at = 1:12, labels = mes)
+```
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("img/graficos.png")
+```
+
+<!-- |Tipo de variable  | Escala          | Gráfico                                   | -->
+<!-- |:-----------------|:----------------|:------------------------------------------| -->
+<!-- |Cualitativas      |                 |                                           | -->
+<!-- |                  |Nominal          | torta                                     | -->
+<!-- |                  |Ordinal          | barras                                    | -->
+<!-- |                  |                 |                                           | -->
+<!-- |Cuantitativas     |Intervalo-razón  | diagrama de tallos y hojas                | -->
+<!-- |                  |                 | histograma                                | -->
+<!-- |                  |                 | diagrama de cajas                         | -->
+<!-- |                  |                 | diagrama de densidad                      | -->
+<!-- |                  |                 | diagrama de puntos                        | -->
+<!-- |                  |                 | diagrama de lineas                        | -->
+<!-- |                  |                 | diagrama de radar                         | -->
+<!-- |                  |                 | gráfico likert                            | -->
+<!-- |                  |                 | mapa de calor                             | -->
+
+<br/><br/>
 
 ### **Gráficos variables cualitativas con R base**
 
 Gráfico de tortas
+
+Este gráfico es útil para mostrar participaciones o cuotas de mercado. Se recomienda cuando hay pocas categorías y se desea resaltar la proporción de cada una.
 
 ```{r, fig.height=6}
 a=rep("Cultutal", 360145)
@@ -110,7 +225,11 @@ pie(t, labels=labs, main=" Participación eventos Medio Universitario",
     col = paleta4)
 ```
 
+<br/><br/>
+
 ### **Diagrama de barras**
+
+Las barras permiten comparar categorías con facilidad. En mercadeo se usan, por ejemplo, para comparar niveles de satisfacción o respuestas a encuestas por opciones.
 
 ```{r, fig.height=6}
 ev=c(4,  8, 12, 43, 32)
@@ -118,7 +237,11 @@ names(ev)=c("Muy regular", "Regular", "Bueno", "Muy bueno","Excelente")
 barplot(ev, col=c("#ff5b00","#dcf600","#7dbd00","#659cef","#2956b2"), main = "Evaluación proceso de inducción")
 ```
 
+<br/><br/>
+
 ### **Diagrama de barras dos variables**
+
+Cuando se cruzan dos variables categóricas, las barras agrupadas permiten comparar combinaciones (p. ej., tipo de producto vs. canal). Esto ayuda a detectar patrones por segmento.
 
 ```{r, fig.height=5.5}
 counts <- table(mtcars$vs, mtcars$gear); rownames(counts)=c("Montor en linea", "Motor en V")
@@ -126,19 +249,30 @@ barplot(counts, main="Numero de cambios adelante por Tipo de motor",  xlab="Nume
   legend = rownames(counts))
 ```
 
+<br/><br/>
 
 ### **Gráficas variables cuantitativas con R base**
 
+En variables numéricas nos interesa describir la distribución, la tendencia y la dispersión. Los siguientes gráficos ayudan a responder preguntas como: ¿hay valores atípicos?, ¿la distribución es simétrica?, ¿existen agrupaciones?
+
+<br/><br/>
+
 ### **Diagrama de árbol**
+
+El diagrama de tallos y hojas permite ver valores individuales y su frecuencia sin perder detalle. Es una buena alternativa cuando el conjunto de datos no es muy grande.
 
 ```{r}
 nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
 stem(nf)
 ```
+
 Este diagrama ordena los datos de manera que se puede determinar tanto en mínimo (1.6) como el máximo (4.3) , además de visualizar donde están la mayor concentración de ellos.
 
+<br/><br/>
 
 ### **Histograma**
+
+El histograma resume la distribución de una variable. En contextos de negocio puede servir para ver la dispersión de tiempos de entrega o el rango de ventas por cliente.
 
 ```{r, fig.height=5}
 nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
@@ -155,6 +289,8 @@ h1
 
 ### **Diagrama de densidad**
 
+La densidad muestra la forma general de la distribución suavizada. Es útil para comparar rápidamente perfiles de consumo o niveles de gasto.
+
 ```{r, fig.height=5}
 nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
 plot(density(nf), main="Distribucion de las notas de matematias fundamentales", col=c21, lwd=2)
@@ -163,6 +299,8 @@ plot(density(nf), main="Distribucion de las notas de matematias fundamentales", 
 <br/><br/>
   
 ### **Diagrama de cajas**
+
+El boxplot resume mediana, cuartiles y valores atípicos. Es ideal para comparar desempeño entre productos, tiendas o periodos.
 
 ```{r}
 nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
@@ -173,6 +311,8 @@ abline(h=3, col=c41)
 <br/><br/>
 
 ### **Diagrama de cajas**
+
+Aquí se compara la distribución por grupos. Esta lógica es muy útil para comparar resultados por carrera, sede, canal o región.
 
 ```{r, fig.height=4.5}
 nf=c(4.1, 2.7, 3.1, 3.2, 3.0, 3.2, 2.0, 2.4, 1.6, 3.2, 3.1, 2.6, 2.0, 2.4, 2.8, 3.3, 4.0, 3.4, 3.0, 3.1, 2.7, 2.7, 3.0, 3.8, 3.2, 2.2, 3.5, 3.5, 3.8, 3.5, 3.9, 4.2, 4.3, 3.9, 3.2, 3.5, 3.5, 3.7, 4.1, 3.7, 3.5, 3.6, 3.2, 3.1, 3.4, 3.0, 3.0, 3.0, 2.7, 1.7, 3.6, 2.1, 2.4, 3.0, 3.1, 2.5, 2.5, 3.6, 2.2, 2.4, 3.1, 3.3, 2.7, 3.7, 3.0, 2.7, 3.0, 3.2, 3.1, 2.4, 3.0, 2.7, 2.5, 3.0, 3.0, 3.0, 3.2, 3.1, 3.8, 4.1, 3.7, 3.5, 3.0, 3.7, 3.7, 4.1, 3.7, 3.9, 3.7, 2.0)
@@ -188,6 +328,8 @@ abline(h=4, col=c11, lwd=2)
 
 ### **Diagrama de dispersión**
 
+Este gráfico permite analizar la relación entre dos variables numéricas. En administración es clave para explorar asociaciones como inversión publicitaria vs. ventas.
+
 ```{r, fig.height=5}
 ed=round(rnorm(90,18,1),1)
 plot(ed,nf, main="Edad vs Nota final matemáticas fundamentales", ylim = c(0,5), xlab = "Edad", ylab = "Nota final",col=c11,pch=19)
@@ -199,6 +341,8 @@ grid()
 
 ### **Gráfica de series de tiempo**
 
+Las series de tiempo muestran el comportamiento a lo largo de meses o años. Son fundamentales para analizar tendencias, estacionalidad y cambios en la demanda.
+
 ```{r, fig.height=5}
 plot(AirPassengers, main="Numero de pasajeros por mes", col=c31, lwd = 2)
 ```
@@ -206,6 +350,8 @@ plot(AirPassengers, main="Numero de pasajeros por mes", col=c31, lwd = 2)
 <br/><br/>
 
 ### **Resumen**
+
+El siguiente bloque resume varios tipos de gráficos en una sola vista. Úsalo como referencia rápida de qué gráfico elegir según el tipo de variable y el objetivo del análisis.
 
 ```{r}
 x=rnorm(100,100,20)
@@ -230,20 +376,23 @@ par(mfrow=c(1, 1))
 
 ## **Gráficos con ggplot2**
 
+`ggplot2` es el paquete más usado en R para visualización. Su lógica por capas facilita construir gráficos claros y consistentes, lo cual es muy útil para reportes académicos y corporativos.
 
-+ **Data**: capa de los datos
+<br/>
 
-+ **Aesthetics**: capa estética (**aes**), definimos las variables a utilizar en el gráfico
++ **Data**: capa de los datos. Aquí defines el dataset, por ejemplo una tabla de ventas, clientes o campañas.
 
-+ **Geometries**: capa de geometrías, se define el tipo de gráfica a realizar
++ **Aesthetics**: capa estética (**aes**), definimos las variables a utilizar en el gráfico. Ejemplo: `x = mes`, `y = ventas`, `color = canal`.
 
-+ **Facets**: capa de facetas, permite detallar la gráfica por categorías
++ **Geometries**: capa de geometrías, se define el tipo de gráfica a realizar. Por ejemplo barras para comparar productos o líneas para ver tendencias.
 
-+ **Statistics**: capa de estadística, permite agregar modelos
++ **Facets**: capa de facetas, permite detallar la gráfica por categorías. Útil para comparar sedes, segmentos de clientes o regiones.
 
-+ **Coordinates**: capa de coordenadas, permite ajustar las escalas de los ejes
++ **Statistics**: capa de estadística, permite agregar modelos. Por ejemplo, una línea de tendencia para evaluar crecimiento de ingresos.
 
-+ **Theme**: capas de características del gráfico que no dependen de  los datos
++ **Coordinates**: capa de coordenadas, permite ajustar las escalas de los ejes. Ayuda a enfocar rangos relevantes (p. ej. solo 2023-2025).
+
++ **Theme**: capas de características del gráfico que no dependen de los datos. Se usa para estilos y legibilidad en reportes ejecutivos.
 
 <br/><br/>
 
@@ -255,7 +404,7 @@ par(mfrow=c(1, 1))
 
 #### Primer paso:  **Instalar y cargar la libreria**
 
-
+Primero instalamos y cargamos la librería. Esto se hace una sola vez por equipo (instalación) y luego se carga en cada sesión de trabajo.
 
 ```{r, eval=FALSE}
 # Instalar ggplot2 si no lo tienes
@@ -278,6 +427,7 @@ library(ggplot2)
 
 #### Segundo paso : **Declarar la base de datos y las varibles**
 
+Aquí definimos la base y las variables que vamos a comparar. En este ejemplo, se relaciona el peso del auto con el consumo, una lógica similar a costo vs. ventas o inversión vs. retorno.
 
 ```{r,fig.height=5}
 p <- ggplot(mtcars, aes(x = wt, y = mpg))
@@ -291,7 +441,7 @@ p
 
 #### Tercer paso : **Crear grafico base** con las diferentes geometrías
 
-
+Con la geometría definimos el tipo de gráfico. El `geom_point()` crea el diagrama de dispersión, muy usado para visualizar relaciones entre variables.
 
 
 ```{r,fig.height=5}
@@ -313,6 +463,8 @@ p
 
 #### Cuarto paso : **Agregar caracteristicas adicionales**
 
+Se pueden incluir colores, tamaños y transparencia para resaltar grupos o categorías. Esto ayuda a hacer comparaciones por segmentos.
+
 ```{r,fig.height=5}
 p <- ggplot(mtcars, aes(x = wt, y = mpg, color = cyl)) +
           geom_point(size = 2, alpha = 0.7)  # Tamaño y transparencia de los puntos
@@ -326,6 +478,8 @@ p
 
 
 #### Sexto paso : **Agregar títilo,  etiquetas a los ejes  leyenda aclararoria**
+
+Los títulos y etiquetas convierten un gráfico técnico en uno comunicativo. En contextos de negocio, esto facilita que el lector entienda el mensaje sin leer el código.
 
 ```{r, message=FALSE, warning=FALSE,fig.height=5}
 p <- p + labs(title = "Relación entre Peso del Auto y Consumo de Combustible",
@@ -343,6 +497,8 @@ p
 
 #### Septimo paso : **Agregar una línea de tendencia**
 
+La línea de tendencia resume la relación general entre las variables. Es útil para explicar patrones de crecimiento o caída en términos gerenciales.
+
 ```{r, message=FALSE, warning=FALSE,fig.height=5}
 p <- p + geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = c31)
 p
@@ -351,6 +507,8 @@ p
 </br></br>
 
 #### Octavo paso : **Agreagar un tema o fondo**
+
+El tema define el estilo visual. Un tema limpio mejora la legibilidad, especialmente en presentaciones o informes.
 
 ```{r}
 p <- p + theme_minimal(base_size = 14)
@@ -362,6 +520,8 @@ p
 </br></br>
 
 ### Noveno paso : **Ajustar la escala de colores**
+
+La escala de color debe ser coherente y fácil de interpretar. En dashboards o reportes, colores consistentes ayudan a comparar gráficos entre sí.
 
 ```{r}
 library(ggplot2)
@@ -389,13 +549,12 @@ p
 #### gráfico completo !!
 
 
-
 </br></br>
 
 
-
-
 ## Otros gráficos
+
+A continuación se muestran ejemplos adicionales para ampliar el repertorio. La idea es que puedas reconocer qué gráfico usar según la pregunta del análisis.
 
 ```{r, fig.height=5}
 library(ggplot2)
@@ -434,6 +593,8 @@ ggplot(iris, aes(x=Sepal.Length, y=Species)) +
 </br></br>
 
 ## **Gráficos con plotly**
+
+`plotly` permite convertir gráficos en interactivos. Esto es útil para presentaciones donde el usuario puede pasar el mouse y ver detalles sin saturar la pantalla.
 
 ```{r, eval=FALSE}
 # Instalar paquetes si es necesario
@@ -484,7 +645,7 @@ https://gganimate.com/
 
 ## **Graficos con highcharter**
 
-
+`highcharter` es otra opción para gráficos interactivos con estética profesional. Suele usarse en tableros ejecutivos por su estilo limpio y opciones de personalización.
 
 ```{r, warning=FALSE, message=FALSE}
 # Instalar paquetes si es necesario
@@ -523,8 +684,9 @@ hchart(mtcars, "scatter", hcaes(x = wt, y = mpg, group = cyl, name = modelo)) %>
 
 <br/><br/>
 
-### **Estética en la visualización**
+## **Estética en la visualización**
 
+Además de la elección del gráfico, el diseño visual influye en la interpretación. Una buena estética mejora la comprensión y evita confusiones en la lectura de resultados.
 
 La **estética** juega un papel fundamental en la visualización de datos, ya que ayuda a hacer que la información sea más comprensible y atractiva para el espectador. Entre las diferentes formas de estética utilizadas en la visualización, se encuentran:
 
@@ -549,28 +711,26 @@ El **ancho de línea** y el **tipo de línea** se utilizan para diferenciar entr
 
 La dimensión (1D, 2D, 3D) se refiere a la cantidad de dimensiones que se utilizan en la visualización. Mientras que las visualizaciones 1D se limitan a una sola dimensión, como una línea de tiempo, las visualizaciones 2D y 3D pueden representar información en dos o tres dimensiones, lo que permite una representación más detallada y compleja de los datos. Es recomendable no utilizar 3D para que las visializaciones sean más limpias y sencillas 
 
-<br/><br/>
 
-```{r, echo=FALSE, out.width="50%", fig.align = "center"}
-knitr::include_graphics("img/formas.png")
-```
 
 <br/><br/>
 
-## **Formas**
+#### **Formas**
 
 Es posible utilizar circulos, cuadrados, triangulos y en general figuras geométricas para resaltar puntos que represente valores numéricos en un plano 2D y de esta forma representar una secuencia o tendencia de la información.
 
 <br/><br/>
 
-```{r, echo=FALSE, out.width="50%", fig.align = "center"}
+```{r, echo=FALSE, out.width="70%", fig.align = "center"}
 knitr::include_graphics("img/formas.png")
 ```
 
 <br/><br/>
 
 
-## **Paletas**
+#### **Paletas**
+
+Las paletas ayudan a mantener consistencia y a diferenciar categorías. En mercadeo, una paleta bien elegida refuerza la identidad visual del informe.
 
 ```{r, echo=FALSE, out.width="50%", fig.align = "center"}
 knitr::include_graphics("img/paleta0.png")
@@ -581,46 +741,54 @@ Tomada de Pinteres
 
 </br></br>
 
-### **Normas IEEE**
+## **Normas APA** 
+
+En trabajos académicos y corporativos es clave seguir normas de presentación. Esto asegura que los gráficos sean claros, comparables y bien documentados.
+
+Aquí tienes el texto **ajustado al enfoque de las normas APA (7.ª edición) para figuras y gráficos**, manteniendo una estructura similar a la que tenías:
 
 
-Las normas **IEEE** para la construcción de gráficos son principios fundamentales en la visualización de datos que garantizan claridad, precisión y eficacia en la comunicación. Estas normas son:
+Las **normas APA** orientan la elaboración y presentación de **figuras** (gráficos, diagramas, mapas, etc.) para asegurar **claridad, precisión y consistencia** en la comunicación académica. En términos prácticos, estas recomendaciones se reflejan en los siguientes criterios:
+
+</br>
+
+### Claridad y legibilidad
+
+El gráfico debe entenderse con rapidez y sin esfuerzo. Evita elementos decorativos innecesarios y prioriza un diseño limpio. Usa **tipografías legibles**, tamaños adecuados y un contraste suficiente entre elementos (líneas, puntos, barras y texto).
+
+</br>
+
+### Precisión y fidelidad de los datos
+
+La figura debe representar los datos de manera exacta, sin distorsiones. Utiliza escalas apropiadas y proporcionales, indica **unidades de medida**, y cuida que las comparaciones visuales sean correctas. Si se presentan porcentajes, verifica coherencia (por ejemplo, totales consistentes cuando aplique).
+
+</br>
+
+### Rotulación y organización según APA
+
+En APA, un gráfico se presenta como **Figura** y debe incluir:
+
+* **Número de figura** (por ejemplo, *Figura 1*).
+* **Título de la figura** (claro y descriptivo).
+* El gráfico (contenido visual).
+* **Nota de figura** si es necesaria (para aclarar abreviaturas, describir símbolos, indicar fuente o explicar detalles metodológicos).
+
+</br>
+
+### Consistencia y estilo académico
+
+Mantén coherencia en el formato a lo largo del informe: mismos estilos de ejes, tamaños de letra, criterios de color y formato de leyendas. Las etiquetas de ejes deben ser claras, con nombres completos (o abreviaturas explicadas en nota).
+
+</br>
+
+### Accesibilidad y uso del color
+
+Usa el color solo cuando aporte información. Evita combinaciones que dificulten la lectura y procura que el gráfico sea interpretable incluso en escala de grises (por ejemplo, con patrones, formas o distintos tipos de línea). Esto mejora la accesibilidad y la calidad de impresión.
+
 
 </br></br>
 
-#### **Eficiencia**:
-
-El gráfico debe transmitir la información de manera rápida y clara.
-Evita decoraciones innecesarias (chartjunk).
-Usa escalas adecuadas para facilitar la interpretación.
-
-</br></br>
-
-#### **Eficacia**:
-
-El gráfico debe cumplir con su propósito comunicativo.
-Elige el tipo de gráfico más adecuado para los datos (barras, líneas, dispersión, etc.).
-Usa etiquetas, títulos y leyendas para orientar al lector.
-
-</br></br>
-
-#### **Exactitud**:
-
-Representa los datos de forma fiel y sin distorsiones.
-Usa escalas proporcionales y evita manipulaciones visuales que alteren la percepción.
-Si se usan porcentajes, asegúrate de que la suma sea 100%.
-
-</br></br>
-
-#### **Estética**:
-
-El diseño debe ser limpio y atractivo sin afectar la legibilidad.
-Usa colores adecuados con suficiente contraste.
-Mantén coherencia en los estilos y fuentes.
-Siguiendo estas normas, se logra que los gráficos sean interpretados correctamente y comuniquen la información de manera efectiva
-
-
-</br></br>
+## **Ejemplos**
 
 ```{r}
 ggplot(cars, aes(x = speed)) +
@@ -635,6 +803,8 @@ ggplot(cars, aes(x = speed)) +
 ```
 
 </br></br>
+
+Este ejemplo muestra cómo incluir títulos, ejes y fuente, cumpliendo criterios de claridad y fidelidad en la presentación de datos.
 
 ```{r, warning=FALSE, message=FALSE}
 ggplot(cars, aes(x = speed, y = dist)) +
@@ -653,14 +823,123 @@ ggplot(cars, aes(x = speed, y = dist)) +
 
 </br></br>
 
+Este segundo ejemplo integra una tendencia lineal para apoyar la interpretación, algo útil en análisis de productividad o eficiencia.
 
 
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+library(ggplot2)
+library(ggthemes)
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point(size=2) +
+  theme_economist() +
+  labs(title="ggthemes: theme_economist()")
+```
+
+</br></br>
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+library(ggplot2)
+library(ggrepel)
+
+df <- head(mtcars, 10)
+df$modelo <- rownames(df)
+
+ggplot(df, aes(wt, mpg, label = modelo)) +
+  geom_point(size=2) +
+  geom_text_repel() +
+  labs(title="ggrepel: etiquetas que no se enciman")
+```
+
+</br></br>
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+library(ggplot2)
+library(ggiraph)
+par(mar=c(5,16,4,2)+0.1)
+p <- ggplot(mtcars, aes(wt, mpg, tooltip = rownames(mtcars))) +
+  geom_point_interactive(size=2) +
+  theme_minimal()
+
+girafe(ggobj = p)
+```
+
+<br/><br/>
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+# install.packages("likert")
+library(likert)
+par(mar=c(5,16,4,2)+0.1)
+# Datos simulados (respuestas tipo Likert)
+set.seed(123)
+n <- 120
+datos <- data.frame(
+  Servicio = factor(sample(c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                             "De acuerdo","Totalmente de acuerdo"), n, TRUE),
+                    levels = c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                               "De acuerdo","Totalmente de acuerdo"),
+                    ordered = TRUE),
+  Precio   = factor(sample(c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                             "De acuerdo","Totalmente de acuerdo"), n, TRUE),
+                    levels = c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                               "De acuerdo","Totalmente de acuerdo"),
+                    ordered = TRUE),
+  Calidad  = factor(sample(c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                             "De acuerdo","Totalmente de acuerdo"), n, TRUE),
+                    levels = c("Totalmente en desacuerdo","En desacuerdo","Neutral",
+                               "De acuerdo","Totalmente de acuerdo"),
+                    ordered = TRUE)
+)
+
+# Construir objeto Likert y graficar
+lk <- likert(datos)
+
+p =plot(lk,
+     centered = TRUE,
+     main = "Encuesta de satisfacción (Likert)",
+     xlab = "Porcentaje de respuestas")
+p +
+  theme(
+    legend.text = element_text(angle = 0, hjust = 1, vjust = 1)
+  )
+```
+
+<br/><br/>
+
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
+# install.packages("plotly")
+library(plotly)
+
+set.seed(123)
+df <- data.frame(
+  Edad   = round(rnorm(100, mean = 35, sd = 5),0),
+  Ingreso = rnorm(100, mean = 5500, sd = 1000),
+  Grupo  = sample(c("A", "B", "C"), 100, replace = TRUE)
+)
+
+p <- plot_ly(
+  data = df,
+  x = ~Edad, y = ~Ingreso,
+  type = "scatter", mode = "markers",
+  color = ~Grupo,
+  text = ~paste0("Grupo: ", Grupo,
+                 "<br>Edad: ", round(Edad, 1),
+                 "<br>Ingreso: ", round(Ingreso, 0)),
+  hoverinfo = "text",
+  marker = list(size = 10, opacity = 0.8)
+) %>%
+  layout(
+    title = "Dispersión interactiva (Plotly)",
+    xaxis = list(title = "Edad (años)"),
+    yaxis = list(title = "Ingreso (COP)")
+  )
+
+p
 
 
+```
 
-
-
-
+<br/><br/><br/><br/>
 
 
 ![](img/pujcali.jpeg)
@@ -669,7 +948,8 @@ ggplot(cars, aes(x = speed, y = dist)) +
 
 ### **Una imagen dice mas que mil palabras...** 
 
+Las imágenes también comunican contexto y refuerzan la narrativa del informe. En presentaciones de mercadeo, una foto puede conectar datos con la realidad del entorno.
+
 Daniel Enrique González Gómez 
 
 Imagen tomada de :https://javerianacali.edu.co/noticias/la-javeriana-bogota-y-cali-1-de-colombia
-

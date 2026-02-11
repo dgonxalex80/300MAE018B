@@ -1,0 +1,30 @@
+
+/* =========================================================
+   Estilos para acercar el tablero a la referencia (imagen)
+   ========================================================= */
+
+.navbar {
+  background-color: #2C82DF !important;  /* azul del header */
+}
+
+.navbar-brand, .navbar-nav > li > a {
+  color: #ffffff !important;
+}
+
+/* Tarjetas valueBox (flexdashboard) */
+.value-box {
+  border-radius: 10px !important;
+}
+.value-box .value {
+  font-size: 52px !important;
+  font-weight: 700 !important;
+}
+.value-box .caption {
+  font-size: 16px !important;
+}
+
+/* Espaciado vertical similar a la imagen */
+.section.level3 {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}

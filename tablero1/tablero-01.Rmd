@@ -1,0 +1,249 @@
+---
+title: "Caso Cerveza"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(DT)
+
+# Carga datos
+library(paquetePROB)
+data(beer)
+
+# Tamaño homogéneo de gráficos y texto
+knitr::opts_chunk$set(fig.width = 5.2, fig.height = 3.1, fig.retina = 2)
+theme_tablero <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 9),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
+  )
+theme_set(theme_tablero)
+
+# Helper para cargar paquetes opcionales
+load_pkg <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message("Paquete no instalado: ", pkg)
+    return(FALSE)
+  }
+  library(pkg, character.only = TRUE)
+  TRUE
+}
+
+has_plotly <- load_pkg("plotly")
+
+# Paleta
+colores <- c(
+  "#C68642", # 1-lager artesanal - ámbar
+  "#F1C40F", # 2-clara artesanal - dorado
+  "#7B3F00", # 3-lager importada - marrón
+  "#F39C12", # 4-normal y helada - amarillo intenso
+  "#BDC3C7"  # 5-baja en alcohol - gris claro
+)
+
+# Etiquetas
+labs_tp <- c("lager artesanal", "clara artesanal", "lager importada",
+             "normal y helada", "baja en alcohol")
+labs_or <- c("nacional", "importada")
+
+beer <- beer %>%
+  mutate(
+    tipo_lbl = factor(tipo, levels = 1:5, labels = labs_tp),
+    origen_lbl = factor(origen, levels = c(0, 1), labels = labs_or)
+  )
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Precio
+
+```{r}
+p_precio <- ggplot(beer, aes(x = tipo_lbl, y = precio, fill = tipo_lbl)) +
+  geom_boxplot(width = 0.6, outlier.alpha = 0.3) +
+  geom_jitter(width = 0.15, alpha = 0.25, size = 1) +
+  scale_fill_manual(values = colores) +
+  labs(
+    title = "Distribucion del precio por tipo",
+    x = "Tipo",
+    y = "Precio"
+  ) +
+  theme(legend.position = "none")
+
+if (has_plotly) {
+  plotly::layout(
+    plotly::ggplotly(p_precio, height = 280),
+    font = list(size = 10),
+    title = list(font = list(size = 11))
+  )
+} else p_precio
+```
+
+### Calorias
+
+```{r}
+p_cal <- ggplot(beer, aes(x = tipo_lbl, y = calorias, fill = tipo_lbl)) +
+  geom_boxplot(width = 0.6, outlier.alpha = 0.3) +
+  geom_jitter(width = 0.15, alpha = 0.25, size = 1) +
+  scale_fill_manual(values = colores) +
+  labs(
+    title = "Distribucion de calorias por tipo",
+    x = "Tipo",
+    y = "Calorias (por 12 oz)"
+  ) +
+  theme(legend.position = "none")
+
+if (has_plotly) {
+  plotly::layout(
+    plotly::ggplotly(p_cal, height = 280),
+    font = list(size = 10),
+    title = list(font = list(size = 11))
+  )
+} else p_cal
+```
+
+### Alcohol
+
+```{r}
+p_alc <- ggplot(beer, aes(x = tipo_lbl, y = poralcoh, fill = tipo_lbl)) +
+  geom_boxplot(width = 0.6, outlier.alpha = 0.3) +
+  geom_jitter(width = 0.15, alpha = 0.25, size = 1) +
+  scale_fill_manual(values = colores) +
+  labs(
+    title = "Distribucion de alcohol por tipo",
+    x = "Tipo",
+    y = "Alcohol (%)"
+  ) +
+  theme(legend.position = "none")
+
+if (has_plotly) {
+  plotly::layout(
+    plotly::ggplotly(p_alc, height = 280),
+    font = list(size = 10),
+    title = list(font = list(size = 11))
+  )
+} else p_alc
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Tipo
+
+```{r}
+t1 <- beer %>%
+  count(tipo_lbl, name = "n")
+
+p_tipo <- ggplot(t1, aes(x = reorder(tipo_lbl, n), y = n, fill = tipo_lbl)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = n), hjust = -0.1, size = 3) +
+  scale_fill_manual(values = colores) +
+  coord_flip() +
+  labs(
+    title = "Distribucion por tipo de cerveza",
+    x = "Tipo",
+    y = "Frecuencia"
+  ) +
+  theme(legend.position = "none")
+
+p_tipo
+```
+
+### Origen
+
+```{r}
+t2 <- beer %>%
+  count(origen_lbl, name = "n") %>%
+  mutate(pct = n / sum(n))
+
+p_origen <- ggplot(t2, aes(x = "", y = n, fill = origen_lbl)) +
+  geom_col(width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  scale_fill_manual(values = colores[1:2]) +
+  geom_text(aes(label = percent(pct, accuracy = 1)),
+            position = position_stack(vjust = 0.5), size = 4) +
+  labs(title = "Distribucion por origen", fill = "Origen") +
+  theme_void(base_size = 10) +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
+  )
+
+p_origen
+```
+
+### Data
+
+```{r}
+DT::datatable(beer, fillContainer = FALSE, options = list(pageLength = 8))
+```
+
+### Informe
+
+Aquí va el análisis de los datos
+
+Column {data-width=200}
+-----------------------------------------------------------------------
+
+### minimo precio unidad
+
+```{r}
+pmin <- min(beer$precio, na.rm = TRUE)
+valueBox(number(pmin, accuracy = 0.01), icon = "ion-social-usd")
+```
+
+### maximo precio unidad
+
+```{r}
+pmax <- max(beer$precio, na.rm = TRUE)
+valueBox(number(pmax, accuracy = 0.01), icon = "ion-social-usd")
+```
+
+### promedio precio unidad
+
+```{r}
+pmean <- mean(beer$precio, na.rm = TRUE)
+valueBox(number(pmean, accuracy = 0.01),
+         icon = "ion-social-usd",
+         color = ifelse(pmean > 10, "warning", "primary"))
+```
+
+### promedio alcohol
+
+```{r}
+pmean_alc <- mean(beer$poralcoh, na.rm = TRUE)
+valueBox(number(pmean_alc, accuracy = 0.01),
+         icon = "ion-thermometer",
+         color = "primary")
+```
+
+### promedio calorias
+
+```{r}
+pmean_cal <- mean(beer$calorias, na.rm = TRUE)
+valueBox(number(pmean_cal, accuracy = 1),
+         icon = "ion-flame",
+         color = "primary")
+```
+
+### Porcentaje de cerveza importada
+
+```{r}
+t3 <- table(beer$origen_lbl)
+pct_import <- unname(100 * t3["importada"] / sum(t3))
+
+gauge(pct_import, min = 0, max = 100, symbol = "%",
+      sectors = gaugeSectors(success = c(80, 100),
+                             warning = c(40, 79),
+                             danger = c(0, 39)))
+```

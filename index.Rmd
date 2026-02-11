@@ -35,7 +35,7 @@ source("colores.R")
 <div class="highlight-box">
 
 ```{r, echo=FALSE, out.width="100%", fig.align = "center"}
-knitr::include_graphics("img/calendario_paleta.png")
+knitr::include_graphics("img/calendario3.png")
 ```
 
 </div>

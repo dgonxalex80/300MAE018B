@@ -1,0 +1,145 @@
+---
+title: "Tablero beer.csv"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(scales)
+
+# Datos
+beer <- read.csv("beer.csv", sep = ",", dec = ",", stringsAsFactors = FALSE)
+
+# Colores
+# colores.R
+
+c0= "#D2BCA1" # CAQUI
+c1= "#192338" # OXFORD BLUE
+c2= "#1E2E4F" # SPACE CADET
+c3= "#31487A" # YLMN BLUE
+c4= "#8FB3E2" # JORDY BLUE
+c5= "#D9E1F1" # LEVENDER (WEB)
+
+c6= "#2C5697" # AZUL INSTITUCIONAL
+c7= "#F7F7F7" # FONDO GRIS CLARO WEB
+
+c8 = "#936A4d" # cafe oscuro
+
+# Paleta base (imagen)
+c11 <- "#3B5B8A"; c12 <- "#899DB9"; c13 <- "#B1BDD0"
+c21 <- "#5D7A9C"; c22 <- "#9EAFC4"; c23 <- "#BECAD7"
+c31 <- "#F28B30"; c32 <- "#F7B983"; c33 <- "#FAD1AC"
+c41 <- "#F2B33D"; c42 <- "#F7D18B"; c43 <- "#FAE1B1"
+c51 <- "#F0D9BF"; c52 <- "#F6E8D9"; c53 <- "#F9F0E5"
+
+paleta4 <- c(c11, c21, c31, c41)
+paleta5 <- c(c11, c21, c31, c41, c51)
+# Factores
+beer$tipo <- factor(beer$tipo)
+beer$origen <- factor(beer$origen)
+
+# Etiquetas
+labs_tipo <- c("lager artesanal", "clara artesanal", "lager importada",
+               "normal y helada", "baja en alcohol")
+labs_origen <- c("nacional", "importada")
+
+beer$tipo_lbl <- factor(beer$tipo, levels = 1:5, labels = labs_tipo)
+beer$origen_lbl <- factor(beer$origen, levels = 0:1, labels = labs_origen)
+```
+
+Column {data-width=250}
+-----------------------------------------------------------------------
+
+### Total cervezas
+
+```{r}
+valueBox(nrow(beer), icon = "ion-beer")
+```
+
+### Precio promedio
+
+```{r}
+prom_precio <- mean(beer$precio, na.rm = TRUE)
+valueBox(number(prom_precio, accuracy = 0.01), icon = "ion-social-usd")
+```
+
+### Alcohol promedio
+
+```{r}
+prom_alcohol <- mean(beer$poralcoh, na.rm = TRUE)
+valueBox(number(prom_alcohol, accuracy = 0.01), icon = "ion-thermometer")
+```
+
+### Calorias max
+
+```{r}
+max_cal <- max(beer$calorias, na.rm = TRUE)
+valueBox(number(max_cal, accuracy = 1), icon = "ion-flame")
+```
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+### Precio por tipo
+
+```{r}
+ggplot(beer, aes(x = tipo_lbl, y = precio, fill = tipo_lbl)) +
+  geom_boxplot() +
+  scale_fill_manual(values = paleta5) +
+  labs(x = "Tipo", y = "Precio", title = "Distribucion de precio por tipo") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### Calorias por tipo
+
+```{r}
+ggplot(beer, aes(x = tipo_lbl, y = calorias, fill = tipo_lbl)) +
+  geom_boxplot() +
+  scale_fill_manual(values = paleta5) +
+  labs(x = "Tipo", y = "Calorias", title = "Distribucion de calorias por tipo") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### Precio vs Alcohol
+
+```{r}
+ggplot(beer, aes(x = precio, y = poralcoh, color = tipo_lbl)) +
+  geom_point(alpha = 0.8) +
+  scale_color_manual(values = paleta5) +
+  labs(x = "Precio", y = "Alcohol (%)", title = "Precio vs alcohol") +
+  theme_minimal()
+```
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Tipo
+
+```{r}
+t1 <- table(beer$tipo_lbl)
+cols_t1 <- if (length(t1) <= 4) paleta4 else paleta5
+barplot(t1, col = cols_t1[1:length(t1)], las = 1,
+        main = "Distribucion por tipo", ylab = "Frecuencia")
+```
+
+### Origen
+
+```{r}
+t2 <- table(beer$origen_lbl)
+cols_t2 <- paleta4[1:length(t2)]
+pie(t2, col = cols_t2, main = "Distribucion por origen")
+```
+
+### Datos
+
+```{r}
+DT::datatable(beer, options = list(pageLength = 8))
+```

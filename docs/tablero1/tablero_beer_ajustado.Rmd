@@ -1,0 +1,270 @@
+---
+title: "Caso Cerveza"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: cosmo
+    css: estilos_beer.css
+---
+
+```{r setup, include=FALSE}
+# ============================================================
+# Tablero Caso Cerveza (flexdashboard)
+# - Layout similar a la imagen de referencia
+# - Pestañas (tabset) para: Precio / Calorías / Alcohol
+# - Pestañas (tabset) para: Tipo / Origen / Data / Informe
+# - KPIs a la derecha: mínimo / máximo / promedio (precio)
+# - Gauge: % de cerveza importada
+# ============================================================
+
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(scales)
+
+# -----------------------------
+# 1) Cargar datos
+# -----------------------------
+beer <- read.csv("beer.csv", sep = ",", dec = ",", stringsAsFactors = FALSE)
+
+# -----------------------------
+# 2) Paleta (la que vienes usando)
+# -----------------------------
+c11 <- "#3B5B8A"; c12 <- "#899DB9"; c13 <- "#B1BDD0"
+c21 <- "#5D7A9C"; c22 <- "#9EAFC4"; c23 <- "#BECAD7"
+c31 <- "#F28B30"; c32 <- "#F7B983"; c33 <- "#FAD1AC"
+c41 <- "#F2B33D"; c42 <- "#F7D18B"; c43 <- "#FAE1B1"
+c51 <- "#F0D9BF"; c52 <- "#F6E8D9"; c53 <- "#F9F0E5"
+
+# Para tipos (5 categorías)
+paleta5 <- c(c31, c41, c11, c21, "#BFC5C9")  # naranja, amarillo, azul, azul claro, gris
+# Para origen (2 categorías)
+paleta2 <- c(c11, c31)
+
+# -----------------------------
+# 3) Etiquetas (para que salgan como en la imagen)
+# -----------------------------
+beer$tipo   <- factor(beer$tipo)
+beer$origen <- factor(beer$origen)
+
+labs_tipo   <- c("lager artesanal", "clara artesanal", "lager importada",
+                 "normal y helada", "baja en alcohol")
+labs_origen <- c("nacional", "importada")
+
+beer$tipo_lbl   <- factor(beer$tipo,   levels = 1:5, labels = labs_tipo)
+beer$origen_lbl <- factor(beer$origen, levels = 0:1, labels = labs_origen)
+
+# -----------------------------
+# 4) Métricas (KPIs)
+# -----------------------------
+min_precio  <- min(beer$precio, na.rm = TRUE)
+max_precio  <- max(beer$precio, na.rm = TRUE)
+mean_precio <- mean(beer$precio, na.rm = TRUE)
+
+pct_importada <- mean(beer$origen_lbl == "importada", na.rm = TRUE) * 100
+```
+
+```{css, echo=FALSE}
+```
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### { .tabset .tabset-fade }
+
+#### Precio
+
+```{r}
+# Boxplot: Distribución del precio por tipo de cerveza
+ggplot(beer, aes(x = tipo_lbl, y = precio, fill = tipo_lbl)) +
+  geom_boxplot(width = 0.7, outlier.alpha = 0.7) +
+  scale_fill_manual(values = paleta5) +
+  labs(
+    title = "Distribución del precio por tipo de cerveza",
+    x = "Tipo",
+    y = "Precio"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 10)
+  )
+```
+
+#### Calorias
+
+```{r}
+# Boxplot: Distribución de calorías por tipo
+ggplot(beer, aes(x = tipo_lbl, y = calorias, fill = tipo_lbl)) +
+  geom_boxplot(width = 0.7, outlier.alpha = 0.7) +
+  scale_fill_manual(values = paleta5) +
+  labs(
+    title = "Distribución de calorías por tipo de cerveza",
+    x = "Tipo",
+    y = "Calorías"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 10)
+  )
+```
+
+#### Alcohol
+
+```{r}
+# Dispersión: Precio vs Alcohol (coloreado por tipo)
+ggplot(beer, aes(x = poralcoh, y = precio, color = tipo_lbl)) +
+  geom_point(size = 2.2, alpha = 0.85) +
+  scale_color_manual(values = paleta5) +
+  labs(
+    title = "Precio vs Alcohol",
+    x = "Alcohol (%)",
+    y = "Precio",
+    color = "Tipo"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    legend.position = "bottom"
+  )
+```
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### { .tabset .tabset-fade }
+
+#### Tipo
+
+```{r}
+# Barras: distribución por tipo (frecuencia)
+conteo_tipo <- beer %>%
+  count(tipo_lbl) %>%
+  arrange(desc(n))
+
+ggplot(conteo_tipo, aes(x = tipo_lbl, y = n, fill = tipo_lbl)) +
+  geom_col(width = 0.8, color = "gray20") +
+  scale_fill_manual(values = paleta5) +
+  labs(
+    title = "Distribución tipo de cerveza",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+#### Origen
+
+```{r}
+# Barras: distribución por origen
+conteo_origen <- beer %>%
+  count(origen_lbl) %>%
+  arrange(desc(n))
+
+ggplot(conteo_origen, aes(x = origen_lbl, y = n, fill = origen_lbl)) +
+  geom_col(width = 0.6, color = "gray20") +
+  scale_fill_manual(values = paleta2) +
+  labs(
+    title = "Distribución por origen",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(size = 12)
+  )
+```
+
+#### Data
+
+```{r}
+# Tabla de datos (como en la pestaña Data)
+DT::datatable(
+  beer,
+  options = list(pageLength = 10, scrollX = TRUE),
+  rownames = FALSE
+)
+```
+
+#### Informe
+
+```{r}
+# Resumen rápido (puedes ampliarlo)
+resumen <- beer %>%
+  summarise(
+    n = n(),
+    min_precio = min(precio, na.rm = TRUE),
+    max_precio = max(precio, na.rm = TRUE),
+    prom_precio = mean(precio, na.rm = TRUE),
+    pct_importada = mean(origen_lbl == "importada", na.rm = TRUE) * 100
+  )
+
+resumen
+```
+
+Column {data-width=280}
+-----------------------------------------------------------------------
+
+### 
+
+```{r}
+# KPI: mínimo precio unidad
+valueBox(
+  value = number(min_precio, accuracy = 0.01),
+  caption = "mínimo precio unidad",
+  icon = "fa-dollar-sign",
+  color = "primary"
+)
+```
+
+### 
+
+```{r}
+# KPI: máximo precio unidad
+valueBox(
+  value = number(max_precio, accuracy = 0.01),
+  caption = "máximo precio unidad",
+  icon = "fa-dollar-sign",
+  color = "primary"
+)
+```
+
+### 
+
+```{r}
+# KPI: promedio precio unidad
+valueBox(
+  value = number(mean_precio, accuracy = 0.01),
+  caption = "promedio precio unidad",
+  icon = "fa-dollar-sign",
+  color = "primary"
+)
+```
+
+### Porcentaje de cerveza importada
+
+```{r}
+# Gauge: % importada (similar al indicador semicircular)
+gauge(
+  pct_importada,
+  min = 0, max = 100,
+  symbol = "%",
+  gaugeSectors(
+    success = c(0, 50),
+    warning = c(50, 80),
+    danger  = c(80, 100)
+  )
+)
+```
