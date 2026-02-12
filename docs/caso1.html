@@ -589,24 +589,7 @@ alcohol, calorías, porción, presentación y precio?</li>
 <div id="carga-de-la-data" class="section level2">
 <h2><strong>Carga de la data</strong></h2>
 <pre class="r"><code>library(readr)
-cervezas &lt;- read_csv(&quot;data/cervezas.csv&quot;)
-
-attr(cervezas, &quot;spec&quot;) &lt;- NULL
-attr(cervezas, &quot;problems&quot;) &lt;- NULL
-str(cervezas, vec.len = 0, width = 40)</code></pre>
-<pre><code>spc_tbl_ [200 × 12] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
- $ marca        : chr [1:200]  ...
- $ producto     : chr [1:200]  ...
- $ tipo_codigo  : num [1:200] NULL ...
- $ tipo         : chr [1:200]  ...
- $ origen_codigo: num [1:200] NULL ...
- $ origen       : chr [1:200]  ...
- $ pais         : chr [1:200]  ...
- $ alcohol      : num [1:200] NULL ...
- $ calorias     : num [1:200] NULL ...
- $ porcion      : num [1:200] NULL ...
- $ presentacion : num [1:200] NULL ...
- $ precio       : num [1:200] NULL ...</code></pre>
+cervezas &lt;- read_csv(&quot;data/cervezas.csv&quot;)</code></pre>
 <p><br/><br/></p>
 </div>
 <div id="base-de-datos" class="section level2">
@@ -617,8 +600,8 @@ cervezas2 &lt;- cervezas[,c(1,4,6:12)]
 DT::datatable(
   head(cervezas2, fillContainer = FALSE, options = list(pageLength = 8))
 )</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-7f7b16972906a6d1fa99" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-7f7b16972906a6d1fa99">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["Marca_G05","Marca_U81","Marca_E70","Marca_R92","Marca_L39","Marca_O37"],["clara artesanal","lager artesanal","cerveza normal y helada","lager artesanal","lager artesanal","clara artesanal"],["nacional","nacional","nacional","nacional","nacional","nacional"],["Colombia","Colombia","Colombia","Colombia","Colombia","Colombia"],[4.8,4.7,6.1,4,5.4,4.5],[157,187,208,185,191,171],[330,330,330,330,330,330],[500,473,330,269,473,500],[5.98,5.32,3.49,3.01,5.84,5.36]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>marca<\/th>\n      <th>tipo<\/th>\n      <th>origen<\/th>\n      <th>pais<\/th>\n      <th>alcohol<\/th>\n      <th>calorias<\/th>\n      <th>porcion<\/th>\n      <th>presentacion<\/th>\n      <th>precio<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,8,9]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"marca","targets":1},{"name":"tipo","targets":2},{"name":"origen","targets":3},{"name":"pais","targets":4},{"name":"alcohol","targets":5},{"name":"calorias","targets":6},{"name":"porcion","targets":7},{"name":"presentacion","targets":8},{"name":"precio","targets":9}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5060d784bc073de0b04d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5060d784bc073de0b04d">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],["Marca_G05","Marca_U81","Marca_E70","Marca_R92","Marca_L39","Marca_O37"],["clara artesanal","lager artesanal","cerveza normal y helada","lager artesanal","lager artesanal","clara artesanal"],["nacional","nacional","nacional","nacional","nacional","nacional"],["Colombia","Colombia","Colombia","Colombia","Colombia","Colombia"],[4.8,4.7,6.1,4,5.4,4.5],[157,187,208,185,191,171],[330,330,330,330,330,330],[500,473,330,269,473,500],[5.98,5.32,3.49,3.01,5.84,5.36]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>marca<\/th>\n      <th>tipo<\/th>\n      <th>origen<\/th>\n      <th>pais<\/th>\n      <th>alcohol<\/th>\n      <th>calorias<\/th>\n      <th>porcion<\/th>\n      <th>presentacion<\/th>\n      <th>precio<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[5,6,7,8,9]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"marca","targets":1},{"name":"tipo","targets":2},{"name":"origen","targets":3},{"name":"pais","targets":4},{"name":"alcohol","targets":5},{"name":"calorias","targets":6},{"name":"porcion","targets":7},{"name":"presentacion","targets":8},{"name":"precio","targets":9}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 
 

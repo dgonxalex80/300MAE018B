@@ -96,16 +96,9 @@ Para orientar el desarrollo de la actividad, responda y soporte con resultados l
 
 ## **Carga de la data**
 
-```{r,  message=FALSE, warning=FALSE}
+```{r, eval=FALSE}
 library(readr)
 cervezas <- read_csv("data/cervezas.csv")
-
-attr(cervezas, "spec") <- NULL
-attr(cervezas, "problems") <- NULL
-str(cervezas, vec.len = 0, width = 40)
-
-
-
 ```
 
 <br/><br/>

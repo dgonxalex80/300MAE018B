@@ -1288,18 +1288,22 @@ knitr::include_graphics("img/tablero-01.png")
   📥 Descargar código Rmd
 </button>
 <script>
-document.getElementById('dl-rmd').addEventListener('click', async () => {
-  const urlRaw = 'https://raw.githubusercontent.com/dgonxalex80/300MAE005H/main/pdf/tablero-01.Rmd';
-  const resp = await fetch(urlRaw);               // CORS está permitido en raw.githubusercontent.com
+const downloadFile = async (urlRaw, fileName) => {
+  const resp = await fetch(urlRaw);
   const blob = await resp.blob();
   const url  = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'tablero-01.Rmd';                  // nombre de archivo al guardar
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+document.getElementById('dl-rmd').addEventListener('click', async () => {
+  const urlRaw = 'https://raw.githubusercontent.com/dgonxalex80/300MAE018B/main/tablero1/tablero-01.Rmd';
+  await downloadFile(urlRaw, 'tablero-01.Rmd');
 });
 </script>
 </html>
@@ -1314,20 +1318,27 @@ document.getElementById('dl-rmd').addEventListener('click', async () => {
 </button>
 <script>
 document.getElementById('dl-practica').addEventListener('click', async () => {
-  const urlRaw = 'practica_beer.R';
-  const resp = await fetch(urlRaw);
-  const blob = await resp.blob();
-  const url  = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'practica_beer.R';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  const urlRaw = 'https://raw.githubusercontent.com/dgonxalex80/300MAE018B/main/practica_beer.R';
+  await downloadFile(urlRaw, 'practica_beer.R');
 });
 </script>
 </html>
 
+
+<br/> <br/> 
+
+## Descarga de base de datos
+
+<html>
+<button id="dl-beer" style="background:c50;color:#fff;padding:7px 20px;border:0;border-radius:6px;cursor:pointer">
+  📥 Descargar beer.csv
+</button>
+<script>
+document.getElementById('dl-beer').addEventListener('click', async () => {
+  const urlRaw = 'https://raw.githubusercontent.com/dgonxalex80/300MAE018B/main/data/beer.csv';
+  await downloadFile(urlRaw, 'beer.csv');
+});
+</script>
+</html>
 
 <br/> <br/> 
